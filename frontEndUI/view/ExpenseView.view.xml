@@ -1,0 +1,128 @@
+<mvc:View
+  controllerName="frontEndUI.controller.ExpenseView"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:l="sap.ui.layout"
+  height="100%">
+
+  <Page showHeader="true" enableScrolling="true" class="sapUiResponsivePadding">
+    
+    <!-- Header Bar -->
+    <customHeader>
+      <Bar design="Header">
+        <contentLeft>
+          <Button icon="sap-icon://nav-back" press="onNavBack" tooltip="Back" type="Transparent"/>
+        </contentLeft>
+        <contentMiddle>
+          <Title text="Expense Tracker" />
+        </contentMiddle>
+        <contentRight>
+          <Button icon="sap-icon://bell" tooltip="Notifications" type="Transparent" />
+          <Button icon="sap-icon://settings" tooltip="Settings" type="Transparent" />
+        </contentRight>
+      </Bar>
+    </customHeader>
+
+    <!-- Responsive Body Content -->
+    <content>
+      <HBox wrap="Wrap" alignItems="Start" justifyContent="Start" class="sapUiSmallMargin">
+
+        <!-- LEFT PANEL -->
+        <VBox width="25%" class="sapUiSmallMargin">
+          <!-- Date Range Filter -->
+          <DateRangeSelection id="dateRange" delimiter=" - " displayFormat="long" change="onFilterChange"/>
+
+          <!-- Filter / Export Buttons -->
+          <HBox class="sapUiSmallMarginTop">
+            <Button text="Filter" press="onFilter" />
+            <Button text="Export Excel" icon="sap-icon://excel-attachment" press="onExport" />
+          </HBox>
+
+          <!-- Reminder Tabs -->
+          <IconTabBar class="sapUiSmallMarginTop" expandable="false">
+            <items>
+              <IconTabFilter text="Upcoming / Recurring" icon="sap-icon://future">
+                <List>
+                  <StandardListItem title="Electricity - Due 12 May" />
+                  <StandardListItem title="Netflix - Recurring Monthly" />
+                </List>
+              </IconTabFilter>
+              <IconTabFilter text="Missed" icon="sap-icon://history">
+                <List>
+                  <StandardListItem title="Water Bill - Missed 08 May" />
+                </List>
+              </IconTabFilter>
+            </items>
+          </IconTabBar>
+        </VBox>
+
+        <!-- RIGHT PANEL -->
+        <VBox width="70%" class="sapUiSmallMargin">
+          <!-- Overview Info -->
+          <HBox justifyContent="SpaceBetween">
+            <ObjectStatus title="Monthly Income" text="345,553" />
+            <ObjectStatus title="Monthly Expense" text="2,345" />
+            <ObjectStatus title="Weekly" text="234" />
+            <ObjectStatus title="Yearly" text="13,245" />
+            <ObjectStatus title="High Expense" text="Groceries" />
+          </HBox>
+
+          <!-- Action Buttons -->
+          <HBox class="sapUiSmallMarginTop">
+            <Button text="Add Expense" icon="sap-icon://add" press="onAddExpense"/>
+            <Button text="Add Category" icon="sap-icon://add-folder" press="onAddCategory"/>
+          </HBox>
+
+        <Table id="expenseTable"
+       mode="none"
+       inset="false"
+       class="sapUiResponsiveMargin sapUiSmallMarginTop"
+       items="{/data}">
+  <columns>
+    <Column><Text text="Date/Time"/></Column>
+    <Column><Text text="Type"/></Column>
+    <Column><Text text="Category"/></Column>
+    <Column><Text text="Sub Category"/></Column>
+    <Column><Text text="Description"/></Column>
+    <Column><Text text="Payment Mode"/></Column>
+    <Column><Text text="Amount"/></Column>
+    <Column><Text text="Flow"/></Column>
+    <Column><Text text="Actions"/></Column>
+  </columns>
+  <items>
+    <ColumnListItem>
+      <cells>
+        <Text text="{transactiontime}" />
+        <Text text="{type}" />
+        <Text text="{category}" />
+        <Text text="{subcategory}" />
+        <Text text="{description}" />
+        <Text text="{payment_mode}" />
+        <Text text="{amount}" />
+        <Text text="{flow}" />
+        <HBox>
+          <Button icon="sap-icon://edit" type="Transparent" press="onEdit"/>
+          <Button icon="sap-icon://delete" type="Transparent" press="onDelete"/>
+        </HBox>
+      </cells>
+    </ColumnListItem>
+  </items>
+</Table>
+
+        </VBox>
+
+      </HBox>
+    </content>
+
+    <!-- Footer -->
+    <footer>
+      <Bar design="Footer">
+        <contentMiddle>
+          <Text text="Owned by Pravya Group of Enterprise" />
+        </contentMiddle>
+      </Bar>
+    </footer>
+
+  </Page>
+</mvc:View>

@@ -1,0 +1,185 @@
+{
+  "_version": "1.59.0",
+  "sap.app": {
+    "id": "frontEndUI",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.14.0",
+      "toolsId": "0c60fb47-0f02-4d2f-a7f6-d130976c3e84"
+    },
+    "dataSources": {
+      "Public": {
+        "uri": "/odata/v4/cms-data-services/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {},
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.120.15",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.f": {},
+        "sap.suite.ui.generic.template": {},
+        "sap.ui.comp": {},
+        "sap.ui.generic.app": {},
+        "sap.ui.table": {},
+        "sap.ushell": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "frontEndUI.i18n.i18n"
+        }
+      },
+      "util": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "frontEndUI.util.util"
+        }
+      },
+      "publicmodel": {
+        "dataSource": "Public",
+        "preload": true,
+        "settings": {
+          "synchronizationMode": "None",
+          "operationMode": "Server",
+          "earlyRequests": true
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "viewType": "XML",
+        "async": true,
+        "viewPath": "frontEndUI.view",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "clearControlAggregation": false
+      },
+      "routes": [
+        {
+          "name": "LoginView",
+          "pattern": "",
+          "target": "TargetLoginView"
+        },
+        {
+          "name": "HomeView",
+          "pattern": "HomeView",
+          "target": "HomeView"
+        },
+        {
+          "name": "ExpenseView",
+          "pattern": "ExpenseView",
+          "target": "ExpenseView"
+        },
+        {
+          "name": "ViewCapacityPlanning",
+          "pattern": "ViewCapacityPlanning/{ID}/{cmshdrID}",
+          "target": "ViewCapacityPlanning"
+        },
+        {
+          "name": "ViewBenchmark",
+          "pattern": "ViewBenchmark/{businessExternalID}/{gma1}/{gma2}/{ID}",
+          "target": "ViewBenchmark"
+        },
+        {
+          "name": "ApprovalWFConfiguration",
+          "pattern": "ApprovalWFConfiguration",
+          "target": "ApprovalWFConfiguration"
+        }
+
+      ],
+      "targets": {
+        "TargetLoginView": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "login",
+          "viewName": "login"
+        },
+        "HomeView": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewName": "HomeView",
+          "viewId": "HomeView"
+        },
+        "ExpenseView": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewName": "ExpenseView",
+          "viewId": "ExpenseView"
+        },
+        "ViewCapacityPlanning": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewName": "ViewCapacityPlanning",
+          "viewId": "ViewCapacityPlanning"
+        },
+        "ViewBenchmark": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewName": "ViewBenchmark",
+          "viewId": "ViewBenchmark"
+        },
+        "ApprovalWFConfiguration": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewName": "ApprovalWFConfiguration",
+          "viewId": "ApprovalWFConfiguration"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "frontEndUI.view.App",
+      "type": "XML",
+      "async": true,
+      "id": "App"
+    }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "cf_g1_y0_gttpmg_cmsui-approuter"
+  }
+}

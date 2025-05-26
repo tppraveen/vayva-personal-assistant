@@ -1,0 +1,13 @@
+.customHeaderBar {
+  background-color: #2fb4ff !important;
+  color: white;
+}
+
+.customFooterBar {
+  background-color: #2fb4ff !important;
+  color: white;
+}
+
+.loginContainer input {
+  width: 100%;
+}

@@ -1,0 +1,30 @@
+{
+  "sap.app": {
+    "id": "frontEndUI",
+    "type": "application",
+    "title": "SAPUI5 Node.js Hello"
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "rootView": {
+      "viewName": "frontEndUI.view.App",
+      "type": "XML",
+      "async": true,
+      "id": "app"
+    },
+    "dependencies": {
+      "minUI5Version": "1.108",
+      "libs": {
+        "sap.m": {}
+      }
+    },
+    "models": {}
+  }
+}

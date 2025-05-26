@@ -1,0 +1,11 @@
+<mvc:View
+  controllerName="frontEndUI.controller.Home"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m">
+  
+  <Page title="Welcome to Home Page">
+    <content>
+      <Text text="You are now logged in!" class="sapUiMediumMargin"/>
+    </content>
+  </Page>
+</mvc:View>

@@ -1,0 +1,55 @@
+ 
+
+
+<mvc:View
+  controllerName="frontEndUI.controller.HomeView"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+	xmlns:l="sap.ui.layout"
+	xmlns:f="sap.ui.layout.form"
+  height="100%">
+  
+  <Page
+    showHeader="true"
+    enableScrolling="false"
+    class="sapUiResponsivePadding">
+    
+    <!-- Custom Header -->
+    <customHeader>
+      <Bar
+        design="Header"
+        style="Standard" >
+        <contentLeft>
+          <Button icon="sap-icon://nav-back" press="onNavBack" tooltip="Notifications" type="Transparent" />
+        </contentLeft>
+        <contentMiddle>
+          <Title text="Pravya Family App" />
+        </contentMiddle>
+		  <contentRight>
+          <Button icon="sap-icon://bell" tooltip="Notifications" type="Transparent" />
+          <Button icon="sap-icon://employee" tooltip="User Profile" type="Transparent" />
+        </contentRight>
+      </Bar>
+    </customHeader>
+
+    <!-- Centered Login Content -->
+  
+     
+	    <!-- Body: Dynamic Menu Tiles -->
+    <content>
+      <HBox class="sapUiSmallMargin" id="menuTileContainer" wrap="true" justifyContent="Start" alignItems="Start" />
+    </content> 
+
+    <!-- Footer -->
+    <footer>
+      <Bar
+        design="Footer" >
+        <contentMiddle>
+          <Text text="Owned by Pravya Group of Enterprise" />
+        </contentMiddle>
+      </Bar>
+    </footer>
+    
+  </Page>
+</mvc:View>

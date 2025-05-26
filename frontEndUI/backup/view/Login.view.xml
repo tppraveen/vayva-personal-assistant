@@ -1,0 +1,26 @@
+<mvc:View
+  controllerName="frontEndUI.controller.Login"
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m">
+  
+  <VBox class="sapUiContentPadding" justifyContent="Center" alignItems="Center">
+    
+    <!-- Header -->
+    <Label text="Pravya Family App" class="sapUiLargeMargin" design="Bold" />
+
+    <!-- Login Form -->
+    <VBox class="sapUiSmallMargin" width="300px">
+      <Input id="username" placeholder="Username" />
+      <Input id="password" type="Password" placeholder="Password" />
+      <Button text="Login" press="onLoginPress" type="Emphasized" class="sapUiSmallMarginTop"/>
+    </VBox>
+
+    <!-- Footer -->
+    <Toolbar class="sapUiSmallMarginTop">
+      <ToolbarSpacer/>
+      <Text text="Owned by Pravya Group of Enterprise" />
+      <ToolbarSpacer/>
+    </Toolbar>
+    
+  </VBox>
+</mvc:View>
