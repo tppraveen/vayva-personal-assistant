@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>SAPUI5 + Node.js Hello</title>
+  <script
+    id="sap-ui-bootstrap"
+    src="https://sdk.openui5.org/resources/sap-ui-core.js"
+    data-sap-ui-theme="sap_horizon"
+    data-sap-ui-libs="sap.m"
+    data-sap-ui-async="true"
+    data-sap-ui-resourceroots='{"sap.ui.demo.hello": "./"}'>
+  </script>
+  <script>
+    sap.ui.getCore().attachInit(function () {
+      new sap.ui.core.ComponentContainer({
+        name: "sap.ui.demo.hello",
+        async: true,
+        settings: { id: "hello" }
+      }).placeAt("content");
+    });
+  </script>
+</head>
+<body class="sapUiBody" id="content"></body>
+</html>
