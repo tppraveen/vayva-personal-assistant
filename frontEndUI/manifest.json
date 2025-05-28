@@ -110,9 +110,9 @@
           "target": "ExpenseView"
         },
         {
-          "name": "ViewCapacityPlanning",
-          "pattern": "ViewCapacityPlanning/{ID}/{cmshdrID}",
-          "target": "ViewCapacityPlanning"
+          "name": "ExpenseCategoryConfig",
+          "pattern": "ExpenseCategoryConfig",
+          "target": "ExpenseCategoryConfig"
         },
         {
           "name": "ViewBenchmark",
@@ -148,12 +148,12 @@
           "viewName": "ExpenseView",
           "viewId": "ExpenseView"
         },
-        "ViewCapacityPlanning": {
+        "ExpenseCategoryConfig": {
           "viewType": "XML",
           "transition": "slide",
           "clearControlAggregation": false,
-          "viewName": "ViewCapacityPlanning",
-          "viewId": "ViewCapacityPlanning"
+          "viewName": "ExpenseCategoryConfig",
+          "viewId": "ExpenseCategoryConfig"
         },
         "ViewBenchmark": {
           "viewType": "XML",

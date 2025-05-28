@@ -12,8 +12,9 @@ router.oExpenseCategoryConfigServices = async (req, res) => {
  
 
 
-router.getExpenseListsbyUser = async (req, res) => {
-           const username = req.headers['x-username'];
+router.getExpenseCategoryConfigListsbyUser = async (req, res) => {
+  console.log(req.body)
+            const { username } = req.body;
   
 
   if (!username) {
@@ -42,8 +43,9 @@ router.getExpenseListsbyUser = async (req, res) => {
      
 }
 router.readExpenseCategoryByID = async (req, res) => {
-  const  username  = req.headers['x-username']; 
-  const  id  = req.headers['x-id']; // Get the ID from the URL parameter
+  // const  username  = req.headers['x-username']; 
+  // const  id  = req.headers['x-id']; // Get the ID from the URL parameter
+     const { username,id } = req.body;
   
   if (!id || !username) {
     return response.error(res, 400, 'Expense category ID and Username is required.');
@@ -114,7 +116,6 @@ router.insertExpenseCategoryConfig = async (req, res) => {
 router.updateExpenseCategoryConfig = async (req, res) => {
   try {
     const {
-      username,
       category,
       subcategory,
       importance,
@@ -127,8 +128,10 @@ router.updateExpenseCategoryConfig = async (req, res) => {
       recurring,
       recurringtype,
       recurringevery,
-      remainder,
-      status,id
+      isreminder,
+      status,
+      username,
+          id
     } = req.body;
 
     if (!id || !username || !category || !subcategory) {
@@ -170,7 +173,7 @@ router.updateExpenseCategoryConfig = async (req, res) => {
       recurring === true || recurring === 'true',
       recurringtype,
       recurringevery,
-      remainder === true || remainder === 'true',
+      isreminder === true || isreminder === 'true',
       status || 'Active',
       username, // modified_by
       id,

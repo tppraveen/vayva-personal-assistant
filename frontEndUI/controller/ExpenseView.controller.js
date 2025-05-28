@@ -95,8 +95,8 @@ function(BaseController, Controller, formatter, BusyIndicator, Filter, FilterOpe
       MessageToast.show("Add Expense");
     },
 
-    onAddCategory: function () {
-      MessageToast.show("Add Category");
+    onAddCategory: function () { 
+			oRouter.navTo("ExpenseCategoryConfig", true);
     },
 
     onEdit: function (oEvent) {

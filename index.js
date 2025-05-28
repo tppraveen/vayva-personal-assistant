@@ -47,8 +47,8 @@ app.post(oUserServicePrefix+'/getLoginUserMenu',oUserService.getLoginUserMenu);
 const oExpenseCategoryConfigService = require('./routes/ExpenseCategoryConfigService');
 
 app.get(oExpenseConfigServicePrefix,oExpenseCategoryConfigService.oExpenseCategoryConfigServices);
-app.get(oExpenseConfigServicePrefix+'/getExpenseListsbyUser',oExpenseCategoryConfigService.getExpenseListsbyUser);
-app.get(oExpenseConfigServicePrefix + '/readExpenseCategoryByID', oExpenseCategoryConfigService.readExpenseCategoryByID);
+app.post(oExpenseConfigServicePrefix+'/getExpenseCategoryConfigListsbyUser',oExpenseCategoryConfigService.getExpenseCategoryConfigListsbyUser);
+app.post(oExpenseConfigServicePrefix + '/readExpenseCategoryByID', oExpenseCategoryConfigService.readExpenseCategoryByID);
 app.post(oExpenseConfigServicePrefix+'/insertExpenseCategoryConfig',oExpenseCategoryConfigService.insertExpenseCategoryConfig);
 app.put(oExpenseConfigServicePrefix+'/updateExpenseCategoryConfig',oExpenseCategoryConfigService.updateExpenseCategoryConfig);
 

@@ -1,0 +1,92 @@
+<mvc:View
+  controllerName="frontEndUI.controller.ExpenseCategoryConfig"
+     xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  xmlns:l="sap.ui.layout"
+  xmlns:f="sap.ui.layout.form"
+  height="100%">
+
+  <Page
+    title="Expense Configuration"
+    showNavButton="true"
+    navButtonPress="onNavBack"
+    showHeader="true">
+
+    <headerContent>
+      <Button icon="sap-icon://notification" type="Transparent" />
+      <Button icon="sap-icon://settings" type="Transparent" />
+    </headerContent>
+
+    <content>
+      <!-- Filter Panel -->
+      <Panel expandable="true" expanded="true" headerText="Filter">
+        <VBox>
+          <HBox>
+        <Label text="Category" />
+            <Select width="200px" items="{/categories}">
+              <core:Item key="{id}" text="{name}" />
+            </Select>
+        <Label text="Sub Category" />
+            <Select width="200px" items="{/subcategories}">
+              <core:Item key="{id}" text="{name}" />
+            </Select>
+            <Button icon="sap-icon://filter" tooltip="Apply Filter" />
+          </HBox>
+        </VBox>
+      </Panel>
+
+      <!-- Table with Add Button -->
+      <Toolbar>
+        <Title text="Expense Categories" />
+        <ToolbarSpacer />
+        <Button icon="sap-icon://add" text="Add" press="onAddPress" type="Emphasized" />
+      </Toolbar>
+
+      <Table id="expenseTable"
+       inset="false"
+       items="{oExpCatConfigModel>/data}">
+  <columns>
+    <Column><Text text="Category" /></Column>
+    <Column><Text text="Subcategory" /></Column>
+    <Column><Text text="Importance" /></Column>
+    <Column><Text text="Limit Goal" /></Column>
+    <Column><Text text="Recurring" /></Column>
+    <Column><Text text="Suggestions" /></Column>
+    <Column><Text text="Notes" /></Column>
+    <Column><Text text="Status" /></Column>
+    <Column><Text text="Created On" /></Column>
+    <Column><Text text="Actions" /></Column>
+  </columns>
+  <items>
+    <ColumnListItem>
+      <cells>
+        <Text text="{oExpCatConfigModel>category}" />
+        <Text text="{oExpCatConfigModel>subcategory}" />
+        <Text text="{oExpCatConfigModel>importance}" />
+        <Text text="{= ${oExpCatConfigModel>yearlimit} + '/' + ${oExpCatConfigModel>monthlimit} + '/' + ${oExpCatConfigModel>weeklimit} + '/' + ${oExpCatConfigModel>dailylimit} }" />
+        <Text text="{= ${oExpCatConfigModel>recurring} ? 'Yes' : 'No'}" />
+        <Text text="{oExpCatConfigModel>suggestions}" />
+        <Text text="{oExpCatConfigModel>notes}" />
+        <Text text="{oExpCatConfigModel>status}" />
+        <Text text="{= ${oExpCatConfigModel>created_on}.substring(0,10) }" />
+        <HBox>
+          <Button icon="sap-icon://edit" press="onEditPress" type="Transparent" />
+          <Button icon="sap-icon://delete" press="onDeletePress" type="Transparent" />
+        </HBox>
+      </cells>
+    </ColumnListItem>
+  </items>
+</Table>
+
+    </content>
+
+    <footer>
+      <Bar>
+        <contentMiddle>
+          <Text text="Owned by Pravya Group of Enterprise" />
+        </contentMiddle>
+      </Bar>
+    </footer>
+  </Page>
+</mvc:View>

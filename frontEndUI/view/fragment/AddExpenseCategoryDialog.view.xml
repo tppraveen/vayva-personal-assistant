@@ -1,0 +1,69 @@
+<mvc:View
+  xmlns:mvc="sap.ui.core.mvc"
+  xmlns="sap.m"
+  xmlns:core="sap.ui.core"
+  controllerName="frontEndUI.controller.ExpenseCategoryConfig">
+
+  <Dialog
+    id="addDialog"
+    title="Add Expense Category"
+    class="sapUiResponsivePadding"
+    stretchOnPhone="true"
+    draggable="true"
+    resizable="true"
+    contentHeight="auto"
+    contentWidth="100%">
+
+    <HBox justifyContent="SpaceBetween" wrap="Wrap" class="sapUiSmallMargin">
+      <!-- Left -->
+      <VBox width="48%">
+        <Label text="Category" />
+        <Input />
+        <Label text="Sub Category" />
+        <Input />
+        <Label text="Limit Goal (Year)" />
+        <Input type="Number" />
+        <Label text="Limit Goal (Month)" />
+        <Input type="Number" />
+        <Label text="Limit Goal (Week)" />
+        <Input type="Number" />
+        <Label text="Limit Goal (Daily)" />
+        <Input type="Number" />
+        <Label text="Importance" />
+        <Select items="{comboModel>/importance}">
+          <core:Item key="{comboModel>key}" text="{comboModel>text}" />
+        </Select>
+      </VBox>
+
+      <!-- Right -->
+      <VBox width="48%">
+        <Label text="Status" />
+        <Select items="{comboModel>/status}">
+          <core:Item key="{comboModel>key}" text="{comboModel>text}" />
+        </Select>
+        <Label text="Suggestions" />
+        <TextArea rows="4" growing="true" width="100%" />
+        <Label text="Notes" />
+        <TextArea rows="4" growing="true" width="100%" />
+        <Label text="Recurring" />
+        <Switch state="false" />
+        <Label text="Recurring Type" />
+        <Select items="{comboModel>/recurringType}">
+          <core:Item key="{comboModel>key}" text="{comboModel>text}" />
+        </Select>
+        <Label text="Recurring Days" />
+        <Input type="Number" />
+        <Label text="Reminder Want?" />
+        <Switch state="false" />
+      </VBox>
+    </HBox>
+
+    <beginButton>
+      <Button text="Add" type="Emphasized" press="onAddCategoryConfirm" />
+    </beginButton>
+
+    <endButton>
+      <Button text="Cancel" press="onDialogCancel" />
+    </endButton>
+  </Dialog>
+</mvc:View>
