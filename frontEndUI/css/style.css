@@ -11,3 +11,7 @@
 .loginContainer input {
   width: 100%;
 }
+.sapMBar{
+    background-color: #2fb4ff !important;
+  color: white;
+}

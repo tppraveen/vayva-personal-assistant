@@ -19,7 +19,7 @@
         <!-- Left Column -->
         <VBox width="48%">
           <Label text="Category" />
-          <Input value="{viewModel>/formData/category}" />
+          <Input value="{viewModel>/formData/category}"  enabled="{= ${viewModel>/mode} === 'Add' }"/>
 
           <Label text="Limit Goal (Year)" />
           <Input type="Number" value="{viewModel>/formData/yearlimit}" />
@@ -45,7 +45,7 @@
         <!-- Right Column -->
         <VBox width="48%">
           <Label text="Sub Category" />
-          <Input value="{viewModel>/formData/subcategory}" />
+          <Input value="{viewModel>/formData/subcategory}"   enabled="{= ${viewModel>/mode} === 'Add' }" />
 
           <Label text="Limit Goal (Week)" />
           <Input type="Number" value="{viewModel>/formData/weeklimit}" />

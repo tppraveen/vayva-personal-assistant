@@ -196,12 +196,56 @@ router.updateExpenseCategoryConfig = async (req, res) => {
     return response.error(res, 500, 'Internal server error.', err.message);
   }
 };
+router.deleteExpenseCategoryConfig = async (req, res) => {
+  try {
+    const { username, category, subcategory } = req.body;
+
+    if (!username || !category || !subcategory) {
+      return response.error(res, 400, 'username, category, and subcategory are required.');
+    }
+
+    // Step 1: Check if category+subcategory exists in Expense table
+    const expenseCheckQuery = `
+      SELECT COUNT(*) 
+      FROM expensetracker 
+      WHERE username = $1 AND category = $2 AND subcategory = $3
+    `;
+
+    const expenseResult = await pool.query(expenseCheckQuery, [username, category, subcategory]);
+
+    if (parseInt(expenseResult.rows[0].count) > 0) {
+      return response.error(res, 409, 'This category is already used in expenses. Please delete associated expenses first.');
+    }
+
+    // Step 2: Delete from ExpenseCategoryConfig
+    const deleteQuery = `
+      DELETE FROM ExpenseCategoryConfig
+      WHERE username = $1 AND category = $2 AND subcategory = $3
+      RETURNING id
+    `;
+
+    const deleteResult = await pool.query(deleteQuery, [username, category, subcategory]);
+
+    if (deleteResult.rowCount === 0) {
+      return response.error(res, 404, 'Expense category config not found.');
+    }
+
+    return response.success(res, 200, {
+      message: 'Expense category config deleted successfully.',
+      id: deleteResult.rows[0].id
+    });
+
+  } catch (err) {
+    console.error('Error deleting ExpenseCategoryConfig:', err);
+    return response.error(res, 500, 'Internal server error.', err.message);
+  }
+};
 
 
 
 
 router.getCategoryListsByUser = async (req, res) => {
-           const username = req.headers['x-username'];
+    const { username } = req.body;
 
   if (!username) {
     return response.error(res, 400, 'Username is required.', 'Missing query parameter: username.');
@@ -216,8 +260,9 @@ router.getCategoryListsByUser = async (req, res) => {
     const values = [username];
 
     const result = await pool.query(query, values);
+const categories = result.rows.map(row => ({ category: row.category }));
 
-    return response.success(res, 200,'Category list fetched successfully.',result.rows.map(row => row.category));
+return response.success(res, 200, 'Category list fetched successfully.', categories);
 
   } catch (err) {
     console.error('Error fetching categories:', err);
@@ -225,8 +270,9 @@ router.getCategoryListsByUser = async (req, res) => {
   }
 };
 router.getSubCategoryListsByUser = async (req, res) => {
-           const username = req.headers['x-username'];
-           const category = req.headers['x-category'];
+          
+           
+    const { username, category } = req.body;
 
   if (!username|| !category) {
     return response.error(res, 400, 'Username is required.', 'Missing query parameter: username.');
@@ -243,9 +289,12 @@ router.getSubCategoryListsByUser = async (req, res) => {
     `;
     const values = [username,category];
 
-    const result = await pool.query(query, values);
+   const result = await pool.query(query, values);
+const categories = result.rows.map(row => ({ subcategory: row.subcategory }));
 
-    return response.success(res, 200,'Sub Category list fetched successfully.',result.rows.map(row => row.subcategory));
+return response.success(res, 200, 'Sub Category list fetched successfully.', categories);
+
+
 
   } catch (err) {
     console.error('Error fetching categories:', err);

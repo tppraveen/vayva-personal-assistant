@@ -51,9 +51,10 @@ app.post(oExpenseConfigServicePrefix+'/getExpenseCategoryConfigListsbyUser',oExp
 app.post(oExpenseConfigServicePrefix + '/readExpenseCategoryByID', oExpenseCategoryConfigService.readExpenseCategoryByID);
 app.post(oExpenseConfigServicePrefix+'/insertExpenseCategoryConfig',oExpenseCategoryConfigService.insertExpenseCategoryConfig);
 app.put(oExpenseConfigServicePrefix+'/updateExpenseCategoryConfig',oExpenseCategoryConfigService.updateExpenseCategoryConfig);
+app.delete(oExpenseConfigServicePrefix+'/delete',oExpenseCategoryConfigService.deleteExpenseCategoryConfig);
 
-app.get(oExpenseConfigServicePrefix+'/getCategoryListsByUser',oExpenseCategoryConfigService.getCategoryListsByUser);
-app.get(oExpenseConfigServicePrefix+'/getSubCategoryListsByUser',oExpenseCategoryConfigService.getSubCategoryListsByUser);
+app.post(oExpenseConfigServicePrefix+'/getCategoryListsByUser',oExpenseCategoryConfigService.getCategoryListsByUser);
+app.post(oExpenseConfigServicePrefix+'/getSubCategoryListsByUser',oExpenseCategoryConfigService.getSubCategoryListsByUser);
 
 
 
@@ -70,10 +71,11 @@ const oExpenseService = require('./routes/ExpenseService');
 
 app.get(oExpenseServicePrefix,oExpenseService.oExpenseServices);
 app.post(oExpenseServicePrefix+'/getExpenseListsbyUser',oExpenseService.getExpenseListsbyUser);
-app.get(oExpenseServicePrefix + '/readExpenseByID', oExpenseService.readExpenseByID);
+app.post(oExpenseServicePrefix + '/readExpenseByID', oExpenseService.readExpenseByID);
 app.post(oExpenseServicePrefix+'/insertExpense',oExpenseService.insertExpense);
-app.put(oExpenseServicePrefix + '/deleteExpense/:id', oExpenseService.deleteExpense);
-app.put(oExpenseServicePrefix + '/updateExpense/:id', oExpenseService.updateExpense);
+app.delete(oExpenseServicePrefix + '/deleteExpense', oExpenseService.deleteExpense);
+app.post(oExpenseServicePrefix + '/updateExpense/:id', oExpenseService.updateExpense);
+app.post(oExpenseServicePrefix + '/getExpenseDashboardSummary', oExpenseService.getExpenseDashboardSummary);
 
 
 

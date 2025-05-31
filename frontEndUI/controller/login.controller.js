@@ -1,4 +1,5 @@
 sap.ui.define([
+  "frontEndUI/controller/BaseController",
 	"sap/ui/core/mvc/Controller",
 	"frontEndUI/model/formatter",
 	'sap/ui/core/BusyIndicator',
@@ -10,10 +11,10 @@ sap.ui.define([
 /**
  * @param {typeof sap.ui.core.mvc.Controller} Controller
  */
-function(Controller, formatter, BusyIndicator, Filter, FilterOperator, MessageToast, CMSModel) {
+function(BaseController,Controller, formatter, BusyIndicator, Filter, FilterOperator, MessageToast, CMSModel) {
 	"use strict";
 	var oRouter;
-	return Controller.extend("frontEndUI.controller.login", {
+	return BaseController.extend("frontEndUI.controller.login", {
 		formatter: formatter,
 		onInit: function() {
 			oRouter = sap.ui.core.UIComponent.getRouterFor(this);
@@ -49,7 +50,7 @@ function(Controller, formatter, BusyIndicator, Filter, FilterOperator, MessageTo
       let oGlobalModel = sap.ui.getCore().getModel("oGlobalModel");
       oGlobalModel.setProperty("/LoginView/username", sUsername);
       oGlobalModel.setProperty("/LoginView/password", sPassword);
-
+var that=this
       $.ajax({
         url: "/oData/v1/UserServices/validateLoginUser",
         method: "POST",
@@ -59,7 +60,7 @@ function(Controller, formatter, BusyIndicator, Filter, FilterOperator, MessageTo
           password: sPassword
         }),
         success: function (response) {
-          MessageToast.show(response.message || "Login successful!");
+          that.onShowMessageTost(response.message || "Login successful!");
 
           // Navigate to Home
           const oRouter = sap.ui.core.UIComponent.getRouterFor(this);

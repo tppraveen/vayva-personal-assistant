@@ -10,9 +10,101 @@ router.oExpenseServices = async (req, res) => {
     res.json(detailService);
 }
  
-
-
 router.getExpenseListsbyUser = async (req, res) => {
+  const { username, fromDate, toDate } = req.body;
+
+  if (!username) {
+    return response.error(res, 400, 'Username is required.');
+  }
+
+  try {
+    let query = `
+      SELECT *, TO_CHAR(transactiontime, 'DD/MM/YYYY HH24:MI') AS transaction_time
+      FROM expensetracker
+      WHERE username = $1 AND status = 'Active'
+    `;
+    const values = [username];
+    let index = 2;
+
+    if (fromDate && toDate) {
+      query += ` AND transactiontime BETWEEN $${index} AND $${index + 1}`;
+      values.push(fromDate, toDate);
+      index += 2;
+    }
+
+    query += ` ORDER BY transactiontime DESC`;
+
+    const result = await pool.query(query, values);
+
+    return response.success(res, 200, 'Expense list fetched successfully.', result.rows);
+
+  } catch (err) {
+    console.error('Database error while fetching Expense:', err);
+    return response.error(res, 500, 'Internal server error. Please try again later.');
+  }
+};
+
+router.getExpenseDashboardSummary = async (req, res) => {
+  const { username } = req.body;
+
+  if (!username) {
+    return response.error(res, 400, 'Username is required.');
+  }
+
+  try {
+    const query = `
+    WITH filtered AS (
+  SELECT *
+  FROM expensetracker
+  WHERE username = $1 AND status = 'Active'
+),
+income_total AS (
+  SELECT COALESCE(SUM(amount), 0) AS total_income
+  FROM filtered
+  WHERE LOWER(type) = 'Income'
+),
+expense_total AS (
+  SELECT COALESCE(SUM(amount), 0) AS total_expense
+  FROM filtered
+  WHERE LOWER(type) = 'Expense'
+),
+last_expense AS (
+  SELECT category, subcategory
+  FROM filtered
+  WHERE LOWER(type) = 'Expense'
+  ORDER BY transactiontime DESC
+  LIMIT 1
+),
+top_category AS (
+  SELECT category, SUM(amount) AS total
+  FROM filtered
+  WHERE LOWER(type) = 'Expense'
+  GROUP BY category
+  ORDER BY total DESC
+  LIMIT 1
+)
+SELECT 
+  it.total_income,
+  et.total_expense,
+  le.category AS last_expense_category,
+  le.subcategory AS last_expense_subcategory,
+  tc.category AS highest_expense_category,
+  tc.total AS highest_expense_amount
+FROM income_total it, expense_total et, last_expense le, top_category tc;
+    `;
+
+    const result = await pool.query(query, [username]);
+
+    return response.success(res, 200, "Dashboard summary fetched", result.rows[0]);
+
+  } catch (err) {
+    console.error("Error fetching dashboard summary:", err);
+    return response.error(res, 500, "Internal server error.");
+  }
+};
+
+
+router.getExpenseListsbyUser2 = async (req, res) => {
             const { username } = req.body;
   
 
@@ -22,9 +114,9 @@ router.getExpenseListsbyUser = async (req, res) => {
 
   try {
     const query = `
-      SELECT *,TO_CHAR(transactiontime, 'DD/MM/YYYY HH24:MI') AS transactiontime
+      SELECT *,TO_CHAR(transactiontime, 'DD/MM/YYYY HH24:MI') AS transaction_time
       FROM expensetracker
-      WHERE username = $1 AND status = 'Active'
+      WHERE username = $1 AND status = 'Active'  order by transactiontime desc 
     `;
     const values = [username];
 
@@ -44,9 +136,9 @@ router.getExpenseListsbyUser = async (req, res) => {
 
 
 router.readExpenseByID = async (req, res) => {
-  const  username  = req.headers['x-username']; 
-  const  id  = req.headers['x-id']; // Get the ID from the URL parameter
-  
+   const { username,id } = req.body;
+   
+  console.log(username +""+id)
   if (!id || !username) {
     return response.error(res, 400, 'Expense ID and Username is required.');
   }
@@ -96,9 +188,7 @@ router.insertExpense = async (req, res) => {
       expense_mood,
       username
     } = req.body;
-console.log(req.body)
-  console.log(datetime +"--"+ type +"--"+ amount  +"--"+ category +"--"+ username)
-
+ 
     if (!datetime || !type || !amount || !category || !username) {
       return response.error(res, 400, 'Required fields are missing.');
     }
@@ -166,7 +256,7 @@ console.log(req.body)
       payment_status,
       username
     ];
-    console.log(query+"/n"+values)
+//console.log(query+"/n"+values)
     const result = await pool.query(query, values);
 
     return response.success(res, 201,'Expense details added successfully.');
@@ -196,7 +286,7 @@ router.updateExpense = async (req, res) => {
     expense_mood,
     username
   } = req.body;
-
+ 
   if (!id || !username) {
     return response.error(res, 400, 'Expense ID and username are required.');
   }
@@ -214,8 +304,8 @@ router.updateExpense = async (req, res) => {
     const transactionTime = new Date(datetime); // full timestamp
 
     // Convert "Yes"/"No" to booleans
-    const isPlannedBool = is_planned === 'Yes';
-    const impactSavingBool = impact_saving === 'Yes';
+    const isPlannedBool = is_planned ;
+    const impactSavingBool = impact_saving ;
 
     const query = `
       UPDATE expensetracker
@@ -271,10 +361,7 @@ router.updateExpense = async (req, res) => {
       return response.error(res, 404, 'Expense not found or inactive.');
     }
 
-    return response.success(res, 200, {
-      message: 'Expense record updated successfully.',
-      id: result.rows[0].id
-    });
+    return response.success(res, 200, 'Expense record updated successfully.');
 
   } catch (err) {
     console.error('Error updating expense record:', err);
@@ -283,8 +370,7 @@ router.updateExpense = async (req, res) => {
 };
 
 router.deleteExpense = async (req, res) => {
-  const { id } = req.params; // Get the expense ID from the URL parameter
-  const { username } = req.body; // The user who is performing the deletion
+ const { username, id } = req.body;
 
   if (!id || !username) {
     return response.error(res, 400, 'Expense ID and username are required.');
@@ -308,10 +394,7 @@ router.deleteExpense = async (req, res) => {
       return response.error(res, 404, 'Expense not found or already deleted.');
     }
 
-    return response.success(res, 200, {
-      message: 'Expense record marked as deleted successfully.',
-      id: result.rows[0].id
-    });
+    return response.success(res, 200, 'Expense record marked as deleted successfully.');
 
   } catch (err) {
     console.error('Error deleting expense record:', err);

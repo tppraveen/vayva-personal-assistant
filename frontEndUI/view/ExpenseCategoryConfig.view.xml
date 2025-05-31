@@ -10,10 +10,10 @@
   <Page
     title="Expense Configuration"
     showNavButton="true"
-    navButtonPress="onNavBack"
+    navButtonPress="onNavBack"  
     showHeader="true">
 
-    <headerContent>
+    <headerContent class="customHeaderBar">
       <Button icon="sap-icon://notification" type="Transparent" />
       <Button icon="sap-icon://settings" type="Transparent" />
     </headerContent>
@@ -64,7 +64,18 @@
         <Text text="{oExpCatConfigModel>category}" />
         <Text text="{oExpCatConfigModel>subcategory}" />
         <Text text="{oExpCatConfigModel>importance}" />
-        <Text text="{= ${oExpCatConfigModel>yearlimit} + '/' + ${oExpCatConfigModel>monthlimit} + '/' + ${oExpCatConfigModel>weeklimit} + '/' + ${oExpCatConfigModel>dailylimit} }" />
+        <VBox>
+          <HBox>
+              <Text text="{= 'Year: ' + ${oExpCatConfigModel>yearlimit} + '   Month: ' + ${oExpCatConfigModel>monthlimit}}" />
+          </HBox>
+          <HBox>
+              <Text text="{= 'Week: ' + ${oExpCatConfigModel>weeklimit} + '   Day: ' + ${oExpCatConfigModel>dailylimit} }" />
+          </HBox>
+        </VBox>
+       <!-- <Text
+  text="{= 'Year: ' + ${oExpCatConfigModel>yearlimit} + '   Month: ' + ${oExpCatConfigModel>monthlimit} + '\nWeek: ' + ${oExpCatConfigModel>weeklimit} + '   Day: ' + ${oExpCatConfigModel>dailylimit} }"
+ 
+  maxLines="2" /> -->
         <Text text="{= ${oExpCatConfigModel>recurring} ? 'Yes' : 'No'}" />
         <Text text="{oExpCatConfigModel>suggestions}" />
         <Text text="{oExpCatConfigModel>notes}" />
@@ -81,8 +92,8 @@
 
     </content>
 
-    <footer>
-      <Bar>
+    <footer >
+      <Bar  class="customHeaderBar">
         <contentMiddle>
           <Text text="Owned by Pravya Group of Enterprise" />
         </contentMiddle>

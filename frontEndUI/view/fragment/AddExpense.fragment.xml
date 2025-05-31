@@ -1,0 +1,185 @@
+<core:FragmentDefinition xmlns="sap.m"
+  xmlns:core="sap.ui.core" 
+  xmlns:layout="sap.ui.layout"
+  xmlns:f="sap.ui.layout.form"
+  xmlns:l="sap.ui.layout">
+
+<Dialog
+  id="expenseDialog"
+  title="{= ${viewModel>/mode} === 'Add' ? 'Add Expense' : 'Edit Expense' }"
+  class="sapUiContentPadding"
+  draggable="true"
+  resizable="true"
+  contentWidth="500px"
+  contentHeight="auto"
+  stretchOnPhone="true"
+  afterClose=".onDialogClose">
+
+  <!-- <headerContent>
+    <Button icon="sap-icon://decline" type="Transparent" press=".onDialogClose" tooltip="Close" />
+  </headerContent> -->
+<!-- Two-column HBox layout -->
+     
+       
+
+
+
+       <!-- Main FlexBox to wrap all rows vertically -->
+  <VBox class="sapUiSmallMargin">
+
+    <!-- Second Row: date time ,type,isplanned -->
+    <FlexBox direction="Row" wrap="Wrap" justifyContent="SpaceBetween">
+      <VBox width="60%">
+         <Label text="Date - Time" 	wrapping="true"/>
+    <DateTimePicker   value="{path: 'viewModel>/formData/datetime', type: 'sap.ui.model.type.DateTime', formatOptions: {UTC: true}}"
+  displayFormat="dd-MM-yyyy HH:mm:ss" />
+
+      </VBox>
+
+      <VBox width="37%">
+         <Label text="Type" />
+    <ComboBox selectedKey="{viewModel>/formData/type}" items="{viewModel>/types}">
+      <items>
+        <core:Item key="{viewModel>key}" text="{viewModel>text}" />
+      </items>
+    </ComboBox>
+      </VBox>
+     
+    </FlexBox>
+    
+
+     <!-- First Row: Category, Subcategory -->
+    <FlexBox direction="Row" wrap="Wrap" justifyContent="SpaceBetween">
+      <VBox width="48%">
+        <Label text="Category" />
+        <ComboBox selectedKey="{viewModel>/formData/category}" 
+                  items="{categoryModel>/data}" 
+                  selectionChange=".onCategoryChange">
+          <core:Item key="{categoryModel>category}" text="{categoryModel>category}" />
+        </ComboBox>
+      </VBox>
+
+      <VBox width="48%">
+        <Label text="Subcategory" />
+        <ComboBox selectedKey="{viewModel>/formData/sub_category}" 
+                  items="{subcategoryModel>/data}">
+          <core:Item key="{subcategoryModel>subcategory}" text="{subcategoryModel>subcategory}" />
+        </ComboBox>
+      </VBox>
+
+     
+    </FlexBox>
+ 
+
+
+
+
+
+
+
+
+
+ 
+
+    
+
+    <!-- First Row: Category, Subcategory, Amount -->
+    <FlexBox direction="Row" wrap="Wrap" justifyContent="SpaceBetween">
+      <VBox width="42%">
+        <Label text="Payment Mode" 	wrapping="true"/>
+    <ComboBox selectedKey="{viewModel>/formData/payment_mode}" items="{viewModel>/paymentModes}">
+      <items>
+        <core:Item key="{viewModel>key}" text="{viewModel>text}" />
+      </items>
+    </ComboBox>
+      </VBox>
+
+      <VBox width="32%">
+        <Label text="Amount" />
+        <Input value="{viewModel>/formData/amount}" type="Number" />
+      </VBox>
+
+      <VBox width="23%">
+        <Label text="Is Planned" 	wrapping="true"/>
+    <Switch state="{viewModel>/formData/is_planned}" 
+            change=".onSwitchChange" customData="{ key: 'is_planned' }" />
+      </VBox>
+    </FlexBox>
+
+    <!-- Second Row: Payment Status, Description -->
+    <FlexBox direction="Row" wrap="Wrap" justifyContent="SpaceBetween">
+      <VBox width="99%">
+      <Label text="Description" />
+        <TextArea value="{viewModel>/formData/description}" rows="2" width="100%"/>
+       
+      </VBox>
+
+       
+    </FlexBox>
+
+    <!-- Third Row: Impact Saving (Switch), Cycle -->
+    <FlexBox direction="Row" wrap="Wrap" justifyContent="SpaceBetween">
+    
+      <VBox width="35%">
+         <Label text="Payment Status"	wrapping="true"/>
+        <ComboBox selectedKey="{viewModel>/formData/payment_status}" items="{viewModel>/paymentStatuses}">
+          <core:Item key="{viewModel>key}" text="{viewModel>text}" />
+        </ComboBox>
+      </VBox>
+      <VBox width="22%">
+        <Label text="Impact Saving" 	wrapping="true"  />
+        <Switch state="{viewModel>/formData/impact_saving}" 
+                change=".onSwitchChange" customData="{ key: 'impact_saving' }" />
+      </VBox>
+ <VBox width="35%">
+        <Label text="Merchant Name"	wrapping="true" />
+        <TextArea value="{viewModel>/formData/merchant_name}" rows="2"/>
+      </VBox>
+
+      
+    </FlexBox>
+
+    <!-- Fourth Row: Merchant Name, With Whom -->
+    <FlexBox direction="Row" wrap="Wrap" justifyContent="SpaceBetween">
+     
+      <VBox width="35%">
+        <Label text="Cycle" />
+        <ComboBox selectedKey="{viewModel>/formData/cycle}" items="{viewModel>/cycles}">
+          <core:Item key="{viewModel>key}" text="{viewModel>text}" />
+        </ComboBox>
+      </VBox>
+
+      <VBox width="64%">
+        <Label text="With Whom" />
+        <TextArea value="{viewModel>/formData/with_whom}" rows="2" />
+      </VBox>
+       
+    </FlexBox>
+
+    <!-- Fifth Row: Notes, Expense Mood -->
+    <FlexBox direction="Row" wrap="Wrap" justifyContent="SpaceBetween">
+      <VBox width="48%">
+        <Label text="Notes" />
+        <TextArea value="{viewModel>/formData/notes}" rows="2" />
+      </VBox>
+
+      <VBox width="48%">
+        <Label text="Expense Mood" 	wrapping="true"/>
+        <ComboBox selectedKey="{viewModel>/formData/expense_mood}" items="{viewModel>/moods}">
+          <core:Item key="{viewModel>key}" text="{viewModel>text}" />
+        </ComboBox>
+        </VBox>
+    </FlexBox>
+
+  </VBox>
+  
+
+  <endButton>
+    <Button text="Save" type="Emphasized" press=".onSaveExpense" />
+  </endButton>
+  <beginButton>
+    <Button text="Cancel" press=".onDialogClose" />
+  </beginButton>
+</Dialog>
+
+</core:FragmentDefinition>

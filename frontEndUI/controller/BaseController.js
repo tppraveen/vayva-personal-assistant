@@ -52,6 +52,9 @@ sap.ui.define(
                 }
                 );
             },
+            onShowMessageTost: function (message) {
+                sap.m.MessageToast.show( message);
+            },
             
 
         });

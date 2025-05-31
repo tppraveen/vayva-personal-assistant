@@ -31,10 +31,12 @@
         <!-- LEFT PANEL -->
         <VBox width="25%" class="sapUiSmallMargin">
           <!-- Date Range Filter -->
-          <DateRangeSelection id="dateRange" delimiter=" - " displayFormat="long" change="onFilterChange"/>
+          <DateRangeSelection id="dateRange" delimiter=" - "  displayFormat="yyyy-MM-dd"
+  valueFormat="yyyy-MM-dd"   change="onFilter"/>
 
           <!-- Filter / Export Buttons -->
           <HBox class="sapUiSmallMarginTop">
+            <Button text="Reset" press="loadExpenseData" />
             <Button text="Filter" press="onFilter" />
             <Button text="Export Excel" icon="sap-icon://excel-attachment" press="onExport" />
           </HBox>
@@ -67,18 +69,43 @@
             <ObjectStatus title="Yearly" text="13,245" />
             <ObjectStatus title="High Expense" text="Groceries" />
           </HBox>
+            <HBox justifyContent="SpaceAround" class="sapUiSmallMarginBottom">
+  <VBox>
+    <ObjectStatus text="Income" state="Success" />
+    <Text text="{oExpenseSummaryModel>/total_income}" />
+  </VBox>
+  <VBox>
+    <ObjectStatus text="Monthly Expense" state="Warning" />
+    <Text text="{oExpenseSummaryModel>/monthly_expense}" />
+  </VBox>
+  <VBox>
+    <ObjectStatus text="Weekly Expense" state="Warning" />
+    <Text text="{oExpenseSummaryModel>/weekly_expense}" />
+  </VBox>
+  <VBox>
+    <ObjectStatus text="Top Category" state="Information" />
+    <Text text="{oExpenseSummaryModel>/highest_expense_category}" />
+  </VBox>
+  <VBox>
+    <ObjectStatus text="Last Expense" state="None" />
+    <Text text="{oExpenseSummaryModel>/last_expense_category} / {oExpenseSummaryModel>/last_expense_subcategory}" />
+  </VBox>
+</HBox>
+
 
           <!-- Action Buttons -->
-          <HBox class="sapUiSmallMarginTop">
+          <HBox class="sapUiSmallMarginTop" justifyContent="End" alignItems="Center">
             <Button text="Add Expense" icon="sap-icon://add" press="onAddExpense"/>
             <Button text="Add Category" icon="sap-icon://add-folder" press="onAddCategory"/>
           </HBox>
 
         <Table id="expenseTable"
-       mode="none"
+       mode="none"  
+  growing="true"
+  growingScrollToLoad="true"
        inset="false"
        class="sapUiResponsiveMargin sapUiSmallMarginTop"
-       items="{/data}">
+       items="{oExpenseModel>/data}">
   <columns>
     <Column><Text text="Date/Time"/></Column>
     <Column><Text text="Type"/></Column>
@@ -93,16 +120,16 @@
   <items>
     <ColumnListItem>
       <cells>
-        <Text text="{transactiontime}" />
-        <Text text="{type}" />
-        <Text text="{category}" />
-        <Text text="{subcategory}" />
-        <Text text="{description}" />
-        <Text text="{payment_mode}" />
-        <Text text="{amount}" />
-        <Text text="{flow}" />
+        <Text text="{oExpenseModel>transaction_time}" />
+        <Text text="{oExpenseModel>type}" />
+        <Text text="{oExpenseModel>category}" />
+        <Text text="{oExpenseModel>subcategory}" />
+        <Text text="{oExpenseModel>description}" />
+        <Text text="{oExpenseModel>payment_mode}" />
+        <Text text="{oExpenseModel>amount}" />
+        <Text text="{oExpenseModel>flow}" />
         <HBox>
-          <Button icon="sap-icon://edit" type="Transparent" press="onEdit"/>
+          <Button icon="sap-icon://edit" type="Transparent" press="onEditPress"/>
           <Button icon="sap-icon://delete" type="Transparent" press="onDelete"/>
         </HBox>
       </cells>
