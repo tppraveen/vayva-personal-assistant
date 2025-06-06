@@ -31,7 +31,7 @@
     <FlexBox direction="Row" wrap="Wrap" justifyContent="SpaceBetween">
       <VBox width="60%">
          <Label text="Date - Time" 	wrapping="true"/>
-    <DateTimePicker   value="{path: 'viewModel>/formData/datetime', type: 'sap.ui.model.type.DateTime', formatOptions: {UTC: true}}"
+    <DateTimePicker   value="{path: 'viewModel>/formData/datetime', type: 'sap.ui.model.type.DateTime', formatOptions: {UTC: false}}"
   displayFormat="dd-MM-yyyy HH:mm:ss" />
 
       </VBox>

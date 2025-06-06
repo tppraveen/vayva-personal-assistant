@@ -40,6 +40,7 @@
       "minUI5Version": "1.120.15",
       "libs": {
         "sap.m": {},
+        "sap.ui.export": {},
         "sap.ui.core": {},
         "sap.f": {},
         "sap.suite.ui.generic.template": {},

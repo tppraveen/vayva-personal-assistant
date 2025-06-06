@@ -31,14 +31,14 @@
         <!-- LEFT PANEL -->
         <VBox width="25%" class="sapUiSmallMargin">
           <!-- Date Range Filter -->
-          <DateRangeSelection id="dateRange" delimiter=" - "  displayFormat="yyyy-MM-dd"
-  valueFormat="yyyy-MM-dd"   change="onFilter"/>
+          <DateRangeSelection id="dateRange" delimiter=" - "  displayFormat="dd-MM-yyyy"
+  valueFormat="dd-MM-yyyy"   change="onFilter"/>
 
           <!-- Filter / Export Buttons -->
           <HBox class="sapUiSmallMarginTop">
-            <Button text="Reset" press="loadExpenseData" />
+            <Button text="Reset" press="onReset" />
             <Button text="Filter" press="onFilter" />
-            <Button text="Export Excel" icon="sap-icon://excel-attachment" press="onExport" />
+            <Button text="Export Excel" icon="sap-icon://excel-attachment" press="onExportExcel" />
           </HBox>
 
           <!-- Reminder Tabs -->
@@ -61,22 +61,15 @@
 
         <!-- RIGHT PANEL -->
         <VBox width="70%" class="sapUiSmallMargin">
-          <!-- Overview Info -->
-          <HBox justifyContent="SpaceBetween">
-            <ObjectStatus title="Monthly Income" text="345,553" />
-            <ObjectStatus title="Monthly Expense" text="2,345" />
-            <ObjectStatus title="Weekly" text="234" />
-            <ObjectStatus title="Yearly" text="13,245" />
-            <ObjectStatus title="High Expense" text="Groceries" />
-          </HBox>
+         
             <HBox justifyContent="SpaceAround" class="sapUiSmallMarginBottom">
   <VBox>
     <ObjectStatus text="Income" state="Success" />
     <Text text="{oExpenseSummaryModel>/total_income}" />
   </VBox>
   <VBox>
-    <ObjectStatus text="Monthly Expense" state="Warning" />
-    <Text text="{oExpenseSummaryModel>/monthly_expense}" />
+    <ObjectStatus text="Expense" state="Warning" />
+    <Text text="{oExpenseSummaryModel>/total_expense}" />
   </VBox>
   <VBox>
     <ObjectStatus text="Weekly Expense" state="Warning" />
@@ -84,7 +77,7 @@
   </VBox>
   <VBox>
     <ObjectStatus text="Top Category" state="Information" />
-    <Text text="{oExpenseSummaryModel>/highest_expense_category}" />
+    <Text text="{oExpenseSummaryModel>/top_expense_category}" />
   </VBox>
   <VBox>
     <ObjectStatus text="Last Expense" state="None" />
@@ -92,21 +85,23 @@
   </VBox>
 </HBox>
 
-
-          <!-- Action Buttons -->
-          <HBox class="sapUiSmallMarginTop" justifyContent="End" alignItems="Center">
-            <Button text="Add Expense" icon="sap-icon://add" press="onAddExpense"/>
-            <Button text="Add Category" icon="sap-icon://add-folder" press="onAddCategory"/>
-          </HBox>
-
+ 
         <Table id="expenseTable"
        mode="none"  
-  growing="true"
+  growing="true" 
   growingScrollToLoad="true"
        inset="false"
        class="sapUiResponsiveMargin sapUiSmallMarginTop"
        items="{oExpenseModel>/data}">
-  <columns>
+       <headerToolbar>
+				<OverflowToolbar>
+					<Title text='Balance - {= ${oExpenseSummaryModel>/total_income} - ${oExpenseSummaryModel>/total_expense} }' />
+					<ToolbarSpacer />
+    <Button text="Add Expense" icon="sap-icon://add" press="onAddExpense"/>
+            <Button text="Add Category" icon="sap-icon://add-folder" press="onAddCategory"/>
+        				</OverflowToolbar>
+			</headerToolbar>
+  <columns>  
     <Column><Text text="Date/Time"/></Column>
     <Column><Text text="Type"/></Column>
     <Column><Text text="Category"/></Column>

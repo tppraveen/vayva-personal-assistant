@@ -27,19 +27,25 @@
           <Label text="Limit Goal (Month)" />
           <Input type="Number" value="{viewModel>/formData/monthlimit}" />
 
-          <Label text="Importance" />
-          <Select selectedKey="{viewModel>/formData/importance}" items="{comboModel>/importance}">
-            <core:Item key="{comboModel>key}" text="{comboModel>text}" />
-          </Select>
+ <FlexBox direction="Row" wrap="Wrap" justifyContent="SpaceBetween">
+    
+            <Label text="Recurring" />
+            <Switch state="{viewModel>/formData/recurring}" />
+            
+            <Label text="Recurring Type" />
+            <Select selectedKey="{viewModel>/formData/recurringtype}" items="{comboModel>/recurringType}">
+              <core:Item key="{comboModel>key}" text="{comboModel>text}" />
+            </Select>
+          </FlexBox>
 
           <Label text="Suggestions" />
           <TextArea value="{viewModel>/formData/suggestions}" rows="4" growing="true" growingMaxLines="6" width="100%" />
 
-          <Label text="Reminder Want?" />
-          <Switch state="{viewModel>/formData/isreminder}" />
-
-          <Label text="Recurring" />
-          <Switch state="{viewModel>/formData/recurring}" />
+          <Label text="Importance" />
+          <Select selectedKey="{viewModel>/formData/importance}" items="{comboModel>/importance}">
+            <core:Item key="{comboModel>key}" text="{comboModel>text}" />
+          </Select>
+         
         </VBox>
 
         <!-- Right Column -->
@@ -53,21 +59,28 @@
           <Label text="Limit Goal (Daily)" />
           <Input type="Number" value="{viewModel>/formData/dailylimit}" />
 
+          
+<HBox  justifyContent="SpaceBetween" alignItems="Center">
+            <HBox>
+            <Label text="Reminder Want?" />
+            <Switch state="{viewModel>/formData/isreminder}" />
+            </HBox>
+           <HBox> 
+           <Button icon="sap-icon://appointment" tooltip="Set Reminder" press="onOpenReminderFragment" visible="{viewModel>/formData/isreminder}"/>
+ </HBox>
+             
+          </HBox>
+
+          <Label text="Notes" />
+          <TextArea value="{viewModel>/formData/notes}" rows="4" growing="true" growingMaxLines="6" width="100%" />
+
           <Label text="Status" />
           <Select selectedKey="{viewModel>/formData/status}" items="{comboModel>/status}">
             <core:Item key="{comboModel>key}" text="{comboModel>text}" />
           </Select>
 
-          <Label text="Notes" />
-          <TextArea value="{viewModel>/formData/notes}" rows="4" growing="true" growingMaxLines="6" width="100%" />
-
-          <Label text="Recurring Type" />
-          <Select selectedKey="{viewModel>/formData/recurringtype}" items="{comboModel>/recurringType}">
-            <core:Item key="{comboModel>key}" text="{comboModel>text}" />
-          </Select>
-
-          <Label text="Recurring Days" />
-          <Input type="Number" value="{viewModel>/formData/recurringevery}" />
+          
+ 
         </VBox>
       </HBox>
     </content>

@@ -14,6 +14,9 @@ router.oUserServices = async (req, res) => {
 router.validateLoginUser = async (req, res) => {
     const { username, password } = req.body;
 
+    //call remainder functions 
+const { onAppLaunch } = require('./RemainderService');
+
   if (!username || !password) {
     return response.error(res, 400, 'Username and password are required.');
   }
@@ -25,7 +28,7 @@ router.validateLoginUser = async (req, res) => {
       LIMIT 1
     `;
     const values = [username, password];
-  console.log(values)
+ 
     const result = await pool.query(query, values);
 
     if (result.rows.length === 0) {
@@ -35,6 +38,8 @@ router.validateLoginUser = async (req, res) => {
     if (user.status.toLowerCase() !== 'active') {
       return response.error(res, 403, `User status is ${user.status}. Access denied.`);
     }
+    //if login success then call trigger
+    await  onAppLaunch(username)
     return response.success(res, 200, `Login successful, ${user.name}, ${user.lastname}. Navigating to home page.`);
 
   } catch (err) {

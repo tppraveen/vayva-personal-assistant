@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db');
+const pool = require('../db'); 
 const handleError = require('../utils/errorHandler');
 const response = require('../utils/responseHandler'); // Use response helper
+ 
 
-// GET all rows
+// GET all rows 
 router.oExpenseCategoryConfigServices = async (req, res) => {
     const detailService =  { ExpenseCategoryConfigService: ['getExpenseListsbyUser', 'service2', 'Usservice3er3'] };
     res.json(detailService);
@@ -25,7 +26,8 @@ router.getExpenseCategoryConfigListsbyUser = async (req, res) => {
     const query = `
       SELECT *
       FROM ExpenseCategoryConfig
-      WHERE username = $1 AND status = 'Active'
+      WHERE username = $1 AND status = 'Active' 
+      order by modified_on desc 
     `;
     const values = [username];
 
@@ -43,41 +45,207 @@ router.getExpenseCategoryConfigListsbyUser = async (req, res) => {
      
 }
 router.readExpenseCategoryByID = async (req, res) => {
-  // const  username  = req.headers['x-username']; 
-  // const  id  = req.headers['x-id']; // Get the ID from the URL parameter
-     const { username,id } = req.body;
-  
+  const { username, id } = req.body;
+
   if (!id || !username) {
     return response.error(res, 400, 'Expense category ID and Username is required.');
   }
 
   try {
-    const query = `
-      SELECT *
-      FROM ExpenseCategoryConfig
-      WHERE id = $1 AND status = 'Active' and username = $2
-      LIMIT 1
-    `;
-    
-    const result = await pool.query(query, [id,username]);
+    // Fetch Expense Category
+    const categoryQuery = `
+      SELECT *  FROM ExpenseCategoryConfig 
+      WHERE id = $1 AND status = 'Active' 
+      AND username = $2 LIMIT 1`;
+    const categoryResult = await pool.query(categoryQuery, [id, username]);
 
-    if (result.rows.length === 0) {
+    if (categoryResult.rows.length === 0) {
       return response.error(res, 404, 'Expense category not found or inactive.');
     }
 
-    return response.success(res, 200, 'Expense category fetched successfully.',  result.rows[0]);
-    
+    const category = categoryResult.rows[0];
+
+    // Fetch related Reminder
+    const reminderQuery = `
+      SELECT *, TO_CHAR(remainder_at AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Kolkata', 'DD-MM-YYYY HH12:MI:SS AM') AS remainder_at
+
+      FROM expenseRemainder
+      WHERE expense_category_id = $1 AND username = $2
+      ORDER BY created_on DESC
+      LIMIT 1
+    `;
+    const reminderResult = await pool.query(reminderQuery, [id, username]);
+
+    if (reminderResult.rows.length > 0) {
+      category.reminder = reminderResult.rows[0]; // Attach the reminder
+    } else {
+      category.reminder = null;
+    }
+
+    return response.success(res, 200, 'Expense category fetched successfully.2', category);
+
   } catch (err) {
     console.error('Error fetching expense category:', err);
     return response.error(res, 500, 'Internal server error.', err.message);
   }
 };
-
+ 
+// ✅ Controller: insertExpenseCategoryConfig
 router.insertExpenseCategoryConfig = async (req, res) => {
+   try {
+    const {
+      username, category, subcategory, importance, yearlimit, monthlimit, weeklimit,
+      dailylimit, suggestions, notes, recurring, recurringtype, recurringevery,
+      remainder, status, remainderData
+    } = req.body;
+
+    if (!username || !category || !subcategory) {
+      return response.error(res, 400, 'Required fields missing.', 'username, category, and subcategory are mandatory.');
+    }
+
+ 
+    const insertExpenseQuery = `
+      INSERT INTO ExpenseCategoryConfig (
+        username, category, subcategory, importance, yearlimit, monthlimit, weeklimit, dailylimit,
+        suggestions, notes, recurring, recurringtype, recurringevery, isreminder, status, created_by
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6, $7, $8,
+        $9, $10, $11, $12, $13, $14, $15, $16
+      )
+      RETURNING id;
+    `;
+
+    const expenseValues = [
+      username, category, subcategory, importance,
+      parseInt(yearlimit) || 0, parseInt(monthlimit) || 0,
+      parseInt(weeklimit) || 0, parseInt(dailylimit) || 0,
+      suggestions, notes,
+      recurring === true || recurring === 'true',
+      recurringtype, parseInt(recurringevery) || 0,
+      remainder === true || remainder === 'true',
+      status || 'Active', username
+    ];
+
+    const result =  await pool.query(insertExpenseQuery, expenseValues);
+    const expenseId = result.rows[0].id;
+
+    // ✅ Call helper only if remainder is true
+    if (remainder === true || remainder === 'true') {
+      await handleExpenseRemainder({
+         
+        expenseCategoryId: expenseId,
+        remainderData,
+        username
+      });
+    }
+
+ 
+    return response.success(res, 201, {
+      message: 'Expense category config created successfully.',
+      id: expenseId
+    });
+
+  } catch (err) {
+   // await client.query('ROLLBACK');
+    console.error('Error inserting ExpenseCategoryConfig:', err);
+    return response.error(res, 500, 'Internal server error.', err.message);
+  } finally {
+    //client.release();
+  }
+};
+ function formatDateToDDMMYYYY(dateInput) {
+  const date = new Date(dateInput);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months start at 0
+  const year = date.getFullYear();
+  return `${day}-${month}-${year}`;
+}
+// ✅ Helper function: handleExpenseRemainder
+async function handleExpenseRemainder({  expenseCategoryId, remainderData, username }) {
+  
+  if (!remainderData || !expenseCategoryId) return;
+
+  let {
+    mode, title, description, amount, is_recurring, remainder_at,
+    due_days, repeat_type, repeat_days, repeat_time, repeat_day_of_month,
+    repeat_month, repeat_week, start_date, end_date
+  } = remainderData;
+
+  if(is_recurring){
+    const date = new Date(`January 1, 1970 ${repeat_time}`);
+    repeat_time = date.toLocaleTimeString('en-GB', { hour12: false }); 
+  
+
+      start_date = formatDateToDDMMYYYY(start_date);
+    end_date = formatDateToDDMMYYYY(end_date);
+  }else{
+  remainder_at = new Date(remainder_at).toISOString();
+
+  }
+  console.log(remainderData)
+  // Step 1: Check for existing remainder record
+  const checkQuery = `
+    SELECT id FROM expenseremainder 
+    WHERE expense_category_id = $1 AND username = $2
+    LIMIT 1;
+  `;
+  const checkResult = await pool.query(checkQuery, [expenseCategoryId, username]);
+  const existingRemainder = checkResult.rows[0];
+  console.log("Existing Remainder:"+existingRemainder)
+  if (existingRemainder) {
+    // Step 2: Update if exists
+    const updateQuery = `
+      UPDATE expenseremainder SET
+        title = $1, description = $2, amount = $3, is_recurring = $4, remainder_at = $5,
+        due_days = $6, repeat_type = $7, repeat_days = $8, repeat_time = $9,
+        repeat_day_of_month = $10, repeat_month = $11, repeat_week = $12,
+        start_date = $13, end_date = $14, modified_by = $15, modified_on = NOW()
+      WHERE id = $16;
+    `;
+    const updateValues = [
+      title, description || null, amount || null, is_recurring || false,
+      remainder_at || null, due_days || '', repeat_type || '', JSON.stringify(repeat_days || []),
+      repeat_time || null, repeat_day_of_month || null, JSON.stringify(repeat_month || []),
+      repeat_week || null, start_date || null, end_date || null,
+      username, existingRemainder.id
+    ];
+    await pool.query(updateQuery, updateValues);
+    return existingRemainder.id;
+  } else {
+    // Step 3: Insert if not found
+    const insertQuery = `
+      INSERT INTO expenseremainder (
+        expense_category_id, title, description, amount, is_recurring, remainder_at,
+        due_days, repeat_type, repeat_days, repeat_time, repeat_day_of_month,
+        repeat_month, repeat_week, start_date, end_date,
+        created_by, modified_by, username
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6,
+        $7, $8, $9, $10, $11,
+        $12, $13, $14, $15,
+        $16, $17, $18
+      ) RETURNING id;
+    `;
+    const insertValues = [
+      expenseCategoryId, title, description || null, amount || null, is_recurring || false,
+      remainder_at || null, due_days || '', repeat_type || '', JSON.stringify(repeat_days || []),
+      repeat_time || null, repeat_day_of_month || null, JSON.stringify(repeat_month || []),
+      repeat_week || null, start_date || null, end_date || null,
+      username, username, username
+    ];
+    const insertResult = await pool.query(insertQuery, insertValues);
+    return insertResult.rows[0].id;
+  }
+
+ 
+}
+
+
+router.insertExpenseCategoryConfig2 = async (req, res) => {
   try {
     const {
      username, category, subcategory, importance, yearlimit, monthlimit, weeklimit, 
-     dailylimit, suggestions, notes, recurring, recurringtype, recurringevery, remainder, status
+     dailylimit, suggestions, notes, recurring, recurringtype, recurringevery, remainder, status,remainderData
     } = req.body;
 
     if (!username || !category || !subcategory) {
@@ -131,7 +299,7 @@ router.updateExpenseCategoryConfig = async (req, res) => {
       isreminder,
       status,
       username,
-          id
+          id,remainderData
     } = req.body;
 
     if (!id || !username || !category || !subcategory) {
@@ -185,6 +353,17 @@ router.updateExpenseCategoryConfig = async (req, res) => {
     if (result.rowCount === 0) {
       return response.error(res, 404, 'Record not found or unauthorized.');
     }
+    const client = await pool.connect();
+    if (isreminder === true || isreminder === 'true') {
+      await handleExpenseRemainder({
+       
+        expenseCategoryId: id, // fetched during update
+        remainderData,
+        username
+      });
+    }
+
+
 
     return response.success(res, 200, {
       message: 'Expense category config updated successfully.',
@@ -208,7 +387,7 @@ router.deleteExpenseCategoryConfig = async (req, res) => {
     const expenseCheckQuery = `
       SELECT COUNT(*) 
       FROM expensetracker 
-      WHERE username = $1 AND category = $2 AND subcategory = $3
+      WHERE username = $1 AND category = $2 AND subcategory = $3 and status!='Deleted'
     `;
 
     const expenseResult = await pool.query(expenseCheckQuery, [username, category, subcategory]);

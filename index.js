@@ -24,6 +24,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'frontEndUI')));
 
+ 
+ 
 const nodeApiVersion = "/oData/v1";
 app.use(nodeApiVersion+'/api/data', dataRoutes);
 const oUserServicePrefix = nodeApiVersion+"/UserServices";

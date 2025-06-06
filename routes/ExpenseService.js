@@ -11,15 +11,13 @@ router.oExpenseServices = async (req, res) => {
 }
  
 router.getExpenseListsbyUser = async (req, res) => {
-  const { username, fromDate, toDate } = req.body;
-
-  if (!username) {
-    return response.error(res, 400, 'Username is required.');
-  }
-
+  let { username, fromDate, toDate } = req.body;
+   
+  console.log(fromDate +"-----"+toDate)
   try {
     let query = `
-      SELECT *, TO_CHAR(transactiontime, 'DD/MM/YYYY HH24:MI') AS transaction_time
+      SELECT *,   TO_CHAR(transactiontime AT TIME ZONE 'Asia/Kolkata', 'DD/MM/YYYY HH24:MI') AS transaction_time
+
       FROM expensetracker
       WHERE username = $1 AND status = 'Active'
     `;
@@ -42,9 +40,86 @@ router.getExpenseListsbyUser = async (req, res) => {
     console.error('Database error while fetching Expense:', err);
     return response.error(res, 500, 'Internal server error. Please try again later.');
   }
+};router.getExpenseDashboardSummary = async (req, res) => {
+  const { username, fromDate, toDate } = req.body;
+
+  if (!username || !fromDate || !toDate) {
+    return response.error(res, 400, 'Username, fromDate, and toDate are required.');
+  }
+
+  try {
+    const query = `
+      WITH 
+      totals AS (
+          SELECT
+              SUM(CASE WHEN LOWER(type) = 'income' THEN amount ELSE 0 END) AS total_income,
+              SUM(CASE WHEN LOWER(type) = 'expense' THEN amount ELSE 0 END) AS total_expense
+          FROM expensetracker
+          WHERE username = $1
+            AND transactiontime >= $2
+            AND transactiontime <= $3
+            AND status='Active'
+      ),
+      weekly_expense AS (
+          SELECT 
+              SUM(amount) AS weekly_expense
+          FROM expensetracker
+          WHERE LOWER(type) = 'expense'
+            AND username = $1
+            AND transactiontime >= $2
+            AND transactiontime <= $3
+            AND transactiontime >= date_trunc('week', CURRENT_DATE)
+            AND transactiontime < date_trunc('week', CURRENT_DATE) + INTERVAL '7 days'
+            AND status='Active'
+      ),
+      top_category AS (
+          SELECT category
+          FROM expensetracker
+          WHERE LOWER(type) = 'expense'
+            AND username = $1
+            AND transactiontime >= $2
+            AND transactiontime <= $3
+            AND status='Active'
+          GROUP BY category
+          ORDER BY SUM(amount) DESC
+          LIMIT 1
+      ),
+      last_expense AS (
+          SELECT category, subcategory
+          FROM expensetracker
+          WHERE LOWER(type) = 'expense'
+            AND username = $1
+            AND transactiontime >= $2
+            AND transactiontime <= $3
+            AND status='Active'
+          ORDER BY transactiontime DESC
+          LIMIT 1
+      )
+      SELECT 
+          t.total_income,
+          t.total_expense,
+          w.weekly_expense,
+          tc.category AS top_expense_category,
+          le.category AS last_expense_category,
+          le.subcategory AS last_expense_subcategory
+      FROM totals t
+      CROSS JOIN weekly_expense w
+      CROSS JOIN top_category tc	
+      CROSS JOIN last_expense le;
+    `;
+
+    const values = [username, fromDate, toDate];
+    const result = await pool.query(query, values);
+
+    return response.success(res, 200, 'Dashboard summary fetched successfully.', result.rows[0]);
+
+  } catch (err) {
+    console.error('Error fetching dashboard summary:', err);
+    return response.error(res, 500, 'Internal server error. Please try again later.');
+  }
 };
 
-router.getExpenseDashboardSummary = async (req, res) => {
+router.getExpenseDashboardSummary2 = async (req, res) => {
   const { username } = req.body;
 
   if (!username) {
@@ -195,9 +270,9 @@ router.insertExpense = async (req, res) => {
     
     // Determine flow
     let flow;
-    if (type.toLowerCase() === 'expense') flow = 'Debit';
-    else if (type.toLowerCase() === 'income') flow = 'Credit';
-    else if (type.toLowerCase() === 'transfer') flow = 'Transfer';
+    if (type.toLowerCase() === 'Expense') flow = 'Debit';
+    else if (type.toLowerCase() === 'Income') flow = 'Credit';
+    else if (type.toLowerCase() === 'Transfer') flow = 'Transfer';
     else flow = 'Other';
 
     // Parse timestamp and date
@@ -294,9 +369,9 @@ router.updateExpense = async (req, res) => {
   try {
     // Determine flow based on type
     let flow;
-    if (type.toLowerCase() === 'expense') flow = 'Debit';
-    else if (type.toLowerCase() === 'income') flow = 'Credit';
-    else if (type.toLowerCase() === 'transfer') flow = 'Transfer';
+    if (type.toLowerCase() === 'Expense') flow = 'Debit';
+    else if (type.toLowerCase() === 'Income') flow = 'Credit';
+    else if (type.toLowerCase() === 'Transfer') flow = 'Transfer';
     else flow = 'Other';
 
     // Parse timestamp and date

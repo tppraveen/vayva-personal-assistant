@@ -168,6 +168,9 @@ sap.ui.define([
           }
         });
         this.getView().setModel(oLoadModel, "viewModel");
+        
+        //Reset Remainder Model
+         this.resetRemainderFragmntModel();
       },
       onAddCategoryConfirm: function () {
         const oViewModel = this.getView().getModel("viewModel");
@@ -200,7 +203,9 @@ sap.ui.define([
             recurringevery: oData.recurringevery,
             isreminder: oData.isreminder,
             status: oData.status,
-            created_by: oData.username // Assuming the same user created it
+            created_by: oData.username ,// Assuming the same user created it
+            remainderData :oViewModel.getProperty("/reminderData")
+
           }),
           success: function (response) {
             if (response.status === "success") {
@@ -235,6 +240,13 @@ sap.ui.define([
               const formData = oData.data;
               that.getView().getModel("viewModel").setProperty("/mode", "Edit");
               that.getView().getModel("viewModel").setProperty("/formData", formData);
+              oData.data.reminder.mode =  "Edit";
+              oData.data.reminder.visibility=[]
+              var reminder = oData.data.reminder;
+              reminder.repeat_days = that.makeJsonSelectedItems(reminder.repeat_days);
+              reminder.repeat_month = that.makeJsonSelectedItems(reminder.repeat_month);
+               
+              that.getView().getModel("viewModel").setProperty("/reminderData", oData.data.reminder );
 
               that._oAddDialog.open();
             }
@@ -243,6 +255,23 @@ sap.ui.define([
             MessageToast.show("Failed to load category data.");
           }
         });
+      },
+      makeJsonSelectedItems:function(value){
+        try {
+          let arr = JSON.parse(value); // parse outer string
+          value = arr.flatMap(item => {
+            try {
+              return typeof item === 'string' && item.startsWith('[')
+                ? JSON.parse(item).filter(i => typeof i === 'string')
+                : item;
+            } catch {
+              return typeof item === 'string' ? item : [];
+            }
+          }).filter(i => typeof i === 'string');
+        } catch {
+         value = [];
+        }
+        return value;
       },
       onSubmitCategory: function () {
         const oModel = this.getView().getModel("viewModel");
@@ -285,7 +314,8 @@ sap.ui.define([
             isreminder: oData.isreminder,
             status: oData.status,
             username: oData.username,
-            id: oData.id
+            id: oData.id,
+            remainderData :oViewModel.getProperty("/reminderData")
           }),
           success: function (response) {
             if (response.status === "success") {
@@ -354,7 +384,133 @@ sap.ui.define([
             }
           }
         );
+      },
+
+
+
+      resetRemainderFragmntModel: function () {
+   const viewModel = this.getView().getModel("viewModel");
+    const formData = viewModel.getProperty("/formData");
+
+    const reminderData = {
+        mode: "Add",
+        title: formData.subcategory,
+        description: "",
+        is_recurring: false,
+        remainder_at: null,
+        due_days: "",
+        repeat_type: "Daily",
+        repeat_days: [], 
+        repeat_month: [],
+        repeat_day_of_month: 1,
+        repeat_time: null,
+        start_date: "",
+        end_date: "",
+        expectedNextReminder: "12 June 2025",
+        visibility: {
+            recurringFields: false,
+            nonRecurringFields: true,
+            weeklyFields: false,
+            monthlyFields: false,
+            yearlyFields: false
+        }
+    };
+
+    viewModel.setProperty("/reminderData", reminderData);
+},
+
+
+      onOpenReminderFragment: function () {
+    const oModel = this.getView().getModel("viewModel");
+        var oRem =  oModel.getProperty("/reminderData");
+        if(!oRem || oRem.mode!=="Edit"){
+          this.resetRemainderFragmntModel();
+        }
+        else if(oRem && oRem.mode==="Edit"){
+          
+    oModel.setProperty("/reminderData/recurring", oRem.is_recurring);
+    oModel.setProperty("/reminderData/visibility/recurringFields", oRem.is_recurring);
+    oModel.setProperty("/reminderData/visibility/nonRecurringFields", !oRem.is_recurring);
+
+           // Hide all repeat subfields
+    oModel.setProperty("/reminderData/visibility/weeklyFields", false);
+    oModel.setProperty("/reminderData/visibility/monthlyFields", false);
+    oModel.setProperty("/reminderData/visibility/yearlyFields", false);
+
+    // Show only selected type
+    if (oRem.repeat_type === "Weekly") {
+        oModel.setProperty("/reminderData/visibility/weeklyFields", true);
+    } else if (oRem.repeat_type === "Monthly") {
+        oModel.setProperty("/reminderData/visibility/monthlyFields", true);
+    } else if (oRem.repeat_type === "Yearly") {
+        oModel.setProperty("/reminderData/visibility/yearlyFields", true);
+    }
+        }
+        else{          
+          this.resetRemainderFragmntModel();
+        }
+          if (!this._reminderDialog) {
+              this._reminderDialog = sap.ui.xmlfragment("frontEndUI.view.fragment.ReminderFragment", this);
+              this.getView().addDependent(this._reminderDialog);
+          }
+          this._reminderDialog.open();
+      },
+     onRecurringSwitchChange: function (oEvent) {
+    const bState = oEvent.getParameter("state");
+    const oModel = this.getView().getModel("viewModel");
+
+    oModel.setProperty("/reminderData/recurring", bState);
+    oModel.setProperty("/reminderData/visibility/recurringFields", bState);
+    oModel.setProperty("/reminderData/visibility/nonRecurringFields", !bState);
+},
+
+onRepeatTypeChange: function (oEvent) {
+    const sKey = oEvent.getSource().getSelectedKey();
+    const oModel = this.getView().getModel("viewModel");
+
+    // Hide all repeat subfields
+    oModel.setProperty("/reminderData/visibility/weeklyFields", false);
+    oModel.setProperty("/reminderData/visibility/monthlyFields", false);
+    oModel.setProperty("/reminderData/visibility/yearlyFields", false);
+
+    // Show only selected type
+    if (sKey === "Weekly") {
+        oModel.setProperty("/reminderData/visibility/weeklyFields", true);
+    } else if (sKey === "Monthly") {
+        oModel.setProperty("/reminderData/visibility/monthlyFields", true);
+    } else if (sKey === "Yearly") {
+        oModel.setProperty("/reminderData/visibility/yearlyFields", true);
+    }
+},
+
+onReminderOk: function () {
+    const oReminderData = this.getView().getModel("viewModel").getProperty("/reminderData");
+    
+    // Optional: Validate or enrich the data
+    console.log("Reminder Data Submitted:", oReminderData);
+
+    // // Example: Append to reminder list
+    //  const oModel = this.getView().getModel("viewModel");
+    //  const aReminders = [];
+    //  aReminders.push(oReminderData);
+    // oModel.setProperty("/reminderData", aReminders);
+
+    // Close dialog
+    if (this._reminderDialog) {
+        this._reminderDialog.close();
       }
+},
+ 
+
+
+onReminderCancel: function () {
+      if (this._reminderDialog) {
+        this._reminderDialog.close();
+      }
+       
+}
+
+
 
 
 
