@@ -11,12 +11,24 @@ router.oUserServices = async (req, res) => {
 }
  
 
+router.remainderScheduler = async (req, res) => {
+    const { username } = req.body;
+    if (!username) {
+      return response.error(res, 400, 'Username are required.');
+    }
+
+    //call remainder functions 
+    const { onAppLaunch } = require('./RemainderJobRunner');
+    //if login success then call trigger
+    await  onAppLaunch(username)
+    return response.success(res, 200, `Remainder Scheduler executed succefully.`);
+}
+
+
 router.validateLoginUser = async (req, res) => {
     const { username, password } = req.body;
 
-    //call remainder functions 
-const { onAppLaunch } = require('./RemainderService');
-
+   
   if (!username || !password) {
     return response.error(res, 400, 'Username and password are required.');
   }
@@ -38,8 +50,7 @@ const { onAppLaunch } = require('./RemainderService');
     if (user.status.toLowerCase() !== 'active') {
       return response.error(res, 403, `User status is ${user.status}. Access denied.`);
     }
-    //if login success then call trigger
-    await  onAppLaunch(username)
+   
     return response.success(res, 200, `Login successful, ${user.name}, ${user.lastname}. Navigating to home page.`);
 
   } catch (err) {

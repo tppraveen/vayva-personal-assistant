@@ -1,150 +1,197 @@
 <mvc:View
   controllerName="frontEndUI.controller.ExpenseView"
-  xmlns:mvc="sap.ui.core.mvc"
-  xmlns="sap.m"
-  xmlns:core="sap.ui.core"
-  xmlns:l="sap.ui.layout"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:l="sap.ui.layout"
   height="100%">
-
-  <Page showHeader="true" enableScrolling="true" class="sapUiResponsivePadding">
-    
-    <!-- Header Bar -->
-    <customHeader>
-      <Bar design="Header">
-        <contentLeft>
-          <Button icon="sap-icon://nav-back" press="onNavBack" tooltip="Back" type="Transparent"/>
-        </contentLeft>
-        <contentMiddle>
-          <Title text="Expense Tracker" />
-        </contentMiddle>
-        <contentRight>
-          <Button icon="sap-icon://bell" tooltip="Notifications" type="Transparent" />
-          <Button icon="sap-icon://settings" tooltip="Settings" type="Transparent" />
-        </contentRight>
-      </Bar>
-    </customHeader>
-
-    <!-- Responsive Body Content -->
-    <content>
-      <HBox wrap="Wrap" alignItems="Start" justifyContent="Start" class="sapUiSmallMargin">
-
-        <!-- LEFT PANEL -->
-        <VBox width="25%" class="sapUiSmallMargin">
-          <!-- Date Range Filter -->
-          <DateRangeSelection id="dateRange" delimiter=" - "  displayFormat="dd-MM-yyyy"
+	<Page showHeader="true" enableScrolling="true" class="sapUiResponsivePadding">
+		<!-- Header Bar -->
+		<customHeader>
+			<Bar design="Header">
+				<contentLeft>
+					<Button icon="sap-icon://nav-back" press="onNavBack" tooltip="Back" type="Transparent"/>
+				</contentLeft>
+				<contentMiddle>
+					<Title text="Expense Tracker" />
+				</contentMiddle>
+				<contentRight>
+					<Button icon="sap-icon://bell" tooltip="Notifications" type="Transparent" />
+					<Button icon="sap-icon://settings" tooltip="Settings" type="Transparent" />
+				</contentRight>
+			</Bar>
+		</customHeader>
+		<!-- Responsive Body Content -->
+		<content>
+			<HBox wrap="Wrap" alignItems="Start" justifyContent="Start" class="sapUiSmallMargin">
+				<!-- LEFT PANEL -->
+				<VBox width="{= ${device>/system/phone} ? '100%' : '25%'}" class="sapUiSmallMargin">
+					<!-- Date Range Filter -->
+					<DateRangeSelection id="dateRange" delimiter=" - "  displayFormat="dd-MM-yyyy"
   valueFormat="dd-MM-yyyy"   change="onFilter"/>
-
-          <!-- Filter / Export Buttons -->
-          <HBox class="sapUiSmallMarginTop">
-            <Button text="Reset" press="onReset" />
-            <Button text="Filter" press="onFilter" />
-            <Button text="Export Excel" icon="sap-icon://excel-attachment" press="onExportExcel" />
-          </HBox>
-
-          <!-- Reminder Tabs -->
-          <IconTabBar class="sapUiSmallMarginTop" expandable="false">
-            <items>
-              <IconTabFilter text="Upcoming / Recurring" icon="sap-icon://future">
-                <List>
-                  <StandardListItem title="Electricity - Due 12 May" />
-                  <StandardListItem title="Netflix - Recurring Monthly" />
-                </List>
-              </IconTabFilter>
-              <IconTabFilter text="Missed" icon="sap-icon://history">
-                <List>
-                  <StandardListItem title="Water Bill - Missed 08 May" />
-                </List>
-              </IconTabFilter>
-            </items>
-          </IconTabBar>
-        </VBox>
-
-        <!-- RIGHT PANEL -->
-        <VBox width="70%" class="sapUiSmallMargin">
-         
-            <HBox justifyContent="SpaceAround" class="sapUiSmallMarginBottom">
-  <VBox>
+					<!-- Filter / Export Buttons -->
+					<HBox class="sapUiSmallMarginTop">
+						<Button text="Reset" press="onReset" />
+						<Button text="Filter" press="onFilter" />
+						<Button text="Export Excel" icon="sap-icon://excel-attachment" press="onExportExcel" />
+					</HBox>
+					<!-- Reminder Tabs -->
+					<IconTabBar class="sapUiSmallMarginTop" expandable="false">
+						<items>
+							<!-- Upcoming / Recurring Tab -->
+							<IconTabFilter text="Upcoming / Recurring" icon="sap-icon://future">
+								<List items="{oUpcomingReminderModel>/}"   growing="true"
+        growingThreshold="5"
+        growingScrollToLoad="false">
+									<CustomListItem>
+										<HBox alignItems="Center" justifyContent="SpaceBetween" width="100%" class="sapUiTinyMargin">
+											<VBox>
+                        <ObjectIdentifier   
+                      title="{oUpcomingReminderModel>title}"  wrapping="true" 
+                      text="{oUpcomingReminderModel>description}" />
+ 
+												<Text 
+								text="{parts: [{ path: 'oUpcomingReminderModel>remind_at' }],formatter: '.formatter.formatDateTime'}" 
+                       
+                      design="Bold" />
+											</VBox>
+											<VBox >
+												<Button icon="sap-icon://complete" class="sapUiTinyMarginEnd" press=".onCompletePress" type="Accept"/>
+												<Button icon="sap-icon://future" press=".onSnoozePress" type="Emphasized" />
+											</VBox>
+										</HBox>
+									</CustomListItem>
+								</List>
+							</IconTabFilter>
+							<!-- Missed Tab -->
+							<IconTabFilter text="Missed" icon="sap-icon://history">
+								<List items="{oMissedReminderModel>/}"   growing="true"
+        growingThreshold="5"
+        growingScrollToLoad="false">
+									<CustomListItem>
+										<HBox alignItems="Center" justifyContent="SpaceBetween" width="100%">
+											<VBox>
+												  <ObjectIdentifier   
+                      title="{oMissedReminderModel>title}"  wrapping="true" 
+                      text="{oMissedReminderModel>description}" />
+												<Text 
+								text="{parts: [{ path: 'oMissedReminderModel>remind_at' }],formatter: '.formatter.formatDateTime'}" 
+                       
+                      design="Bold" />
+											</VBox>
+										</HBox>
+									</CustomListItem>
+								</List>
+							</IconTabFilter>
+						</items>
+					</IconTabBar>
+				</VBox>
+				<!-- RIGHT PANEL -->
+				<VBox width="{= ${device>/system/phone} ? '100%' : '70%'}" class="sapUiSmallMargin">
+				<ScrollContainer
+  width="100%"
+  horizontal="true"
+  vertical="false"
+  showScrollbar="true">
+  <HBox   class="sapUiSmallMarginBottom" >
+  <VBox  width="20%">
     <ObjectStatus text="Income" state="Success" />
     <Text text="{oExpenseSummaryModel>/total_income}" />
   </VBox>
-  <VBox>
+  <VBox  width="20%">
     <ObjectStatus text="Expense" state="Warning" />
     <Text text="{oExpenseSummaryModel>/total_expense}" />
   </VBox>
-  <VBox>
+  <VBox  width="20%">
     <ObjectStatus text="Weekly Expense" state="Warning" />
     <Text text="{oExpenseSummaryModel>/weekly_expense}" />
   </VBox>
-  <VBox>
+  <VBox  width="20%">
     <ObjectStatus text="Top Category" state="Information" />
     <Text text="{oExpenseSummaryModel>/top_expense_category}" />
   </VBox>
-  <VBox>
-    <ObjectStatus text="Last Expense" state="None" />
+  <VBox  width="20%">
+    <ObjectStatus text="Last Exp." state="None" />
     <Text text="{oExpenseSummaryModel>/last_expense_category} / {oExpenseSummaryModel>/last_expense_subcategory}" />
   </VBox>
 </HBox>
-
+</ScrollContainer>
  
-        <Table id="expenseTable"
+
+
+					<Table id="expenseTable"
        mode="none"  
-  growing="true" 
-  growingScrollToLoad="true"
+  growing="true"  growingThreshold="10"
+  growingScrollToLoad="false"
        inset="false"
        class="sapUiResponsiveMargin sapUiSmallMarginTop"
        items="{oExpenseModel>/data}">
-       <headerToolbar>
-				<OverflowToolbar>
-					<Title text='Balance - {= ${oExpenseSummaryModel>/total_income} - ${oExpenseSummaryModel>/total_expense} }' />
-					<ToolbarSpacer />
-    <Button text="Add Expense" icon="sap-icon://add" press="onAddExpense"/>
-            <Button text="Add Category" icon="sap-icon://add-folder" press="onAddCategory"/>
-        				</OverflowToolbar>
-			</headerToolbar>
-  <columns>  
-    <Column><Text text="Date/Time"/></Column>
-    <Column><Text text="Type"/></Column>
-    <Column><Text text="Category"/></Column>
-    <Column><Text text="Sub Category"/></Column>
-    <Column><Text text="Description"/></Column>
-    <Column><Text text="Payment Mode"/></Column>
-    <Column><Text text="Amount"/></Column>
-    <Column><Text text="Flow"/></Column>
-    <Column><Text text="Actions"/></Column>
-  </columns>
-  <items>
-    <ColumnListItem>
-      <cells>
-        <Text text="{oExpenseModel>transaction_time}" />
-        <Text text="{oExpenseModel>type}" />
-        <Text text="{oExpenseModel>category}" />
-        <Text text="{oExpenseModel>subcategory}" />
-        <Text text="{oExpenseModel>description}" />
-        <Text text="{oExpenseModel>payment_mode}" />
-        <Text text="{oExpenseModel>amount}" />
-        <Text text="{oExpenseModel>flow}" />
-        <HBox>
-          <Button icon="sap-icon://edit" type="Transparent" press="onEditPress"/>
-          <Button icon="sap-icon://delete" type="Transparent" press="onDelete"/>
-        </HBox>
-      </cells>
-    </ColumnListItem>
-  </items>
-</Table>
+						<headerToolbar>
+							<OverflowToolbar>
+								<Title text='Balance - {= ${oExpenseSummaryModel>/total_income} - ${oExpenseSummaryModel>/total_expense} }' />
+								<ToolbarSpacer />
+								<Button text="Add Expense" icon="sap-icon://add" press="onAddExpense"/>
+								<Button text="Add Category" icon="sap-icon://add-folder" press="onAddCategory"/>
+							</OverflowToolbar>
+						</headerToolbar>
+						<columns>
+							<Column>
+								<Text text="Expense"/>
+							</Column>
+							 
+						  <Column minScreenWidth="Tablet" demandPopin="true" popinDisplay="Inline">
+                <Text text="Date/Time" />
+              </Column>
+ 
 
-        </VBox>
+              <Column minScreenWidth="Tablet" demandPopin="true" popinDisplay="Inline">
+                <Text text="Description" />
+              </Column>
 
-      </HBox>
-    </content>
+              <Column minScreenWidth="Tablet" demandPopin="true" popinDisplay="Inline">
+                <Text text="Payment Mode" />
+              </Column>
+							<Column>
+								<Text text="Amount"/>
+							</Column>
+							<Column>
+								<Text text="Actions"/>
+							</Column>
+						</columns>
+						<items>
+							<ColumnListItem   highlight="{ path: 'oExpenseModel>type', formatter: '.formatter.rowColorByType' }">
+								<cells>
+  <ObjectIdentifier   
+                      title="{oExpenseModel>category}"
+                      text="{oExpenseModel>subcategory}" />
+ 
 
-    <!-- Footer -->
-    <footer>
-      <Bar design="Footer">
-        <contentMiddle>
-          <Text text="Owned by Pravya Group of Enterprise" />
-        </contentMiddle>
-      </Bar>
-    </footer>
-
-  </Page>
+                  
+									<Text text="{oExpenseModel>transaction_time}" />
+								 
+                 
+ 
+									<Text text="{oExpenseModel>description}" />
+									<Text text="{oExpenseModel>payment_mode}" />
+									<Text text="{oExpenseModel>amount}" />
+									<HBox>
+										<Button icon="sap-icon://edit" type="Transparent" press="onEditPress"/>
+										<Button icon="sap-icon://delete" type="Transparent" press="onDelete"/>
+									</HBox>
+								</cells>
+							</ColumnListItem>
+						</items>
+					</Table>
+				</VBox>
+			</HBox>
+		</content>
+		<!-- Footer -->
+		<footer>
+			<Bar design="Footer">
+				<contentMiddle>
+					<Text text="Owned by Pravya Group of Enterprise" />
+				</contentMiddle>
+			</Bar>
+		</footer>
+	</Page>
 </mvc:View>

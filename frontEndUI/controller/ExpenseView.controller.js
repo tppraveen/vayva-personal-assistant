@@ -53,6 +53,13 @@ sap.ui.define([
         oDateRange.setSecondDateValue(oToday);   
 
         this.fnResetExpenseDetails();
+        
+              const oModel = new sap.ui.model.json.JSONModel();
+              this.getView().setModel(oModel, "oMissedReminderModel");
+              this.getView().setModel(oModel, "oUpcomingReminderModel");
+              this.getView().setModel(oModel, "oExpenseModel");
+        this.onLoadUpcomingReminder();
+        this.onLoadMissedReminder();
         this.onFilter();
       },
 
@@ -91,12 +98,14 @@ sap.ui.define([
         };
 
         const that = this;
+        BusyIndicator.show(0);
         $.ajax({
           url: "/oData/v1/ExpenseServices/getExpenseDashboardSummary",
           method: "POST",
           contentType: "application/json",
           data: JSON.stringify(payload),
           success: function (response) {
+            BusyIndicator.hide();
             if (response.status === "success") {
               const oModel = new sap.ui.model.json.JSONModel(response.data);
               that.getView().setModel(oModel, "oExpenseSummaryModel");
@@ -106,7 +115,73 @@ sap.ui.define([
             }
           },
           error: function (xhr, status, error) {
+            BusyIndicator.hide();
             MessageToast.show("Error filtering expense data.");
+            console.error("Filter API error:", error);
+          }
+        });
+      },
+      onLoadUpcomingReminder:function(){
+          
+        const that = this;
+         const username = oGlobalModel.getProperty("/LoginView/username");
+       
+         const payload = {
+          username: username,
+          modulename:'ExpenseTracker'
+        };
+BusyIndicator.show(0);
+        $.ajax({
+          url: "/oData/v1/oReminderServices/getUpcomingReminders",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify(payload),
+          success: function (response) {
+            BusyIndicator.hide();
+            if (response.status === "success") {
+              const oModel = new sap.ui.model.json.JSONModel(response.data);
+              that.getView().setModel(oModel, "oUpcomingReminderModel");
+              console.log(response.data)
+            } else {
+              MessageToast.show("Failed to load upcoming Reminder data.");
+            }
+          },
+          error: function (xhr, status, error) {
+            BusyIndicator.hide();
+            MessageToast.show("Error load upcoming Reminder data.");
+            console.error("Filter API error:", error);
+          }
+        });
+      },
+      
+      onLoadMissedReminder:function(){
+          
+        const that = this;
+         const username = oGlobalModel.getProperty("/LoginView/username");
+       
+         const payload = {
+          username: username,
+          modulename:'ExpenseTracker'
+        };
+BusyIndicator.show(0);
+        $.ajax({
+          url: "/oData/v1/oReminderServices/getMissedReminders",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify(payload),
+          success: function (response) {
+            BusyIndicator.hide();
+            if (response.status === "success") {
+              const oModel = new sap.ui.model.json.JSONModel(response.data);
+              that.getView().setModel(oModel, "oMissedReminderModel");
+              console.log(response.data)
+            } else {
+              MessageToast.show("Failed to load missed Reminder data.");
+            }
+          },
+          error: function (xhr, status, error) {
+            BusyIndicator.hide();
+            MessageToast.show("Error load missed Reminder data.");
             console.error("Filter API error:", error);
           }
         });
@@ -152,12 +227,14 @@ _formatDateIST: function(dateObj) {
         };
 
         const that = this;
+        BusyIndicator.show(0);
         $.ajax({
           url: "/oData/v1/ExpenseServices/getExpenseListsbyUser",
           method: "POST",
           contentType: "application/json",
           data: JSON.stringify(payload),
           success: function (response) {
+            BusyIndicator.hide();
             if (response.status === "success") {
               var oModel = new sap.ui.model.json.JSONModel(response);
               that.getView().setModel(oModel, "oExpenseModel");
@@ -167,6 +244,7 @@ _formatDateIST: function(dateObj) {
             }
           },
           error: function (xhr, status, error) {
+            BusyIndicator.hide();
             MessageToast.show("Error filtering expense data.");
             console.error("Filter API error:", error);
           }
@@ -270,7 +348,7 @@ _formatDateIST: function(dateObj) {
 
         oModel.setProperty("/id", id);
 
-
+BusyIndicator.show(0);
         // Call API to fetch full expense data
         $.ajax({
           url: "/oData/v1/ExpenseServices/readExpenseByID",
@@ -278,6 +356,7 @@ _formatDateIST: function(dateObj) {
           contentType: "application/json",
           data: JSON.stringify({ username, id }),
           success: function (response) {
+            BusyIndicator.hide();
             if (response.status === "success" && response.data) {
               const expenseData = response.data;
 
@@ -308,6 +387,7 @@ _formatDateIST: function(dateObj) {
             }
           },
           error: function () {
+            BusyIndicator.hide();
             MessageToast.show("Error while fetching expense data.");
           }
         });
@@ -337,6 +417,7 @@ _formatDateIST: function(dateObj) {
             title: "Confirm Deletion",
             onClose: function (oAction) {
               if (oAction === MessageBox.Action.OK) {
+                BusyIndicator.show(0);
                 // Proceed with AJAX delete call
                 $.ajax({
                   url: "/oData/v1/ExpenseServices/deleteExpense", // your actual endpoint
@@ -347,10 +428,12 @@ _formatDateIST: function(dateObj) {
                     id: id
                   }),
                   success: function (response) {
+                    BusyIndicator.hide();
                     MessageToast.show("Deleted successfully.");
                     that.onFilter?.(); // assuming you have a reload method
                   },
                   error: function (xhr) {
+                    BusyIndicator.hide();
                     const message = "Unknown error occurred.";
                     if (xhr.status === 409) {
                       MessageBox.warning(message);
@@ -440,18 +523,20 @@ _formatDateIST: function(dateObj) {
         if (userMode === "Add") {
           sUrl = "/oData/v1/ExpenseServices/insertExpense";
         }
-
+BusyIndicator.show(0);
         $.ajax({
           url: sUrl, // Update with your actual backend route
           method: "POST",
           contentType: "application/json",
           data: JSON.stringify(oData),
           success: () => {
+            BusyIndicator.hide();
             MessageToast.show("Expense saved successfully.");
             this.onDialogClose();
             this.onFilter?.(); // Optional: reload list if available
           },
           error: (err) => {
+            BusyIndicator.hide();
             MessageBox.error("Failed to save expense.");
           }
         });
@@ -466,16 +551,19 @@ _formatDateIST: function(dateObj) {
       _loadCategoryList: function () {
 
         let username = oGlobalModel.getProperty("/LoginView/username");
+        BusyIndicator.show(0);
         $.ajax({
           url: "/oData/v1/ExpenseCategoryConfigServices/getCategoryListsByUser",
           method: "POST",
           contentType: "application/json",
           data: JSON.stringify({ username }),
           success: (data) => {
+            BusyIndicator.hide();
             const oCategoryModel = new sap.ui.model.json.JSONModel(data || []);
             this.getView().setModel(oCategoryModel, "categoryModel");
           },
           error: () => {
+            BusyIndicator.hide();
             MessageBox.error("Failed to load categories.");
           }
         });
@@ -485,17 +573,19 @@ _formatDateIST: function(dateObj) {
 
         let username = oGlobalModel.getProperty("/LoginView/username");
         const category = oEvent.getParameter("selectedItem").getKey();
-
+BusyIndicator.show(0);
         $.ajax({
           url: `/oData/v1/ExpenseCategoryConfigServices/getSubCategoryListsByUser`,
           method: "POST",
           contentType: "application/json",
           data: JSON.stringify({ username, category }),
           success: (data) => {
+            BusyIndicator.hide();
             const oSubcategoryModel = new sap.ui.model.json.JSONModel(data || []);
             this.getView().setModel(oSubcategoryModel, "subcategoryModel");
           },
           error: () => {
+            BusyIndicator.hide();
             MessageBox.error("Failed to load subcategories.");
           }
         });
@@ -551,6 +641,25 @@ _formatDateIST: function(dateObj) {
     .then(() => sap.m.MessageToast.show("Excel export complete"))
     .catch(err => console.error("Export failed", err));
 },
+
+onCompletePress: function (oEvent) {
+    const oContext = oEvent.getSource().getParent().getBindingContext(); // access item data
+    console.log("Completed:", oContext.getObject());
+    // Add completion logic here
+},
+
+onSnoozePress: function (oEvent) {
+    const oContext = oEvent.getSource().getParent().getBindingContext();
+    console.log("Snoozed:", oContext.getObject());
+    // Add snooze logic here
+},
+ 
+
+onListItemPress: function (oEvent) {
+    const oContext = oEvent.getSource().getBindingContext();
+    console.log("Pressed:", oContext.getObject());
+    // Navigate or show popup detail
+}
 
 
 

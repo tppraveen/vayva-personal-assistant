@@ -31,6 +31,7 @@ app.use(nodeApiVersion+'/api/data', dataRoutes);
 const oUserServicePrefix = nodeApiVersion+"/UserServices";
 const oExpenseServicePrefix = nodeApiVersion+"/ExpenseServices";
 const oExpenseConfigServicePrefix = nodeApiVersion+"/ExpenseCategoryConfigServices";
+const ooReminderServicePrefix = nodeApiVersion+"/oReminderServices";
  
 app.get(nodeApiVersion+'/api/data/users',dataRoutes.getAppHomeMenuTiles);
 
@@ -40,7 +41,15 @@ app.get(nodeApiVersion+'/api/data/users',dataRoutes.getAppHomeMenuTiles);
 const oUserService = require('./routes/UserService');
 app.get(oUserServicePrefix,oUserService.oUserServices);
 app.post(oUserServicePrefix+'/validateLoginUser',oUserService.validateLoginUser);
+app.post(oUserServicePrefix+'/remainderScheduler',oUserService.remainderScheduler);
 app.post(oUserServicePrefix+'/getLoginUserMenu',oUserService.getLoginUserMenu);
+
+//////////////////////////// Reminder Service
+const oReminderService = require('./routes/ReminderService');
+app.get(ooReminderServicePrefix,oReminderService.oReminderServices);
+app.post(ooReminderServicePrefix+'/getUpcomingReminders',oReminderService.getUpcomingReminders);
+app.post(ooReminderServicePrefix+'/getMissedReminders',oReminderService.getMissedReminders);
+ 
 
  
 

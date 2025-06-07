@@ -27,6 +27,7 @@
           <Title text="Pravya Family App" />
         </contentMiddle>
 		  <contentRight>
+          <Button icon="sap-icon://synchronize" tooltip="Run Job Reminader sheduler" type="Transparent" press="fnRunremainderScheduler" />
           <Button icon="sap-icon://bell" tooltip="Notifications" type="Transparent" />
           <Button icon="sap-icon://employee" tooltip="User Profile" type="Transparent" />
         </contentRight>

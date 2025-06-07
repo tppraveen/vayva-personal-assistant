@@ -72,6 +72,7 @@ function(BaseController, Controller, formatter, BusyIndicator, Filter, FilterOpe
 		},
 
     loadMenuTiles: function () {
+			BusyIndicator.show(0);
       const oView = this.getView();
       const oContainer = oView.byId("menuTileContainer");
 	  const username = oGlobalModel.getProperty("/LoginView/username");
@@ -87,6 +88,7 @@ function(BaseController, Controller, formatter, BusyIndicator, Filter, FilterOpe
             return;
           }
 
+           oContainer.removeAllItems()
           aData.data.forEach(function (oItem) {
             const oTile = new StandardTile({
               title: oItem.label,
@@ -97,14 +99,36 @@ function(BaseController, Controller, formatter, BusyIndicator, Filter, FilterOpe
               }.bind(this)
             });
             oContainer.addItem(oTile);
+			BusyIndicator.hide();
           }.bind(this));
+		  	BusyIndicator.hide(0);
         }.bind(this),
         error: function () {
           MessageToast.show("Failed to load menu items.");
         }
       });
-    }
+    },
+	fnRunremainderScheduler: function () {
+      const oView = this.getView(); 
+	  BusyIndicator.show(0);
+	  const username = oGlobalModel.getProperty("/LoginView/username");
+ var that=this
+       $.ajax({
+         url: "/oData/v1/UserServices/remainderScheduler",
+		method: "POST",
+		contentType: "application/json",
+		data: JSON.stringify({ username }),
+        success: function (aData) {
+			MessageToast.show(aData.message);
+			BusyIndicator.hide();
 
+        }.bind(this),
+        error: function () {
+			BusyIndicator.hide();
+          MessageToast.show("Failed to load menu items.");
+        }
+      });
+    },
  
 		
 	});

@@ -36,7 +36,7 @@
 							<core:Item key="Daily" text="Daily"/>
 							<core:Item key="Weekly" text="Weekly"/>
 							<core:Item key="Monthly" text="Monthly"/>
-							<core:Item key="Yearly" text="Yearly"/>
+							<!-- <core:Item key="Yearly" text="Yearly"/> -->
 						</Select>
 
 						<Label text="Repeat on Days" visible="{viewModel>/reminderData/visibility/weeklyFields}"/>

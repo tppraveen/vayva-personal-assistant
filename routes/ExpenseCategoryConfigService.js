@@ -4,6 +4,9 @@ const pool = require('../db');
 const handleError = require('../utils/errorHandler');
 const response = require('../utils/responseHandler'); // Use response helper
  
+const dayjs = require('dayjs');
+const customParseFormat = require('dayjs/plugin/customParseFormat');
+dayjs.extend(customParseFormat);
 
 // GET all rows 
 router.oExpenseCategoryConfigServices = async (req, res) => {
@@ -98,6 +101,10 @@ router.insertExpenseCategoryConfig = async (req, res) => {
       dailylimit, suggestions, notes, recurring, recurringtype, recurringevery,
       remainder, status, remainderData
     } = req.body;
+    if(!remainderData.is_recurring){
+      remainderData.repeat_type='Once'
+    }
+    console.log(remainderData)
 
     if (!username || !category || !subcategory) {
       return response.error(res, 400, 'Required fields missing.', 'username, category, and subcategory are mandatory.');
@@ -171,6 +178,8 @@ async function handleExpenseRemainder({  expenseCategoryId, remainderData, usern
     repeat_month, repeat_week, start_date, end_date
   } = remainderData;
 
+    console.log(remainderData)
+
   if(is_recurring){
     const date = new Date(`January 1, 1970 ${repeat_time}`);
     repeat_time = date.toLocaleTimeString('en-GB', { hour12: false }); 
@@ -178,11 +187,10 @@ async function handleExpenseRemainder({  expenseCategoryId, remainderData, usern
 
       start_date = formatDateToDDMMYYYY(start_date);
     end_date = formatDateToDDMMYYYY(end_date);
-  }else{
-  remainder_at = new Date(remainder_at).toISOString();
-
-  }
-  console.log(remainderData)
+  }else{ 
+  remainder_at = dayjs(remainder_at, 'DD-MM-YYYY hh:mm:ss A').toISOString()
+   }
+   
   // Step 1: Check for existing remainder record
   const checkQuery = `
     SELECT id FROM expenseremainder 
@@ -305,6 +313,9 @@ router.updateExpenseCategoryConfig = async (req, res) => {
     if (!id || !username || !category || !subcategory) {
       return response.error(res, 400, 'Required fields missing.', 'id, username, category, and subcategory are mandatory.');
     }
+if(!remainderData.is_recurring){
+      remainderData.repeat_type='Once'
+    }
 
     const query = `
       UPDATE ExpenseCategoryConfig
@@ -356,7 +367,6 @@ router.updateExpenseCategoryConfig = async (req, res) => {
     const client = await pool.connect();
     if (isreminder === true || isreminder === 'true') {
       await handleExpenseRemainder({
-       
         expenseCategoryId: id, // fetched during update
         remainderData,
         username

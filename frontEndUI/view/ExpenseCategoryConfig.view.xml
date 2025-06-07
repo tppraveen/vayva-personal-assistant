@@ -24,13 +24,13 @@
         <VBox>
           <HBox>
         <Label text="Category" />
-            <Select width="200px" items="{/categories}">
-              <core:Item key="{id}" text="{name}" />
-            </Select>
+             <ComboBox items="{categoryModel>/data}"   selectionChange=".onCategoryChange">
+          <core:Item key="{categoryModel>category}" text="{categoryModel>category}" />
+        </ComboBox>
         <Label text="Sub Category" />
-            <Select width="200px" items="{/subcategories}">
-              <core:Item key="{id}" text="{name}" />
-            </Select>
+             <ComboBox items="{subcategoryModel>/data}">
+          <core:Item key="{subcategoryModel>subcategory}" text="{subcategoryModel>subcategory}" />
+        </ComboBox>
             <Button icon="sap-icon://filter" tooltip="Apply Filter" />
           </HBox>
         </VBox>
@@ -44,25 +44,49 @@
       </Toolbar>
 
       <Table id="expenseTable"
-       inset="false"
+       inset="false"   growing="true"  growingThreshold="10"
+  growingScrollToLoad="false"
        items="{oExpCatConfigModel>/data}">
   <columns>
     <Column><Text text="Category" /></Column>
-    <Column><Text text="Subcategory" /></Column>
-    <Column><Text text="Importance" /></Column>
-    <Column><Text text="Limit Goal" /></Column>
-    <Column><Text text="Recurring" /></Column>
-    <Column><Text text="Suggestions" /></Column>
-    <Column><Text text="Notes" /></Column>
-    <Column><Text text="Status" /></Column>
-    <Column><Text text="Created On" /></Column>
+     
+     <Column demandPopin="true" minScreenWidth="Tablet" popinText="Importance">
+      <Text text="Importance" />
+    </Column>
+
+    <Column demandPopin="true" minScreenWidth="Tablet" popinText="Limit Goal">
+      <Text text="Limit Goal" />
+    </Column>
+
+    <Column demandPopin="true" minScreenWidth="Tablet" popinText="Recurring">
+      <Text text="Recurring" />
+    </Column>
+
+    <Column demandPopin="true" minScreenWidth="Tablet" popinText="Suggestions">
+      <Text text="Suggestions" />
+    </Column>
+
+    <Column demandPopin="true" minScreenWidth="Tablet" popinText="Notes">
+      <Text text="Notes" />
+    </Column>
+
+    <Column  >
+      <Text text="Status" />
+    </Column>
+
+    <Column >
+      <Text text="Created On" />
+    </Column> 
     <Column><Text text="Actions" /></Column>
   </columns>
   <items>
     <ColumnListItem>
       <cells>
-        <Text text="{oExpCatConfigModel>category}" />
-        <Text text="{oExpCatConfigModel>subcategory}" />
+      <ObjectIdentifier   
+                      title="{oExpCatConfigModel>category}"
+                      text="{oExpCatConfigModel>subcategory}" />
+
+        
         <Text text="{oExpCatConfigModel>importance}" />
         <VBox>
           <HBox>

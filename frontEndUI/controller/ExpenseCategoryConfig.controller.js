@@ -35,6 +35,7 @@ sap.ui.define([
           oRouter.navTo("LoginView");
           return
         }
+        this._loadCategoryList()
         this.loadExpenseCategoryConfigData();
         //Reset Inputs
         // var oprocessComboBox = this.getView().byId("idCMSHome_ProcessSelectInput");
@@ -49,13 +50,14 @@ sap.ui.define([
         this.getView().setModel(oModel, "oExpCatConfigModel");
         const username = oGlobalModel.getProperty("/LoginView/username");
         var that = this
-
+BusyIndicator.show(0);
         $.ajax({
           url: "/oData/v1/ExpenseCategoryConfigServices/getExpenseCategoryConfigListsbyUser",
           method: "POST",
           contentType: "application/json",
           data: JSON.stringify({ username }),
           success: function (oResponse) {
+            BusyIndicator.hide();
             if (oResponse.status === "success") {
               var oModel = new sap.ui.model.json.JSONModel(oResponse);
               that.getView().setModel(oModel, "oExpCatConfigModel");
@@ -64,6 +66,7 @@ sap.ui.define([
             }
           },
           error: function (xhr, status, error) {
+            BusyIndicator.hide();
             MessageToast.show("Error fetching data: " + error);
           }
         });
@@ -182,7 +185,11 @@ sap.ui.define([
           MessageBox.error("Please fill all required fields: Username, Category, Subcategory.");
           return;
         }
-
+ var oRemData =oViewModel.getProperty("/reminderData");
+        if(oRemData.is_recurring){
+            oRemData.remainder_at =''
+          }
+          BusyIndicator.show(0);
         $.ajax({
           url: "/oData/v1/ExpenseCategoryConfigServices/insertExpenseCategoryConfig",
           method: "POST",
@@ -204,10 +211,11 @@ sap.ui.define([
             isreminder: oData.isreminder,
             status: oData.status,
             created_by: oData.username ,// Assuming the same user created it
-            remainderData :oViewModel.getProperty("/reminderData")
+            remainderData : oRemData
 
           }),
           success: function (response) {
+            BusyIndicator.hide();
             if (response.status === "success") {
               MessageToast.show("Expense category added successfully.");
               this._oAddDialog.close(); // Close dialog after success
@@ -217,6 +225,7 @@ sap.ui.define([
             }
           }.bind(this),
           error: function (err) {
+            BusyIndicator.hide();
             MessageToast.show("Server error during creation.");
             console.error("Create error:", err);
           }
@@ -230,12 +239,14 @@ sap.ui.define([
         const that = this;
 
         const username = oGlobalModel.getProperty("/LoginView/username");
+        BusyIndicator.show(0);
         $.ajax({
           url: `/oData/v1/ExpenseCategoryConfigServices/readExpenseCategoryByID`,
           method: "POST",
           contentType: "application/json",
           data: JSON.stringify({ username, id }),
           success: function (oData) {
+            BusyIndicator.hide();
             if (oData && oData.status === "success") {
               const formData = oData.data;
               that.getView().getModel("viewModel").setProperty("/mode", "Edit");
@@ -252,6 +263,7 @@ sap.ui.define([
             }
           },
           error: function (err) {
+            BusyIndicator.hide();
             MessageToast.show("Failed to load category data.");
           }
         });
@@ -293,7 +305,11 @@ sap.ui.define([
           MessageBox.error("Missing ID for update.");
           return;
         }
-
+        var oRemData =oViewModel.getProperty("/reminderData");
+        if(oRemData.is_recurring){
+            oRemData.remainder_at =''
+          }
+          BusyIndicator.show(0);
         $.ajax({
           url: "/oData/v1/ExpenseCategoryConfigServices/updateExpenseCategoryConfig",
           method: "PUT",
@@ -315,9 +331,10 @@ sap.ui.define([
             status: oData.status,
             username: oData.username,
             id: oData.id,
-            remainderData :oViewModel.getProperty("/reminderData")
+            remainderData :oRemData
           }),
           success: function (response) {
+            BusyIndicator.hide();
             if (response.status === "success") {
               MessageToast.show("Expense category updated successfully.");
               this.onDialogCancel(); // Close dialog
@@ -327,6 +344,7 @@ sap.ui.define([
             }
           }.bind(this),
           error: function (err) {
+            BusyIndicator.hide();
             MessageBox.error("Server error during update.");
             console.error("Update error:", err);
           }
@@ -354,6 +372,7 @@ sap.ui.define([
             onClose: function (oAction) {
               if (oAction === MessageBox.Action.OK) {
                 // Proceed with AJAX delete call
+                BusyIndicator.show(0);
                 $.ajax({
                   url: "/oData/v1/ExpenseCategoryConfigServices/delete", // your actual endpoint
                   method: "DELETE",
@@ -364,11 +383,13 @@ sap.ui.define([
                     subcategory: subcategory
                   }),
                   success: function (response) {
+            BusyIndicator.hide();
                     MessageToast.show("Deleted successfully.");
                     // optionally refresh model or table
                     that.loadExpenseCategoryConfigData(); // assuming you have a reload method
                   },
                   error: function (xhr) {
+            BusyIndicator.hide();
                     const res = JSON.parse(xhr.responseText || "{}");
                     const message = res.message || "Unknown error occurred.";
                     if (xhr.status === 409) {
@@ -485,7 +506,9 @@ onRepeatTypeChange: function (oEvent) {
 
 onReminderOk: function () {
     const oReminderData = this.getView().getModel("viewModel").getProperty("/reminderData");
-    
+    if(!oReminderData.is_recurring){
+      oReminderData.repeat_type=''
+    }
     // Optional: Validate or enrich the data
     console.log("Reminder Data Submitted:", oReminderData);
 
@@ -508,7 +531,52 @@ onReminderCancel: function () {
         this._reminderDialog.close();
       }
        
-}
+},
+
+
+
+      _loadCategoryList: function () {
+
+        let username = oGlobalModel.getProperty("/LoginView/username");
+        BusyIndicator.show(0);
+        $.ajax({
+          url: "/oData/v1/ExpenseCategoryConfigServices/getCategoryListsByUser",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify({ username }),
+          success: (data) => {
+            BusyIndicator.hide();
+            const oCategoryModel = new sap.ui.model.json.JSONModel(data || []);
+            this.getView().setModel(oCategoryModel, "categoryModel");
+          },
+          error: () => {
+            BusyIndicator.hide();
+            MessageBox.error("Failed to load categories.");
+          }
+        });
+      },
+
+      onCategoryChange: function (oEvent) {
+
+        let username = oGlobalModel.getProperty("/LoginView/username");
+        const category = oEvent.getParameter("selectedItem").getKey();
+BusyIndicator.show(0);
+        $.ajax({
+          url: `/oData/v1/ExpenseCategoryConfigServices/getSubCategoryListsByUser`,
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify({ username, category }),
+          success: (data) => {
+            BusyIndicator.hide();
+            const oSubcategoryModel = new sap.ui.model.json.JSONModel(data || []);
+            this.getView().setModel(oSubcategoryModel, "subcategoryModel");
+          },
+          error: () => {
+            BusyIndicator.hide();
+            MessageBox.error("Failed to load subcategories.");
+          }
+        });
+      },
 
 
 
