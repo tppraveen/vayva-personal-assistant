@@ -56,8 +56,8 @@
                       design="Bold" />
 											</VBox>
 											<VBox >
-												<Button icon="sap-icon://complete" class="sapUiTinyMarginEnd" press=".onCompletePress" type="Accept"/>
-												<Button icon="sap-icon://future" press=".onSnoozePress" type="Emphasized" />
+												<Button icon="sap-icon://complete" class="sapUiTinyMarginEnd" press=".onReminderCompletePress" type="Accept"/>
+												<Button icon="sap-icon://future" press=".onUpcomingReminderSnoozePress" type="Emphasized" />
 											</VBox>
 										</HBox>
 									</CustomListItem>
@@ -78,6 +78,9 @@
 								text="{parts: [{ path: 'oMissedReminderModel>remind_at' }],formatter: '.formatter.formatDateTime'}" 
                        
                       design="Bold" />
+											</VBox>
+											<VBox >
+												<Button icon="sap-icon://nav-back"  press=".onMissedReminderSnoozePress" type="Emphasized" />
 											</VBox>
 										</HBox>
 									</CustomListItem>

@@ -116,14 +116,9 @@
           "target": "ExpenseCategoryConfig"
         },
         {
-          "name": "ViewBenchmark",
-          "pattern": "ViewBenchmark/{businessExternalID}/{gma1}/{gma2}/{ID}",
-          "target": "ViewBenchmark"
-        },
-        {
-          "name": "ApprovalWFConfiguration",
-          "pattern": "ApprovalWFConfiguration",
-          "target": "ApprovalWFConfiguration"
+          "name": "MyCalender",
+          "pattern": "MyCalender",
+          "target": "MyCalender"
         }
 
       ],
@@ -156,19 +151,12 @@
           "viewName": "ExpenseCategoryConfig",
           "viewId": "ExpenseCategoryConfig"
         },
-        "ViewBenchmark": {
+        "MyCalender": {
           "viewType": "XML",
           "transition": "slide",
           "clearControlAggregation": false,
-          "viewName": "ViewBenchmark",
-          "viewId": "ViewBenchmark"
-        },
-        "ApprovalWFConfiguration": {
-          "viewType": "XML",
-          "transition": "slide",
-          "clearControlAggregation": false,
-          "viewName": "ApprovalWFConfiguration",
-          "viewId": "ApprovalWFConfiguration"
+          "viewName": "MyCalender",
+          "viewId": "MyCalender"
         }
       }
     },

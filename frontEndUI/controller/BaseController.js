@@ -13,17 +13,7 @@ sap.ui.define(
             formatter: formatter,
             onInit: function () {
 
-            },
-            // Check Previoush HASH if not route to home page
-            checkPreviousHash: function () {
-                var sPreviousHash = History.getInstance().getPreviousHash();
-                if (!sPreviousHash) {
-                    this.getOwnerComponent().getRouter().navTo("RouteHomeView", {}, true);
-                    return true;
-                }
-                return false
-            },
-
+            }, 
             // Success, Warning,Error message used in Line and Product Standard
             onShowSuccess: function (message) {
                 sap.m.MessageBox.success(

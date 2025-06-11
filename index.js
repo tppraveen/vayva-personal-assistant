@@ -49,6 +49,8 @@ const oReminderService = require('./routes/ReminderService');
 app.get(ooReminderServicePrefix,oReminderService.oReminderServices);
 app.post(ooReminderServicePrefix+'/getUpcomingReminders',oReminderService.getUpcomingReminders);
 app.post(ooReminderServicePrefix+'/getMissedReminders',oReminderService.getMissedReminders);
+app.post(ooReminderServicePrefix+'/markAsCompleted',oReminderService.markAsCompleted);
+app.post(ooReminderServicePrefix+'/snoozeReminder',oReminderService.snoozeReminder);
  
 
  

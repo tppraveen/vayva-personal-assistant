@@ -95,7 +95,7 @@ function(BaseController, Controller, formatter, BusyIndicator, Filter, FilterOpe
               info: oItem.menu,
               icon: "sap-icon://action", // Change icon based on oItem.menu if needed
               press: function () {
-                oRouter.navTo("ExpenseView"); // Ensure route is configured
+                oRouter.navTo(oItem.path); // Ensure route is configured
               }.bind(this)
             });
             oContainer.addItem(oTile);

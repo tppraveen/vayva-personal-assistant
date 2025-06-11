@@ -13,7 +13,8 @@ sap.ui.define([
   "frontEndUI/model/models",
   "sap/m/StandardTile",
   "sap/m/TileContainer",
-  "sap/ui/export/Spreadsheet"
+  "sap/ui/export/Spreadsheet",
+
 ],
   /**
    * @param {typeof sap.ui.core.mvc.Controller} Controller
@@ -642,24 +643,133 @@ BusyIndicator.show(0);
     .catch(err => console.error("Export failed", err));
 },
 
-onCompletePress: function (oEvent) {
-    const oContext = oEvent.getSource().getParent().getBindingContext(); // access item data
-    console.log("Completed:", oContext.getObject());
-    // Add completion logic here
-},
-
-onSnoozePress: function (oEvent) {
-    const oContext = oEvent.getSource().getParent().getBindingContext();
-    console.log("Snoozed:", oContext.getObject());
-    // Add snooze logic here
-},
+ 
  
 
 onListItemPress: function (oEvent) {
     const oContext = oEvent.getSource().getBindingContext();
     console.log("Pressed:", oContext.getObject());
     // Navigate or show popup detail
-}
+},
+
+onReminderCompletePress: function (oEvent) {
+    var that = this;
+
+    // Get the context and ID of the selected reminder
+    var oBindingContext = oEvent.getSource().getBindingContext("oUpcomingReminderModel");
+    var oReminderData = oBindingContext.getObject();
+    var reminderId = oReminderData.id;
+
+    // Confirm with user
+    MessageBox.confirm("Are you sure you want to complete this reminder?", {
+        title: "Confirm Completion",
+        actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
+        onClose: function (oAction) {
+            if (oAction === MessageBox.Action.OK) {
+                // Call backend
+                $.ajax({
+                    url: "/oData/v1/oReminderServices/markAsCompleted",
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({ id: reminderId }),
+                    success: function () {
+                        // Optional: Refresh model
+                        that.getView().getModel("oUpcomingReminderModel").refresh(true);
+                        that.onLoadUpcomingReminder();
+                        that.onLoadMissedReminder();
+
+                        MessageToast.show("Reminder marked as completed.");
+                    },
+                    error: function () {
+                        MessageBox.error("Failed to complete reminder. Please try again.");
+                    }
+                });
+            }
+        }
+    });
+},
+
+onUpcomingReminderSnoozePress: function (oEvent) {
+     const oBindingContext = oEvent.getSource().getBindingContext("oUpcomingReminderModel");
+    const oReminderData = oBindingContext.getObject();
+    this.onReminderSnooze(oReminderData)
+},
+onMissedReminderSnoozePress: function (oEvent) {
+    const oBindingContext = oEvent.getSource().getBindingContext("oMissedReminderModel");
+    const oReminderData = oBindingContext.getObject();
+     this.onReminderSnooze(oReminderData)
+},
+onReminderSnooze: function (oReminderData) {
+    const that = this; 
+    // Create a DateTimePicker Dialog for user input
+    const oDialog = new sap.m.Dialog({
+        title: "Snooze Reminder",
+        content: [
+            new sap.m.Text({ text: "Are you sure you want to snooze this reminder to another time?" }),
+            new sap.m.DateTimePicker("newRemindAt", {
+                valueFormat: "yyyy-MM-ddTHH:mm:ss",
+                displayFormat: "long",
+                width: "100%",
+                required: true
+            })
+        ],
+        beginButton: new sap.m.Button({
+            text: "OK",
+            press: function () {
+                const oDateTimePicker = sap.ui.getCore().byId("newRemindAt");
+                const sNewDate = oDateTimePicker.getDateValue();
+
+                if (!sNewDate) {
+                    sap.m.MessageToast.show("Please select a valid date/time.");
+                    return;
+                }
+
+                oDialog.close();
+
+                // Call backend with new date and reminder ID
+                that._snoozeReminder(oReminderData.id, sNewDate); 
+            }
+        }),
+        endButton: new sap.m.Button({
+            text: "Cancel",
+            press: function () {
+                oDialog.close();
+            }
+        }),
+        afterClose: function () {
+            oDialog.destroy();
+        }
+    });
+
+    oDialog.open();
+},
+
+_snoozeReminder: function (reminderId, newRemindAt) {
+    const oModel = new sap.ui.model.json.JSONModel();
+    const sUrl = "/oData/v1/oReminderServices/snoozeReminder";
+  var that = this;
+    const oPayload = {
+        id: reminderId,
+        newRemindAt: newRemindAt
+    };
+
+    $.ajax({
+        url: sUrl,
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(oPayload),
+        success: function () {
+            sap.m.MessageToast.show("Reminder snoozed successfully.");
+              that.onLoadUpcomingReminder();
+                        that.onLoadMissedReminder();
+        },
+        error: function (xhr) {
+            sap.m.MessageBox.error("Failed to snooze reminder: " + xhr.responseText);
+        }
+    });
+},
+
+
 
 
 
