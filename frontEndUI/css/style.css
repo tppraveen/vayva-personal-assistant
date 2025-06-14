@@ -17,3 +17,9 @@
 }
 
 
+/* Calender Type Bg colr */
+/* Or more generic selector */
+.sapMSLI[data-color] {
+  background-color: attr(data-color color) !important; /* but attr() is not widely supported */
+}
+

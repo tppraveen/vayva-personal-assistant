@@ -50,12 +50,22 @@
 						selected="{allDay>/allDay}"
 						select="handleCheckBoxSelect"/>
 				<Label text="Type" labelFor="appType"/>
-				<Select
+				<!-- <Select
 						id="appType"
 						items="{/types}">
-					<core:Item key="{type}" text="{type}" />
-				</Select>
+					<core:Item key="{type}" text="{category}" />
+					 
+				</Select> -->
+				 
+				  <Input id="calenderType"
+  showValueHelp="true" 
+  valueHelpRequest="onValueHelpRequest"
+  value="{/category}"
+  placeholder="Select category..."
+/>
+
 			</f:SimpleForm>
+			
 		</l:VerticalLayout>
 	</Dialog>
 </core:FragmentDefinition>
