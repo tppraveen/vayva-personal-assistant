@@ -39,7 +39,9 @@ sap.ui.define([], () => {
 		fnReworkIcon: function (s) {
 
 		},
-		 
+		getColorClass: function (sType) {
+      return sType;
+    }
 		 
 
 	};

@@ -98,13 +98,13 @@ router.insertExpenseCategoryConfig = async (req, res) => {
    try {
     const {
       username, category, subcategory, importance, yearlimit, monthlimit, weeklimit,
-      dailylimit, suggestions, notes, recurring, recurringtype, recurringevery,
-      remainder, status, remainderData
+      dailylimit, suggestions,  recurring, recurringtype, recurringevery,
+       status, remainderData
     } = req.body;
     if(!remainderData.is_recurring){
       remainderData.repeat_type='Once'
     }
-    console.log(remainderData)
+     
 
     if (!username || !category || !subcategory) {
       return response.error(res, 400, 'Required fields missing.', 'username, category, and subcategory are mandatory.');
@@ -126,25 +126,17 @@ router.insertExpenseCategoryConfig = async (req, res) => {
       username, category, subcategory, importance,
       parseInt(yearlimit) || 0, parseInt(monthlimit) || 0,
       parseInt(weeklimit) || 0, parseInt(dailylimit) || 0,
-      suggestions, notes,
+      suggestions, "",
       recurring === true || recurring === 'true',
       recurringtype, parseInt(recurringevery) || 0,
-      remainder === true || remainder === 'true',
+      false,
       status || 'Active', username
     ];
 
     const result =  await pool.query(insertExpenseQuery, expenseValues);
     const expenseId = result.rows[0].id;
 
-    // ✅ Call helper only if remainder is true
-    if (remainder === true || remainder === 'true') {
-      await handleExpenseRemainder({
-         
-        expenseCategoryId: expenseId,
-        remainderData,
-        username
-      });
-    }
+   
 
  
     return response.success(res, 201, {
@@ -167,128 +159,7 @@ router.insertExpenseCategoryConfig = async (req, res) => {
   const year = date.getFullYear();
   return `${day}-${month}-${year}`;
 }
-// ✅ Helper function: handleExpenseRemainder
-async function handleExpenseRemainder({  expenseCategoryId, remainderData, username }) {
   
-  if (!remainderData || !expenseCategoryId) return;
-
-  let {
-    mode, title, description, amount, is_recurring, remainder_at,
-    due_days, repeat_type, repeat_days, repeat_time, repeat_day_of_month,
-    repeat_month, repeat_week, start_date, end_date
-  } = remainderData;
-
-    console.log(remainderData)
-
-  if(is_recurring){
-    const date = new Date(`January 1, 1970 ${repeat_time}`);
-    repeat_time = date.toLocaleTimeString('en-GB', { hour12: false }); 
-  
-
-      start_date = formatDateToDDMMYYYY(start_date);
-    end_date = formatDateToDDMMYYYY(end_date);
-  }else{ 
-  remainder_at = dayjs(remainder_at, 'DD-MM-YYYY hh:mm:ss A').toISOString()
-   }
-   
-  // Step 1: Check for existing remainder record
-  const checkQuery = `
-    SELECT id FROM expenseremainder 
-    WHERE expense_category_id = $1 AND username = $2
-    LIMIT 1;
-  `;
-  const checkResult = await pool.query(checkQuery, [expenseCategoryId, username]);
-  const existingRemainder = checkResult.rows[0];
-  console.log("Existing Remainder:"+existingRemainder)
-  if (existingRemainder) {
-    // Step 2: Update if exists
-    const updateQuery = `
-      UPDATE expenseremainder SET
-        title = $1, description = $2, amount = $3, is_recurring = $4, remainder_at = $5,
-        due_days = $6, repeat_type = $7, repeat_days = $8, repeat_time = $9,
-        repeat_day_of_month = $10, repeat_month = $11, repeat_week = $12,
-        start_date = $13, end_date = $14, modified_by = $15, modified_on = NOW()
-      WHERE id = $16;
-    `;
-    const updateValues = [
-      title, description || null, amount || null, is_recurring || false,
-      remainder_at || null, due_days || '', repeat_type || '', JSON.stringify(repeat_days || []),
-      repeat_time || null, repeat_day_of_month || null, JSON.stringify(repeat_month || []),
-      repeat_week || null, start_date || null, end_date || null,
-      username, existingRemainder.id
-    ];
-    await pool.query(updateQuery, updateValues);
-    return existingRemainder.id;
-  } else {
-    // Step 3: Insert if not found
-    const insertQuery = `
-      INSERT INTO expenseremainder (
-        expense_category_id, title, description, amount, is_recurring, remainder_at,
-        due_days, repeat_type, repeat_days, repeat_time, repeat_day_of_month,
-        repeat_month, repeat_week, start_date, end_date,
-        created_by, modified_by, username
-      ) VALUES (
-        $1, $2, $3, $4, $5, $6,
-        $7, $8, $9, $10, $11,
-        $12, $13, $14, $15,
-        $16, $17, $18
-      ) RETURNING id;
-    `;
-    const insertValues = [
-      expenseCategoryId, title, description || null, amount || null, is_recurring || false,
-      remainder_at || null, due_days || '', repeat_type || '', JSON.stringify(repeat_days || []),
-      repeat_time || null, repeat_day_of_month || null, JSON.stringify(repeat_month || []),
-      repeat_week || null, start_date || null, end_date || null,
-      username, username, username
-    ];
-    const insertResult = await pool.query(insertQuery, insertValues);
-    return insertResult.rows[0].id;
-  }
-
- 
-}
-
-
-router.insertExpenseCategoryConfig2 = async (req, res) => {
-  try {
-    const {
-     username, category, subcategory, importance, yearlimit, monthlimit, weeklimit, 
-     dailylimit, suggestions, notes, recurring, recurringtype, recurringevery, remainder, status,remainderData
-    } = req.body;
-
-    if (!username || !category || !subcategory) {
-      return response.error(res, 400, 'Required fields missing.', 'username, category, and subcategory are mandatory.');
-    }
-
-    const query = `
-      INSERT INTO ExpenseCategoryConfig (
-        username,category,subcategory,importance,yearlimit,monthlimit,weeklimit,dailylimit,suggestions,notes,recurring,
-        recurringtype,recurringevery,isreminder,status,created_by
-      ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8,
-        $9, $10, $11, $12, $13, $14, $15, $16
-      )
-      
-    `;
-
-    const values = [
-     username, category, subcategory, importance, parseInt(yearlimit) || 0, parseInt(monthlimit) || 0, parseInt(weeklimit) || 0, 
-     parseInt(dailylimit) || 0, suggestions, notes, recurring === true || recurring === 'true', recurringtype, parseInt(recurringevery) 
-     || 0, remainder === true ||  remainder === 'true', status || 'Active',   username // created_by & modified_by = username
-    ];
-
-    const result = await pool.query(query, values);
-
-    return response.success(res, 201, {
-      message: 'Expense category config created successfully.',
-      id: ""//result.rows[0].id
-    });
-
-  } catch (err) {
-    console.error('Error inserting ExpenseCategoryConfig:', err);
-    return response.error(res, 500, 'Internal server error.', err.message);
-  }
-};
 router.updateExpenseCategoryConfig = async (req, res) => {
   try {
     const {
@@ -300,12 +171,10 @@ router.updateExpenseCategoryConfig = async (req, res) => {
       weeklimit,
       dailylimit,
       suggestions,
-      notes,
-      recurring,
+       recurring,
       recurringtype,
       recurringevery,
-      isreminder,
-      status,
+       status,
       username,
           id,remainderData
     } = req.body;
@@ -348,11 +217,11 @@ if(!remainderData.is_recurring){
       weeklimit,
       dailylimit,
       suggestions,
-      notes,
+      "",
       recurring === true || recurring === 'true',
       recurringtype,
       recurringevery,
-      isreminder === true || isreminder === 'true',
+      false,
       status || 'Active',
       username, // modified_by
       id,
@@ -364,17 +233,7 @@ if(!remainderData.is_recurring){
     if (result.rowCount === 0) {
       return response.error(res, 404, 'Record not found or unauthorized.');
     }
-    const client = await pool.connect();
-    if (isreminder === true || isreminder === 'true') {
-      await handleExpenseRemainder({
-        expenseCategoryId: id, // fetched during update
-        remainderData,
-        username
-      });
-    }
-
-
-
+     
     return response.success(res, 200, {
       message: 'Expense category config updated successfully.',
       id: result.rows[0].id

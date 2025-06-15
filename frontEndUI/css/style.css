@@ -19,7 +19,71 @@
 
 /* Calender Type Bg colr */
 /* Or more generic selector */
-.sapMSLI[data-color] {
-  background-color: attr(data-color color) !important; /* but attr() is not widely supported */
+.colorBlue  {
+  background-color: #1E90FF !important;
+  color: white;
+}
+.colorGreen  {
+  background-color: #32CD32 !important;
+  color: black;
+}
+.colorOrange  {
+  background-color: #FFA500 !important;
+  color: black;
+}
+.colorRed  {
+  background-color: #FF4500 !important;
+  color: white;
+}
+.colorPurple  {
+  background-color: #8A2BE2 !important;
+  color: white;
+}
+.colorPink  {
+  background-color: #FF69B4 !important;
+  color: white;
+}
+.colorCyan  {
+  background-color: #00CED1 !important;
+  color: black;
+}
+.colorGold  {
+  background-color: #FFD700 !important;
+  color: black;
+}
+.colorLightGreen  {
+  background-color: #7FFF00 !important;
+  color: black;
+}
+.colorTeal  {
+  background-color: #40E0D0 !important;
+  color: black;
+}
+.colorCrimson  {
+  background-color: #DC143C !important;
+  color: white;
+}
+.colorDarkGreen  {
+  background-color: #228B22 !important;
+  color: white;
+}
+.colorChocolate  {
+  background-color: #D2691E !important;
+  color: white;
+}
+.colorDarkOrange  {
+  background-color: #FF8C00 !important;
+  color: black;
+}
+.colorOrchid  {
+  background-color: #BA55D3 !important;
+  color: white;
+}
+.colorTomato  {
+  background-color: #FF6347 !important;
+  color: white;
 }
 
+
+
+/* Calender color end */

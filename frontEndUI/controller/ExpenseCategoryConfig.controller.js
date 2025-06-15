@@ -44,13 +44,13 @@ sap.ui.define([
         // 	oprocessComboBox.setValue("");
         // }
       },
-
+ 
       loadExpenseCategoryConfigData: function () {
         var oModel = new sap.ui.model.json.JSONModel();
         this.getView().setModel(oModel, "oExpCatConfigModel");
         const username = oGlobalModel.getProperty("/LoginView/username");
         var that = this
-BusyIndicator.show(0);
+        BusyIndicator.show(0);
         $.ajax({
           url: "/oData/v1/ExpenseCategoryConfigServices/getExpenseCategoryConfigListsbyUser",
           method: "POST",
@@ -89,7 +89,6 @@ BusyIndicator.show(0);
               limitGoal: "500",
               recurring: "Yes",
               suggestions: "Buy in bulk",
-              notes: "Weekly shopping",
               status: "Active",
               createdOn: "2025-05-27"
             }
@@ -162,12 +161,10 @@ BusyIndicator.show(0);
             weeklimit: 0,
             dailylimit: 0,
             suggestions: "",
-            notes: "",
-            recurring: false,
+             recurring: false,
             recurringtype: "",
             recurringevery: 0,
-            isreminder: false,
-            status: ""
+             status: ""
           }
         });
         this.getView().setModel(oLoadModel, "viewModel");
@@ -204,12 +201,10 @@ BusyIndicator.show(0);
             weeklimit: oData.weeklimit,
             dailylimit: oData.dailylimit,
             suggestions: oData.suggestions,
-            notes: oData.notes,
             recurring: oData.recurring,
             recurringtype: oData.recurringtype,
             recurringevery: oData.recurringevery,
-            isreminder: oData.isreminder,
-            status: oData.status,
+             status: oData.status,
             created_by: oData.username ,// Assuming the same user created it
             remainderData : oRemData
 
@@ -323,12 +318,10 @@ BusyIndicator.show(0);
             weeklimit: oData.weeklimit,
             dailylimit: oData.dailylimit,
             suggestions: oData.suggestions,
-            notes: oData.notes,
-            recurring: oData.recurring,
+             recurring: oData.recurring,
             recurringtype: oData.recurringtype,
             recurringevery: oData.recurringevery,
-            isreminder: oData.isreminder,
-            status: oData.status,
+             status: oData.status,
             username: oData.username,
             id: oData.id,
             remainderData :oRemData

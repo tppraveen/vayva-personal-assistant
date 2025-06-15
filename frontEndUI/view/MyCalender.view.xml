@@ -48,7 +48,11 @@
 				<ToggleButton text="Full Day" press="toggleFullDay"/>
 				<Button icon="sap-icon://zoom-in" press="zoomIn"/>
 					<Button icon="sap-icon://zoom-out" press="zoomOut"/>
-
+<Button
+  text="Create Reminder"
+  icon="sap-icon://add-reminder"
+  press="onOpenReminderDialog"
+  type="Emphasized" />
 				<Button id="addNewAppointment" text="Create" press="handleAppointmentCreate" tooltip="Add new appointment" />
 				<Button id="legendButton" icon="sap-icon://legend" press="handleOpenLegend" tooltip="Open SinglePlanningCalendar legend" ariaHasPopup="Dialog" />
 			</actions>

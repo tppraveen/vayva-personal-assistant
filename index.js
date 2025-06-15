@@ -32,7 +32,7 @@ const oUserServicePrefix = nodeApiVersion+"/UserServices";
 const oExpenseServicePrefix = nodeApiVersion+"/ExpenseServices";
 const oExpenseConfigServicePrefix = nodeApiVersion+"/ExpenseCategoryConfigServices";
 const ooReminderServicePrefix = nodeApiVersion+"/oReminderServices";
- 
+ const oCalenderServicePrefix = nodeApiVersion+"/CalenderService";
 app.get(nodeApiVersion+'/api/data/users',dataRoutes.getAppHomeMenuTiles);
 
 
@@ -53,6 +53,12 @@ app.post(ooReminderServicePrefix+'/markAsCompleted',oReminderService.markAsCompl
 app.post(ooReminderServicePrefix+'/snoozeReminder',oReminderService.snoozeReminder);
  
 
+
+//////////////////////////// CalenderService Service
+const oCalenderServiceService = require('./routes/CalenderService');
+ app.post(oCalenderServicePrefix+'/getAllEvents',oCalenderServiceService.getAllEvents);
+//app.post(oCalenderServicePrefix+'/getMissedReminders',oReminderService.getMissedReminders);
+ 
  
 
 

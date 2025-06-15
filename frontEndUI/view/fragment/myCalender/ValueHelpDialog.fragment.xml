@@ -1,5 +1,6 @@
 <core:FragmentDefinition
   xmlns="sap.m"
+  core:require="{ formatter: 'frontEndUI/model/formatter' }"
   xmlns:core="sap.ui.core">
 
   <Dialog
@@ -27,13 +28,12 @@
       selectionChange="onValueHelpSelect">
 
       <items>
-        <StandardListItem
+        <StandardListItem class="{ path: '{colorClass}', formatter: 'formatter.getColorClass' }"
           title="{category}"
           icon="{icon}" >
-      
-      <customData>
+       <!-- <customData>
         <core:CustomData key="color" value="{color}" writeToDom="true" />
-      </customData>
+      </customData> -->
       
     </StandardListItem>
       </items>

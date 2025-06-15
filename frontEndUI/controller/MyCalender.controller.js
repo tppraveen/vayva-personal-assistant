@@ -2,7 +2,7 @@
 sap.ui.define([
 	"frontEndUI/controller/BaseController",
 	"sap/ui/core/mvc/Controller",
-	"frontEndUI/model/formatter",
+	"frontEndUI/model/formatter",  "sap/ui/core/UIComponent",
 	"sap/ui/core/BusyIndicator",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
@@ -22,7 +22,7 @@ sap.ui.define([
 	"sap/ui/core/date/UI5Date",
 	"sap/m/CustomListItem"
 ], function (
-	BaseController,Controller,formatter,BusyIndicator,Filter,FilterOperator,MessageToast,MessageBox,Dialog,Fragment,CMSModel,StandardTile,TileContainer,Spreadsheet,JSONModel,unifiedLibrary,coreLibrary,DateFormat,mobileLibrary,UI5Date,CustomListItem
+	BaseController,Controller,formatter,UIComponent,BusyIndicator,Filter,FilterOperator,MessageToast,MessageBox,Dialog,Fragment,CMSModel,StandardTile,TileContainer,Spreadsheet,JSONModel,unifiedLibrary,coreLibrary,DateFormat,mobileLibrary,UI5Date,CustomListItem
 ) {
 	"use strict";
     let oRouter, oGlobalModel;
@@ -51,23 +51,40 @@ sap.ui.define([
           oRouter.navTo("LoginView");
           return
         } 
-        this.setModel()
+		var oModel = new JSONModel();
+		this.getView().setModel(oModel)
+oModel = new JSONModel();
+			oModel.setData({allDay: false});
+			this.getView().setModel(oModel, "allDay");
+
+			oModel = new JSONModel();
+			oModel.setData({ stickyMode: StickyMode.None, enableAppointmentsDragAndDrop: true, enableAppointmentsResize: true, enableAppointmentsCreate: true });
+			this.getView().setModel(oModel, "settings");
+
+        this.getCalenderEvents()
 		this.getCalenderTypes();
 		this.getCalenderRef();
 
 		let oTodayDateTime = UI5Date.getInstance(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
-		this.getView().getModel().setProperty("/startDate",oTodayDateTime)
+		this.getView().getModel().setProperty("/startDate",oTodayDateTime);
+
+		
+		this.loadCreateReminderDetails();
+      },
+	  
+      onNavBack: function () {
+        oRouter.navTo("HomeView", true);
       },
 	  getCalenderTypes:function(){
-			var aTypes = 
- [
+			var aTypes = [
   {
     "type": "Type01",
     "category": "Work/Study",
     "icon": "sap-icon://study-leave",
     "exampleTitle": "Online Course: JavaScript",
     "description": "Study sessions, work blocks",
-    "color": "#1E90FF"
+    "color": "#1E90FF",
+    "colorClass": "colorBlue"
   },
   {
     "type": "Type02",
@@ -75,7 +92,8 @@ sap.ui.define([
     "icon": "sap-icon://activity-items",
     "exampleTitle": "Morning Run",
     "description": "Any physical activity or gym",
-    "color": "#32CD32"
+    "color": "#32CD32",
+    "colorClass": "colorGreen"
   },
   {
     "type": "Type03",
@@ -83,7 +101,8 @@ sap.ui.define([
     "icon": "sap-icon://meal",
     "exampleTitle": "Lunch with Anna",
     "description": "Meals, social dining",
-    "color": "#FFA500"
+    "color": "#FFA500",
+    "colorClass": "colorOrange"
   },
   {
     "type": "Type04",
@@ -91,7 +110,8 @@ sap.ui.define([
     "icon": "sap-icon://bell",
     "exampleTitle": "Pay Credit Card Bill",
     "description": "To-do, tasks, payments",
-    "color": "#FF4500"
+    "color": "#FF4500",
+    "colorClass": "colorRed"
   },
   {
     "type": "Type05",
@@ -99,7 +119,8 @@ sap.ui.define([
     "icon": "sap-icon://create-form",
     "exampleTitle": "Write Blog Post",
     "description": "Side projects, hobbies",
-    "color": "#8A2BE2"
+    "color": "#8A2BE2",
+    "colorClass": "colorPurple"
   },
   {
     "type": "Type06",
@@ -107,7 +128,8 @@ sap.ui.define([
     "icon": "sap-icon://calendar",
     "exampleTitle": "Friend’s Birthday",
     "description": "Birthdays, events, celebrations",
-    "color": "#FF69B4"
+    "color": "#FF69B4",
+    "colorClass": "colorPink"
   },
   {
     "type": "Type07",
@@ -115,7 +137,8 @@ sap.ui.define([
     "icon": "sap-icon://flight",
     "exampleTitle": "Trip to Mountains",
     "description": "Personal trips",
-    "color": "#00CED1"
+    "color": "#00CED1",
+    "colorClass": "colorCyan"
   },
   {
     "type": "Type08",
@@ -123,7 +146,8 @@ sap.ui.define([
     "icon": "sap-icon://family-care",
     "exampleTitle": "Call Parents",
     "description": "Family time or events",
-    "color": "#FFD700"
+    "color": "#FFD700",
+    "colorClass": "colorGold"
   },
   {
     "type": "Type09",
@@ -131,7 +155,8 @@ sap.ui.define([
     "icon": "sap-icon://open-book",
     "exampleTitle": "Read: Atomic Habits",
     "description": "Dedicated reading time",
-    "color": "#7FFF00"
+    "color": "#7FFF00",
+    "colorClass": "colorLightGreen"
   },
   {
     "type": "Type10",
@@ -139,7 +164,8 @@ sap.ui.define([
     "icon": "sap-icon://umbrella",
     "exampleTitle": "Evening Meditation",
     "description": "Self-care, reflection",
-    "color": "#40E0D0"
+    "color": "#40E0D0",
+    "colorClass": "colorTeal"
   },
   {
     "type": "Type11",
@@ -147,7 +173,8 @@ sap.ui.define([
     "icon": "sap-icon://stethoscope",
     "exampleTitle": "Doctor Appointment",
     "description": "Health checkups, medication",
-    "color": "#DC143C"
+    "color": "#DC143C",
+    "colorClass": "colorCrimson"
   },
   {
     "type": "Type12",
@@ -155,7 +182,8 @@ sap.ui.define([
     "icon": "sap-icon://money-bills",
     "exampleTitle": "Budget Review",
     "description": "Bills, budgeting",
-    "color": "#228B22"
+    "color": "#228B22",
+    "colorClass": "colorDarkGreen"
   },
   {
     "type": "Type13",
@@ -163,7 +191,8 @@ sap.ui.define([
     "icon": "sap-icon://washing-machine",
     "exampleTitle": "Clean Kitchen",
     "description": "Chores, housework",
-    "color": "#D2691E"
+    "color": "#D2691E",
+    "colorClass": "colorChocolate"
   },
   {
     "type": "Type14",
@@ -171,7 +200,8 @@ sap.ui.define([
     "icon": "sap-icon://cart",
     "exampleTitle": "Weekly Grocery Run",
     "description": "Shopping, errands",
-    "color": "#FF8C00"
+    "color": "#FF8C00",
+    "colorClass": "colorDarkOrange"
   },
   {
     "type": "Type15",
@@ -179,7 +209,8 @@ sap.ui.define([
     "icon": "sap-icon://video",
     "exampleTitle": "Watch Movie",
     "description": "Leisure, TV, social fun",
-    "color": "#BA55D3"
+    "color": "#BA55D3",
+    "colorClass": "colorOrchid"
   },
   {
     "type": "Type16",
@@ -187,7 +218,8 @@ sap.ui.define([
     "icon": "sap-icon://bed",
     "exampleTitle": "Nap Time",
     "description": "Rest time, night sleep",
-    "color": "#1E90FF"
+    "color": "#1E90FF",
+    "colorClass": "colorBlue"
   },
   {
     "type": "Type17",
@@ -195,7 +227,8 @@ sap.ui.define([
     "icon": "sap-icon://goal",
     "exampleTitle": "Track Monthly Goals",
     "description": "Goal check-ins",
-    "color": "#32CD32"
+    "color": "#32CD32",
+    "colorClass": "colorGreen"
   },
   {
     "type": "Type18",
@@ -203,7 +236,8 @@ sap.ui.define([
     "icon": "sap-icon://notes",
     "exampleTitle": "Write in Journal",
     "description": "Journaling, diary time",
-    "color": "#FF69B4"
+    "color": "#FF69B4",
+    "colorClass": "colorPink"
   },
   {
     "type": "Type19",
@@ -211,7 +245,8 @@ sap.ui.define([
     "icon": "sap-icon://tree",
     "exampleTitle": "Water the plants",
     "description": "Nature, hobbies",
-    "color": "#228B22"
+    "color": "#228B22",
+    "colorClass": "colorDarkGreen"
   },
   {
     "type": "Type20",
@@ -219,9 +254,11 @@ sap.ui.define([
     "icon": "sap-icon://employee",
     "exampleTitle": "Help at Shelter",
     "description": "Giving back, social events",
-    "color": "#FF6347"
+    "color": "#FF6347",
+    "colorClass": "colorTomato"
   }
 ]
+
 
 
 ;
@@ -265,286 +302,69 @@ sap.ui.define([
 				]
 			this.getView().getModel().setProperty("/supportedAppointmentItems",aCalenderTypeRef)
 	  },
-        	setModel: function() {
-			var oModel = new JSONModel();
-			oModel.setData({
-					appointments: [
-						 {
-						title: "Discussion of the plan",
-						text: "Online meeting with partners and colleagues",
-						type: CalendarDayType.Type01,
-						icon: "sap-icon://home",
-						tentative: true,
-						startDate: UI5Date.getInstance("2025", "5", "14", "11", "30"),
-						endDate: UI5Date.getInstance("2025", "5", "14", "13", "00")
-					},
-						 {
-						title: "Discussion3 of the plan",
-						text: "Online meeting with partners and colleagues",
-						type: CalendarDayType.Type01,
-  						startDate: UI5Date.getInstance("2025", "5", "14", "11", "30"),
-						endDate: UI5Date.getInstance("2025", "5", "14", "13", "00")
-					},
-						 {
-						title: "Discussion3 of the plan",
-						text: "Online meeting with partners and colleagues",
-						type: CalendarDayType.Type01,
-						icon: "sap-icon://home", 
-						startDate: UI5Date.getInstance("2025", "5", "14", "11", "30"),
-						endDate: UI5Date.getInstance("2025", "5", "14", "13", "00")
-					},
-					{
-						title: "Type5 Check all days 1tp",
-						type: CalendarDayType.Type5,
-						startDate: UI5Date.getInstance("2025", "5", "14"),
-						endDate: UI5Date.getInstance("2025", "5", "19")
-					},{
-						title: "Type1 chk time2 tp",
-						type: CalendarDayType.Type20,
-						startDate: UI5Date.getInstance("2025", "5", "14", "11", "50"),
-						endDate: UI5Date.getInstance("2025", "5", "14", "14", "0")
-					},{
-						title: "Type2",
-						type: CalendarDayType.Type18,
-						startDate: UI5Date.getInstance("2025", "5", "12", "22", "01"),
-						endDate: UI5Date.getInstance("2025", "5", "12", "22", "10")
-					},{
-						title: "Meet John Miller",
-						type: CalendarDayType.Type05,
-						startDate: UI5Date.getInstance("2025", "5", "11", "5", "0"),
-						endDate: UI5Date.getInstance("2025", "5", "11", "6", "0")
-					}, {
-						title: "Discussion of the plan",
-						type: CalendarDayType.Type01,
-						startDate: UI5Date.getInstance("2025", "5", "11", "6", "0"),
-						endDate: UI5Date.getInstance("2025", "5", "11", "7", "9")
-					}, {
-						title: "Lunch",
-						text: "canteen",
-						type: CalendarDayType.Type01,
-						startDate: UI5Date.getInstance("2025", "5", "11", "7", "0"),
-						endDate: UI5Date.getInstance("2025", "5", "11", "8", "0")
-					}, {
-						title: "New Product",
-						text: "room 105",
-						type: CalendarDayType.Type01,
-						icon: "sap-icon://meeting-room",
-						startDate: UI5Date.getInstance("2025", "5", "11", "8", "0"),
-						endDate: UI5Date.getInstance("2025", "5", "11", "9", "0")
-					}, {
-						title: "Team meeting",
-						text: "Regular",
-						type: CalendarDayType.Type01,
-						icon: "sap-icon://home",
-						startDate: UI5Date.getInstance("2025", "5", "11", "9", "9"),
-						endDate: UI5Date.getInstance("2025", "5", "11", "10", "0")
-					}, {
-						title: "Discussion with clients regarding our new purpose",
-						text: "room 234 and Online meeting",
-						type: CalendarDayType.Type08,
-						icon: "sap-icon://home",
-						startDate: UI5Date.getInstance("2025", "5", "11", "10", "0"),
-						endDate: UI5Date.getInstance("2025", "5", "11", "11", "30")
-					}, {
-						title: "Discussion of the plan",
-						text: "Online meeting with partners and colleagues",
-						type: CalendarDayType.Type01,
-						icon: "sap-icon://home",
-						tentative: true,
-						startDate: UI5Date.getInstance("2025", "5", "11", "11", "30"),
-						endDate: UI5Date.getInstance("2025", "5", "11", "13", "00")
-					}, {
-						title: "Discussion with clients",
-						type: CalendarDayType.Type08,
-						icon: "sap-icon://home",
-						startDate: UI5Date.getInstance("2025", "5", "11", "12", "30"),
-						endDate: UI5Date.getInstance("2025", "5", "11", "13", "15")
-					}, {
-						title: "Meeting with the manager",
-						type: CalendarDayType.Type03,
-						startDate: UI5Date.getInstance("2025", "5", "11", "13", "9"),
-						endDate: UI5Date.getInstance("2025", "5", "11", "13", "9")
-					}, {
-						title: "Meeting with the HR",
-						type: CalendarDayType.Type03,
-						startDate: UI5Date.getInstance("2025", "5", "11", "14", "0"),
-						endDate: UI5Date.getInstance("2025", "5", "11", "14", "15")
-					}, {
-						title: "Call with customer",
-						type: CalendarDayType.Type08,
-						startDate: UI5Date.getInstance("2025", "5", "11", "14", "15"),
-						endDate: UI5Date.getInstance("2025", "5", "11", "14", "30")
-					}, {
-						title: "Prepare documentation",
-						text: "At my desk",
-						icon: "sap-icon://meeting-room",
-						type: CalendarDayType.Type03,
-						startDate: UI5Date.getInstance("2025", "5", "11", "14", "10"),
-						endDate: UI5Date.getInstance("2025", "5", "11", "15", "30")
-					}, {
-						title: "Meeting with the manager",
-						type: CalendarDayType.Type03,
-						startDate: UI5Date.getInstance("2025", "6", "9", "6", "30"),
-						endDate: UI5Date.getInstance("2025", "6", "9", "7", "0")
-					}, {
-						title: "Lunch",
-						type: CalendarDayType.Type05,
-						startDate: UI5Date.getInstance("2025", "6", "9", "7", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "9", "8", "0")
-					}, {
-						title: "Team meeting",
-						text: "online",
-						type: CalendarDayType.Type01,
-						startDate: UI5Date.getInstance("2025", "6", "9", "8", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "9", "9", "0")
-					}, {
-						title: "Discussion with clients for the new release dates",
-						text: "Online meeting",
-						type: CalendarDayType.Type08,
-						startDate: UI5Date.getInstance("2025", "6", "9", "9", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "9", "10", "0")
-					}, {
-						title: "Team meeting",
-						text: "room 5",
-						type: CalendarDayType.Type01,
-						startDate: UI5Date.getInstance("2025", "6", "9", "11", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "9", "14", "0")
-					}, {
-						title: "Daily standup meeting",
-						type: CalendarDayType.Type01,
-						startDate: UI5Date.getInstance("2025", "6", "9", "9", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "9", "9", "15", "0")
-					}, {
-						title: "Private meeting",
-						type: CalendarDayType.Type03,
-						startDate: UI5Date.getInstance("2025", "6", "11", "9", "9"),
-						endDate: UI5Date.getInstance("2025", "6", "11", "9", "20")
-					}, {
-						title: "Private meeting",
-						type: CalendarDayType.Type03,
-						startDate: UI5Date.getInstance("2025", "6", "10", "6", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "10", "7", "0")
-					}, {
-						title: "Meeting with the manager",
-						type: CalendarDayType.Type03,
-						startDate: UI5Date.getInstance("2025", "6", "10", "15", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "10", "15", "30")
-					}, {
-						title: "Meet John Doe",
-						type: CalendarDayType.Type05,
-						icon: "sap-icon://home",
-						startDate: UI5Date.getInstance("2025", "6", "11", "7", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "11", "7", "30")
-					}, {
-						title: "Team meeting",
-						text: "online",
-						type: CalendarDayType.Type01,
-						startDate: UI5Date.getInstance("2025", "6", "11", "8", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "11", "9", "30")
-					}, {
-						title: "Workshop",
-						type: CalendarDayType.Type05,
-						startDate: UI5Date.getInstance("2025", "6", "11", "8", "30"),
-						endDate: UI5Date.getInstance("2025", "6", "11", "12", "0")
-					}, {
-						title: "Team collaboration",
-						type: CalendarDayType.Type01,
-						startDate: UI5Date.getInstance("2025", "6", "12", "4", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "12", "12", "30")
-					}, {
-						title: "Out of the office",
-						type: CalendarDayType.Type05,
-						startDate: UI5Date.getInstance("2025", "6", "12", "15", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "12", "19", "30")
-					}, {
-						title: "Working out of the building",
-						type: CalendarDayType.Type05,
-						startDate: UI5Date.getInstance("2025", "6", "12", "20", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "12", "21", "30")
-					}, {
-						title: "Vacation",
-						type: CalendarDayType.Type09,
-						text: "out of office",
-						startDate: UI5Date.getInstance("2025", "6", "11", "12", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "13", "14", "0")
-					}, {
-						title: "Reminder",
-						type: CalendarDayType.Type09,
-						startDate: UI5Date.getInstance("2025", "6", "12", "00", "00"),
-						endDate: UI5Date.getInstance("2025", "6", "13", "00", "00")
-					}, {
-						title: "Team collaboration",
-						type: CalendarDayType.Type01,
-						startDate: UI5Date.getInstance("2025", "6", "6", "00", "00"),
-						endDate:  UI5Date.getInstance("2025", "6", "16", "00", "00")
-					}, {
-						title: "Workshop out of the country",
-						type: CalendarDayType.Type05,
-						startDate: UI5Date.getInstance("2025", "6", "14", "00", "00"),
-						endDate: UI5Date.getInstance("2025", "6", "20", "00", "00")
-					}, {
-						title: "Payment reminder",
-						type: CalendarDayType.Type09,
-						startDate: UI5Date.getInstance("2025", "6", "7", "00", "00"),
-						endDate: UI5Date.getInstance("2025", "5", "11", "00", "00")
-					}, {
-						title:"Meeting with the manager",
-						type: CalendarDayType.Type03,
-						startDate: UI5Date.getInstance("2025", "6", "6", "9", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "6", "10", "0")
-					}, {
-						title:"Daily standup meeting",
-						type: CalendarDayType.Type01,
-						startDate: UI5Date.getInstance("2025", "6", "7", "10", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "7", "10", "30")
-					}, {
-						title:"Private meeting",
-						type: CalendarDayType.Type03,
-						startDate: UI5Date.getInstance("2025", "6", "6", "11", "30"),
-						endDate: UI5Date.getInstance("2025", "6", "6", "12", "0")
-					}, {
-						title:"Lunch",
-						type: CalendarDayType.Type05,
-						startDate: UI5Date.getInstance("2025", "6", "6", "12", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "6", "13", "0")
-					}, {
-						title:"Discussion of the plan",
-						type: CalendarDayType.Type01,
-						startDate: UI5Date.getInstance("2025", "6", "16", "11", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "16", "12", "0")
-					}, {
-						title:"Lunch",
-						text: "canteen",
-						type: CalendarDayType.Type05,
-						startDate: UI5Date.getInstance("2025", "6", "16", "12", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "16", "13", "0")
-					}, {
-						title:"Team meeting",
-						text: "room 200",
-						type: CalendarDayType.Type01,
-						icon: "sap-icon://meeting-room",
-						startDate:  UI5Date.getInstance("2025", "6", "16", "16", "0"),
-						endDate: UI5Date.getInstance("2025", "6", "16", "17", "0")
-					}, {
-						title:"Discussion with clients",
-						text: "Online meeting",
-						type: CalendarDayType.Type08,
-						icon: "sap-icon://home",
-						startDate: UI5Date.getInstance("2025", "6", "17", "15", "30"),
-						endDate: UI5Date.getInstance("2025", "6", "17", "16", "30")
-					}
-				]
-			});
+        	getCalenderEvents: function() {
+ 
+          
+        const that = this;
+         const username = oGlobalModel.getProperty("/LoginView/username");
+       
+         const payload = {
+          username: username
+        };
+BusyIndicator.show(0);
+        $.ajax({
+          url: "/oData/v1/CalenderService/getAllEvents",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify(payload),
+          success: function (response) {
+            BusyIndicator.hide();
+            if (response.status === "success") {
+               
+			   const rawAppointments = response.data;
 
-			this.getView().setModel(oModel);
+        const transformedAppointments = rawAppointments.map(item => {
+            const start = new Date(item.startDate);
+            const end = new Date(item.endDate);
 
-			oModel = new JSONModel();
-			oModel.setData({allDay: false});
-			this.getView().setModel(oModel, "allDay");
+            return {
+                title: item.title,
+                text: item.text,
+                type: sap.ui.unified.CalendarDayType[item.type] || sap.ui.unified.CalendarDayType.Type01,
+                icon: item.icon || undefined,
+                tentative: true, // Set based on your logic
+                startDate: UI5Date.getInstance(
+                    start.getFullYear(),
+                    start.getMonth(),         // Months are 0-indexed in JS
+                    start.getDate(),
+                    start.getHours(),
+                    start.getMinutes()
+                ),
+                endDate: UI5Date.getInstance(
+                    end.getFullYear(),
+                    end.getMonth(),
+                    end.getDate(),
+                    end.getHours(),
+                    end.getMinutes()
+                )
+            };
+        });
 
-			oModel = new JSONModel();
-			oModel.setData({ stickyMode: StickyMode.None, enableAppointmentsDragAndDrop: true, enableAppointmentsResize: true, enableAppointmentsCreate: true });
-			this.getView().setModel(oModel, "settings");
+        that.getView().getModel().setProperty("/appointments", transformedAppointments);
+        console.log(transformedAppointments);
+
+		 
+            } else {
+              MessageToast.show("Failed to load upcoming Reminder data.");
+            }
+          },
+          error: function (xhr, status, error) {
+            BusyIndicator.hide();
+            MessageToast.show("Error load upcoming Reminder data.");
+            console.error("Filter API error:", error);
+          }
+        });
+       
 		},
  
 
@@ -1047,7 +867,216 @@ onValueHelpSelect: function(oEvent) {
 
 onValueHelpClose: function() {
   this._oValueHelpDialog.close();
+},
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   loadCreateReminderDetails: function () {
+      var oModel = new JSONModel({
+        title: "",
+        description: "",
+        isRecurring: false,
+        fromDateTime: null,
+        toDateTime: null,
+        recurringFromDate: null,
+        recurringToDate: null,
+        recurrenceType: "daily",
+        selectedDays: [],
+        selectedMonthDays: [],
+        previewReminders: [],
+        daysOfWeek: [
+          { key: "sun", text: "Sunday" },
+          { key: "mon", text: "Monday" },
+          { key: "tue", text: "Tuesday" },
+          { key: "wed", text: "Wednesday" },
+          { key: "thu", text: "Thursday" },
+          { key: "fri", text: "Friday" },
+          { key: "sat", text: "Saturday" }
+        ],
+        daysOfMonth: Array.from({ length: 31 }, (_, i) => {
+          const day = (i + 1).toString();
+          return { key: day, text: day };
+        })
+      });
+      this.getView().setModel(oModel, "reminder");
+    },
+
+    onOpenReminderDialog: function () {
+      var oView = this.getView();
+
+      if (!this._pDialog) {
+        this._pDialog = Fragment.load({
+          name: "frontEndUI.view.fragment.CreateReminder",
+          controller: this
+        }).then(function (oDialog) {
+          oView.addDependent(oDialog);
+          return oDialog;
+        });
+      }
+
+      this._pDialog.then(function (oDialog) {
+        oDialog.open();
+      });
+    },
+
+    onCloseReminderDialog: function () {
+      this._pDialog.then(function (oDialog) {
+        oDialog.close();
+      });
+    },
+
+    onRecurringToggled: function () {
+      this.getView().getModel("reminder").setProperty("/previewReminders", []);
+    },
+
+    onRecurrenceTypeChange: function () {
+      this.getView().getModel("reminder").setProperty("/previewReminders", []);
+    },onLoadReminders: function () {
+  const oModel = this.getView().getModel("reminder");
+  const data = oModel.getData();
+
+  const result = [];
+  const recurrenceType = data.recurrenceType;
+
+  let fromDate = new Date(data.fromDateTime || data.recurringFromDate);
+  let toDate = new Date(data.toDateTime || data.recurringToDate);
+// const fromTime = this.convertTo24Hour(data.defaultFromTime || "09:00");
+// const toTime = this.convertTo24Hour(data.defaultToTime || "09:30");
+ if (!fromDate || !toDate) {
+    sap.m.MessageToast.show("Please provide both From  and To date.");
+    return
 }
+const fromTimePicker = sap.ui.getCore().byId("fromTimePicker");
+const toTimePicker = sap.ui.getCore().byId("toTimePicker");
+
+const fromTimeDate = fromTimePicker.getDateValue();
+const toTimeDate = toTimePicker.getDateValue();
+if (!fromTimeDate || !toTimeDate) {
+    sap.m.MessageToast.show("Please provide both From Time and To Time.");
+    return
+}
+
+// Convert to HH:mm:ss
+const fromTime = fromTimeDate.toTimeString().slice(0, 8)|| "09:00"; // e.g. "09:00:00"
+const toTime = toTimeDate.toTimeString().slice(0, 8)|| "09:30";     // e.g. "17:30:00"
+
+  // Defensive: normalize time to start of day
+  fromDate.setHours(0, 0, 0, 0);
+  toDate.setHours(0, 0, 0, 0);
+
+  const selectedDays = data.selectedDays || [];
+  const selectedMonthDays = data.selectedMonthDays || [];
+
+  const weekdayMap = {
+    sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6
+  };
+
+  for (let d = new Date(fromDate.getTime()); d <= toDate; d.setDate(d.getDate() + 1)) {
+    const current = new Date(d.getTime());
+    const day = current.getDay(); // 0 (Sun) to 6 (Sat)
+    const date = current.getDate(); // 1 to 31
+
+    let include = false;
+
+    if (recurrenceType === "daily") {
+      include = true;
+    } else if (recurrenceType === "weekly") {
+      // Match day by checking if it's in selectedDays
+      include = selectedDays.some(key => weekdayMap[key] === day);
+    } else if (recurrenceType === "monthly") {
+      // Match date (e.g. 1, 15, etc.)
+      include = selectedMonthDays.includes(date.toString());
+    }
+
+    if (include) {
+      const dayName = current.toLocaleDateString(undefined, { weekday: "long" });
+      const dateStr = current.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+
+      const isoDate = current.toISOString().split("T")[0];
+    //   const defaultTime = `${isoDate}T09:00:00`;
+    //   const defaultEndTime = `${isoDate}T09:30:00`;
+const defaultTime = `${isoDate}T${fromTime}`;
+const defaultEndTime = `${isoDate}T${toTime}`;
+      result.push({
+        dateLabel: `${dateStr} (${dayName})`,
+        fromTime: defaultTime,
+        toTime: defaultEndTime
+      });
+    }
+  }
+
+  oModel.setProperty("/previewReminders", result);
+},
+ onDeleteReminderRow: function (oEvent) {
+  const oModel = this.getView().getModel("reminder");
+  const aReminders = oModel.getProperty("/previewReminders");
+
+  // Get the binding context of the clicked row
+  const oCtx = oEvent.getSource().getBindingContext("reminder");
+  const sPath = oCtx.getPath(); // e.g. "/previewReminders/2"
+
+  // Extract index from path
+  const index = parseInt(sPath.split("/").pop(), 10);
+
+  if (!isNaN(index)) {
+    aReminders.splice(index, 1); // Remove item at index
+    oModel.setProperty("/previewReminders", aReminders); // Update model
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

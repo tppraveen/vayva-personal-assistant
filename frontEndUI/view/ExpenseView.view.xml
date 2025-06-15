@@ -45,7 +45,7 @@
         growingScrollToLoad="false">
 									<CustomListItem>
 										<HBox alignItems="Center" justifyContent="SpaceBetween" width="100%" class="sapUiTinyMargin">
-											<VBox>
+											<VBox justifyContent="Center" alignItems="Center" >
                         <ObjectIdentifier   
                       title="{oUpcomingReminderModel>title}"  wrapping="true" 
                       text="{oUpcomingReminderModel>description}" />
@@ -55,7 +55,7 @@
                        
                       design="Bold" />
 											</VBox>
-											<VBox >
+											<VBox justifyContent="Center" alignItems="Center" >
 												<Button icon="sap-icon://complete" class="sapUiTinyMarginEnd" press=".onReminderCompletePress" type="Accept"/>
 												<Button icon="sap-icon://future" press=".onUpcomingReminderSnoozePress" type="Emphasized" />
 											</VBox>
@@ -70,7 +70,7 @@
         growingScrollToLoad="false">
 									<CustomListItem>
 										<HBox alignItems="Center" justifyContent="SpaceBetween" width="100%">
-											<VBox>
+											<VBox justifyContent="Center" alignItems="Center" >
 												  <ObjectIdentifier   
                       title="{oMissedReminderModel>title}"  wrapping="true" 
                       text="{oMissedReminderModel>description}" />
@@ -79,7 +79,7 @@
                        
                       design="Bold" />
 											</VBox>
-											<VBox >
+											<VBox justifyContent="Center" alignItems="Center" >
 												<Button icon="sap-icon://nav-back"  press=".onMissedReminderSnoozePress" type="Emphasized" />
 											</VBox>
 										</HBox>
