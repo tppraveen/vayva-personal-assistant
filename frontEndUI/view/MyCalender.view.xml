@@ -30,6 +30,7 @@
 			class="sapUiSmallMarginTop"
 			title= "My Calendar" startHour="7"
     endHour="21"
+	showCurrentTime="true"
 			viewChange="handleViewChange"
 			appointmentSelect="handleAppointmentSelect"
 			headerDateSelect="handleHeaderDateSelect"
@@ -72,7 +73,9 @@
 					endDate= "{endDate}">
 				</unified:CalendarAppointment>
 			</appointments>
-		</SinglePlanningCalendar>
+		</SinglePlanningCalendar> 
+		 
+
 	</VBox>
 		</content>
 		<!-- Footer -->

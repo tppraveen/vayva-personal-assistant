@@ -101,12 +101,12 @@
 
 						<VBox class="" fitContainer="true">
 							<Label text="From Time" />
-							<TimePicker value="{reminder>/defaultFromTime}" displayFormat="HH:mm"  />
+							<TimePicker id="fromTimePicker" value="{reminder>/defaultFromTime}" displayFormat="HH:mm"  />
 						</VBox>
 
 						<VBox class="" fitContainer="true">
 							<Label text="To Time" />
-							<TimePicker value="{reminder>/defaultToTime}" displayFormat="HH:mm"  />
+							<TimePicker id="toTimePicker" value="{reminder>/defaultToTime}" displayFormat="HH:mm"  />
 						</VBox>
 					</FlexBox>
 
@@ -175,8 +175,11 @@
 							<ColumnListItem>
 								<cells>
 									<Text text="{reminder>dateLabel}" />
-									<DateTimePicker value="{reminder>fromTime}" displayFormat="short" valueFormat="yyyy-MM-ddTHH:mm:ss" width="100%" />
-									<DateTimePicker value="{reminder>toTime}" displayFormat="short" valueFormat="yyyy-MM-ddTHH:mm:ss" width="100%" />
+									<TimePicker  value="{reminder>/defaultFromTime}" displayFormat="HH:mm" />
+									<TimePicker   value="{reminder>/defaultToTime}" displayFormat="HH:mm" />
+
+									<!-- <DateTimePicker value="{reminder>fromTime}" displayFormat="short" valueFormat="yyyy-MM-ddTHH:mm:ss" width="100%" />
+									<DateTimePicker value="{reminder>toTime}" displayFormat="short" valueFormat="yyyy-MM-ddTHH:mm:ss" width="100%" /> -->
 									<Button icon="sap-icon://decline" type="Transparent" press=".onDeleteReminderRow" tooltip="Delete this row" />
 								</cells>
 							</ColumnListItem>

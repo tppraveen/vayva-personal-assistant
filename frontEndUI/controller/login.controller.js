@@ -5,13 +5,13 @@ sap.ui.define([
 	'sap/ui/core/BusyIndicator',
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-	'sap/m/MessageToast',
+	'sap/m/MessageToast', 
 	"frontEndUI/model/models"
 ],
 /**
  * @param {typeof sap.ui.core.mvc.Controller} Controller
  */
-function(BaseController,Controller, formatter, BusyIndicator, Filter, FilterOperator, MessageToast, CMSModel) {
+function(BaseController,Controller, formatter, BusyIndicator, Filter, FilterOperator, MessageToast,CMSModel) {
 	"use strict";
 	var oRouter;
 	return BaseController.extend("frontEndUI.controller.login", {
@@ -38,6 +38,7 @@ function(BaseController,Controller, formatter, BusyIndicator, Filter, FilterOper
 		},
 		
     onLoginPress: function () {
+BusyIndicator.show(0);
       const oView = this.getView();
       const sUsername = oView.byId("username").getValue();
       const sPassword = oView.byId("password").getValue();
@@ -60,6 +61,7 @@ var that=this
           password: sPassword
         }),
         success: function (response) {
+          BusyIndicator.hide()
           that.onShowMessageTost(response.message || "Login successful!");
 
           // Navigate to Home
@@ -67,6 +69,7 @@ var that=this
           oRouter.navTo("HomeView");
         }.bind(this),
         error: function (xhr) {
+          BusyIndicator.hide()
           let message = "Login failed. Please try again.";
           if (xhr.responseJSON && xhr.responseJSON.message) {
             message = xhr.responseJSON.message;

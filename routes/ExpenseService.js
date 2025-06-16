@@ -340,7 +340,7 @@ router.insertExpense = async (req, res) => {
     console.error('Error inserting expense record:', err);
     return response.error(res, 500, 'Internal server error.', err.message);
   }
-};
+}; 
 router.updateExpense = async (req, res) => {
   const { id } = req.params; // Get the expense ID from the URL parameter
   const {

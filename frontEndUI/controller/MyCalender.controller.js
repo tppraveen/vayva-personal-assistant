@@ -856,9 +856,11 @@ onValueHelpSelect: function(oEvent) {
     var oContext = oSelectedItem.getBindingContext();
     var sCategory = oContext.getProperty("category");
     var sIcon = oContext.getProperty("icon");
+    var sType = oContext.getProperty("type");
 
     // update model or inputs
     this.getView().getModel().setProperty("/category", sCategory);
+    this.getView().getModel().setProperty("/type", sType);
     this.getView().getModel().setProperty("/icon", sIcon);
 
     this._oValueHelpDialog.close();
@@ -967,7 +969,8 @@ onValueHelpClose: function() {
 
     onRecurrenceTypeChange: function () {
       this.getView().getModel("reminder").setProperty("/previewReminders", []);
-    },onLoadReminders: function () {
+    },
+	onLoadReminders: function () {
   const oModel = this.getView().getModel("reminder");
   const data = oModel.getData();
 
@@ -1058,7 +1061,104 @@ const defaultEndTime = `${isoDate}T${toTime}`;
     aReminders.splice(index, 1); // Remove item at index
     oModel.setProperty("/previewReminders", aReminders); // Update model
   }
-}
+},
+
+
+ onSaveReminder: function () {
+  const oReminderModel = this.getView().getModel("reminder");
+  const oData = oReminderModel.getData();
+
+  var payload = {   
+	title: oData.title,
+    description: oData.description,	
+    type: this.getView().getModel().getProperty("/type") 
+	};
+
+  if (!payload.title || !payload.type) {
+    sap.m.MessageToast.show("Please enter required fields: Title and Type");
+    return;
+  }
+
+  if (oData.isRecurring) {
+    const reminders = (oData.previewReminders || []).map(reminder => {
+		 // Extract the date from the 'fromTime' (YYYY-MM-DD)
+ 	const originalDate = new Date(reminder.fromTime.split("T")[0]); // "2025-06-01"
+    originalDate.setDate(originalDate.getDate() + 1); // +1 day
+
+    const dateStr = originalDate.toISOString().split("T")[0]; // "2025-06-02"
+
+
+
+    // Extract just the time part (HH:mm:ss)
+    const fromTimeStr = reminder.fromTime.split("T")[1];
+    const toTimeStr = reminder.toTime.split("T")[1];
+
+      return {		
+		 username: "praveen",
+		title: oData.title,
+		description: oData.description,
+		icon: this.getView().getModel().getProperty("/icon") ,
+		type: this.getView().getModel().getProperty("/type"),
+        fromDateTime: new Date(`${dateStr}T${fromTimeStr}`).toISOString(),
+      	toDateTime: new Date(`${dateStr}T${toTimeStr}`).toISOString()
+      };
+    });
+
+    if (reminders.length === 0) {
+      sap.m.MessageToast.show("Please load preview reminders first.");
+      return;
+    }
+
+    payload = reminders;
+  } else {
+    if (!oData.fromDateTime || !oData.toDateTime) {
+      sap.m.MessageToast.show("Please provide From and To date/time.");
+      return;
+    }
+  payload = [{
+    username: "praveen",
+    title: oData.title,
+    description: oData.description,
+    icon: this.getView().getModel().getProperty("/icon") ,
+    type: this.getView().getModel().getProperty("/type") ,
+
+ fromDateTime : new Date(oData.fromDateTime).toISOString(),
+   toDateTime : new Date(oData.toDateTime).toISOString()
+	 }];
+  }
+
+  // 👇 Here you have your final JSON
+  //console.log("Final JSON Payload:", JSON.stringify(payload, null, 2));
+  this.insertEvents(payload);
+
+  // Optionally: Send to backend or close dialog
+  // this.sendToBackend(payload);
+  ///this.onCloseReminderDialog();
+},
+	insertEvents: function(payload) {
+ 
+          
+     var that=this;   
+BusyIndicator.show(0);
+        $.ajax({
+  url: "/oData/v1/CalenderService/insertEvents",
+  method: "POST",
+  contentType: "application/json",
+  data: JSON.stringify(payload),
+  success: function(data) {
+BusyIndicator.hide();
+that.onCloseReminderDialog();
+that.getCalenderEvents()
+    sap.m.MessageToast.show("Reminder added successfully!");
+    // Close dialog or reset form if needed
+  },
+  error: function(xhr, status, error) {
+BusyIndicator.hide();
+    sap.m.MessageToast.show("Error saving reminder: " + error);
+  }
+});
+       
+		},
 
 
 
@@ -1082,6 +1182,18 @@ const defaultEndTime = `${isoDate}T${toTime}`;
 
 
 
+
+
+openReminderView: function() {
+  const oView = this.getView();
+
+  if (!this._oFragment) {
+    this._oFragment = sap.ui.xmlfragment(oView.getId(), "frontEndUI.view.fragment.RemindersTable", this);
+    oView.byId("fragmentContainer").addItem(this._oFragment);
+  }
+
+  this._loadEvents();
+},
 
 
 

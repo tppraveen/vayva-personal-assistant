@@ -37,4 +37,66 @@ router.getAllEvents = async (req, res) => {
   }
      
 }  
+
+
+router.insertEvents = async (req, res) => {
+  const events = req.body;
+  console.log(events)
+  if (!Array.isArray(events) || events.length === 0) {
+    return response.error(res, 400, 'Payload must be a non-empty array.');
+  }
+
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    for (const event of events) {
+      const {
+        username,
+        title,
+        description,
+        icon,
+        type,
+        fromDateTime,
+        toDateTime,
+      } = event;
+
+      if (!username || !title || !fromDateTime || !toDateTime) {
+        await client.query('ROLLBACK');
+        return response.error(res, 400, 'Missing required fields in one or more events.');
+      }
+
+      const insertQuery = `
+        INSERT INTO calenderEvents (
+          username, title, description, icon, type, startdate, enddate, created_by
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `;
+
+      const values = [
+        username,
+        title,
+        description,
+        icon,
+        type,
+        fromDateTime,
+        toDateTime,
+        username // Assuming created_by is same as username
+      ];
+
+      await client.query(insertQuery, values);
+    }
+
+    await client.query('COMMIT');
+    return response.success(res, 201, 'Calendar events inserted successfully.', { status: 'success' });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error inserting calendar events:', error);
+    return response.error(res, 500, 'Failed to insert calendar events.');
+  } finally {
+    client.release();
+  }
+};
+
+
 module.exports = router;
