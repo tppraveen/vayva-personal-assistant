@@ -51,6 +51,7 @@ sap.ui.define([
           oRouter.navTo("LoginView");
           return
         } 
+		
 		var oModel = new JSONModel();
 		this.getView().setModel(oModel)
 oModel = new JSONModel();
@@ -60,6 +61,10 @@ oModel = new JSONModel();
 			oModel = new JSONModel();
 			oModel.setData({ stickyMode: StickyMode.None, enableAppointmentsDragAndDrop: true, enableAppointmentsResize: true, enableAppointmentsCreate: true });
 			this.getView().setModel(oModel, "settings");
+
+			this.getView().setModel(new sap.ui.model.json.JSONModel({
+    viewMode: "calendar" // default
+}), "viewModel");
 
         this.getCalenderEvents()
 		this.getCalenderTypes();
@@ -320,6 +325,15 @@ BusyIndicator.show(0);
           success: function (response) {
             BusyIndicator.hide();
             if (response.status === "success") {
+
+				//for table
+ const data = response.data.map(item => ({
+          ...item,
+          _isEditable: false
+        }));
+        const model = new sap.ui.model.json.JSONModel(data);
+        that.getView().setModel(model, "reminders");
+				// for table end
                
 			   const rawAppointments = response.data;
 
@@ -1171,30 +1185,110 @@ BusyIndicator.hide();
 
 
 
+// table
+onEditSelectedRows: function () {
+  const oTable = this.getView().byId("remindersTable");
+  const aSelectedItems = oTable.getSelectedItems();
 
-
-
-
-
-
-
-
-
-
-
-
-
-openReminderView: function() {
-  const oView = this.getView();
-
-  if (!this._oFragment) {
-    this._oFragment = sap.ui.xmlfragment(oView.getId(), "frontEndUI.view.fragment.RemindersTable", this);
-    oView.byId("fragmentContainer").addItem(this._oFragment);
+  if (aSelectedItems.length === 0) {
+    sap.m.MessageToast.show("Please select at least one row to edit.");
+    return;
   }
 
-  this._loadEvents();
+  const oModel = this.getView().getModel("reminders");
+  const aData = oModel.getData();
+
+  // Reset all rows to not editable first
+  aData.forEach(item => item._isEditable = false);
+
+  // Make only selected rows editable
+  aSelectedItems.forEach(oItem => {
+    const iIndex = oTable.indexOfItem(oItem);
+    if (iIndex > -1) {
+      aData[iIndex]._isEditable = true;
+    }
+  });
+
+  oModel.setData(aData);
+  this.byId("submitBtn").setVisible(true);
+  this.byId("cancelBtn").setVisible(true);
 },
 
+
+onCancelEdit: function () {
+   this.getCalenderEvents(); // Reload from backend
+  this.getView().byId("submitBtn").setVisible(false);
+  this.getView().byId("cancelBtn").setVisible(false);
+},onSubmitChanges: function () {
+  const oModel = this.getView().getModel("reminders");
+  const data = oModel.getData();
+
+  const editedRows = data.filter(item => item._isEditable);
+
+  if (editedRows.length === 0) {
+    sap.m.MessageToast.show("No changes to submit.");
+    return;
+  }
+
+  const payload = editedRows.map(({ _isEditable, ...clean }) => clean);
+console.log(payload)
+return
+  $.ajax({
+    url: "/oData/v1/CalenderService/updateEvents", // adjust to your backend
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify(payload),
+    success: (res) => {
+      if (res.status === "success") {
+        sap.m.MessageToast.show("Updated successfully.");
+        this.getCalenderEvents();
+        this.byId("submitBtn").setVisible(false);
+        this.byId("cancelBtn").setVisible(false);
+      }
+    }
+  });
+}
+,onDeleteSelected: function () {
+  const oTable = this.getView().byId("remindersTable");
+  const aSelectedItems = oTable.getSelectedItems();
+
+  if (aSelectedItems.length === 0) {
+    sap.m.MessageToast.show("Select at least one row to delete.");
+    return;
+  }
+
+  const oModel = this.getView().getModel("reminders");
+  const aData = oModel.getData();
+
+  const idsToDelete = aSelectedItems.map(oItem => {
+    const iIndex = oTable.indexOfItem(oItem);
+    return aData[iIndex].id;
+  });
+console.log(idsToDelete)
+   $.ajax({
+    url: "/oData/v1/CalenderService/deleteEvents", // replace with your actual delete URL
+    method: "POST",
+    contentType: "application/json",
+    data: JSON.stringify({ ids: idsToDelete }),
+    success: (res) => {
+      if (res.status === "success") {
+        sap.m.MessageToast.show("Deleted successfully.");
+        this.getCalenderEvents();
+      }
+    }
+  });
+}
+
+
+
+
+
+
+
+
+
+
+ 
 
 
 

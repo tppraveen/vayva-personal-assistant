@@ -29,7 +29,7 @@
 
       <items>
         <StandardListItem class="{ path: '{colorClass}', formatter: 'formatter.getColorClass' }"
-          title="{category}"
+          title="{category} - {type}"
           icon="{icon}" >
        <!-- <customData>
         <core:CustomData key="color" value="{color}" writeToDom="true" />

@@ -58,6 +58,7 @@ app.post(ooReminderServicePrefix+'/snoozeReminder',oReminderService.snoozeRemind
 const oCalenderServiceService = require('./routes/CalenderService');
  app.post(oCalenderServicePrefix+'/getAllEvents',oCalenderServiceService.getAllEvents);
  app.post(oCalenderServicePrefix+'/insertEvents',oCalenderServiceService.insertEvents);
+ app.post(oCalenderServicePrefix+'/deleteEvents',oCalenderServiceService.deleteEvents);
 //app.post(oCalenderServicePrefix+'/getMissedReminders',oReminderService.getMissedReminders);
  
  

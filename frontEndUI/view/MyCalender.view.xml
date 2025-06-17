@@ -16,6 +16,14 @@
 					<Title text="My Calender" />
 				</contentMiddle>
 				<contentRight>
+				<SegmentedButton selectedKey="{viewModel>/viewMode}">
+    <items>
+        <SegmentedButtonItem key="calendar" text="Calendar" />
+        <SegmentedButtonItem key="table" text="Table" />
+    </items>
+</SegmentedButton>
+
+
 					<Button icon="sap-icon://bell" tooltip="Notifications" type="Transparent" />
 					<Button icon="sap-icon://settings" tooltip="Settings" type="Transparent" />
 				</contentRight>
@@ -23,7 +31,7 @@
 		</customHeader>
 		<!-- Responsive Body Content -->
 		<content>
-			 <VBox class="sapUiSmallMargin">
+			 <VBox class="sapUiSmallMargin"  visible="{= ${viewModel>/viewMode} === 'calendar' }">
 			 
 		<SinglePlanningCalendar
 			id="SPC1"
@@ -77,6 +85,53 @@
 		 
 
 	</VBox>
+	 <VBox  visible="{= ${viewModel>/viewMode} === 'table' }">
+   <Toolbar>
+      <Title text="All Reminders" />
+      <ToolbarSpacer />
+      <Button text="Edit" press=".onEditSelectedRows" icon="sap-icon://edit" />
+      <Button text="Submit" press=".onSubmitChanges" icon="sap-icon://save" visible="false" id="submitBtn" />
+      <Button text="Cancel" press=".onCancelEdit" icon="sap-icon://cancel" visible="false" id="cancelBtn" />
+      <Button text="Delete" press=".onDeleteSelected" icon="sap-icon://delete" />
+    </Toolbar>
+
+    <Table id="remindersTable"
+           mode="MultiSelect"  sticky="ColumnHeaders"
+           includeItemInSelection="true"
+           items="{reminders>/}"
+           editable="true">
+      <columns>
+        <Column><Text text="Title" /></Column>
+        <Column  demandPopin="true" minScreenWidth="Tablet" popinText="Importance"><Text text="Description" /></Column>
+        <Column><Text text="Start Date" /></Column>
+        <Column><Text text="End Date" /></Column>
+        <!-- <Column><Text text="Icon" /></Column> -->
+        <Column demandPopin="true" minScreenWidth="Tablet" popinText="Importance"><Text text="Type" /></Column>
+      </columns>
+      <items>
+        <ColumnListItem type="Active" press=".onRowSelect">
+          <cells>
+            <Input value="{reminders>title}" editable="{reminders>_isEditable}" />
+            <Input value="{reminders>text}" editable="{reminders>_isEditable}" />
+            <DateTimePicker value="{reminders>startDate}"
+                            valueFormat="yyyy-MM-dd'T'HH:mm:ss.SSSX"
+                            displayFormat="yyyy-MM-dd HH:mm"
+                            editable="{reminders>_isEditable}" />
+            <DateTimePicker value="{reminders>endDate}"
+                            valueFormat="yyyy-MM-dd'T'HH:mm:ss.SSSX"
+                            displayFormat="yyyy-MM-dd HH:mm"
+                            editable="{reminders>_isEditable}" />
+            <!-- <Input value="{reminders>icon}" editable="{reminders>_isEditable}" /> -->
+            <Input value="{reminders>type}" editable="{reminders>_isEditable}"
+			
+                        showValueHelp="true" 
+                        valueHelpRequest="onValueHelpRequest"
+                         />
+          </cells>
+        </ColumnListItem>
+      </items>
+    </Table>
+  </VBox>
 		</content>
 		<!-- Footer -->
 		<footer>

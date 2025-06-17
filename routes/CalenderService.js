@@ -18,7 +18,7 @@ router.getAllEvents = async (req, res) => {
   }
   try {
     const query = `
-      SELECT  title,description as text,type,icon,startdate as "startDate",enddate as "endDate"  FROM calenderEvents  WHERE username = $1 `;
+      SELECT  id,title,description as text,type,icon,startdate as "startDate",enddate as "endDate"  FROM calenderEvents  WHERE username = $1 `;
     const values = [username];
  
     const result = await pool.query(query, values);
@@ -95,6 +95,30 @@ router.insertEvents = async (req, res) => {
     return response.error(res, 500, 'Failed to insert calendar events.');
   } finally {
     client.release();
+  }
+};
+
+router.deleteEvents = async (req, res) => {
+  const { ids } = req.body;
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return response.error(res, 400, 'Payload must contain a non-empty "ids" array.');
+  }
+
+  try {
+    const placeholders = ids.map((_, idx) => `$${idx + 1}`).join(', ');
+    const query = `DELETE FROM calenderEvents WHERE id IN (${placeholders})`;
+
+    const result = await pool.query(query, ids);
+
+    return response.success(res, 200, 'Events deleted successfully.', {
+      deletedCount: result.rowCount,
+      deletedIds: ids
+    });
+
+  } catch (err) {
+    console.error('Database error during deleteEvents:', err);
+    return response.error(res, 500, 'Internal server error while deleting events.');
   }
 };
 
