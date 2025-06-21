@@ -37,6 +37,66 @@ router.getAllEvents = async (req, res) => {
   }
      
 }  
+router.getExpenseTrackerEvents = async (req, res) => {
+  const { username } = req.body;
+
+  if (!username) {
+    return response.error(res, 400, 'Username is required.');
+  }
+
+  try {
+    const query = `
+      SELECT id, category AS "title", description AS text, type, payment_mode,
+        transactiontime AS "startDate", transactiontime AS "endDate"
+      FROM expensetracker
+      WHERE username = $1
+    `;
+    const values = [username];
+
+    const result = await pool.query(query, values);
+
+    if (result.rows.length === 0) {
+      return response.error(res, 401, 'No records found for the given username.');
+    }
+
+    // Mapping functions
+    const mapTypeToCode = (type) => {
+      switch (type.toLowerCase()) {
+        case 'Expense': return 'Type12';
+        case 'Income': return 'Type2';
+        case 'Transfer': return 'Type3';
+        case 'Loan': return 'Type4';
+        default: return 'Type1'; // fallback
+      }
+    };
+
+    const mapPaymentModeToIcon = (mode) => {
+  switch (mode.toLowerCase()) {
+    case 'cash': return 'sap-icon://money-bills';
+    case 'credit card': return 'sap-icon://credit-card';
+    case 'debit card': return 'sap-icon://card';
+    case 'upi': return 'sap-icon://hint'; // No exact icon for UPI, "hint" or "process" works
+    case 'wallet': return 'sap-icon://wallet';
+    case 'bank transfer': return 'sap-icon://money-transfer';
+    default: return 'sap-icon://question-mark';
+  }
+};
+
+    // Enhance result rows
+    const enhancedData = result.rows.map(item => ({
+      ...item,
+      typeCode: mapTypeToCode(item.type),
+      icon: mapPaymentModeToIcon(item.payment_mode),
+    }));
+
+    return response.success(res, 200, 'Expense events fetched successfully.', enhancedData);
+
+  } catch (err) {
+    console.error('Database error during event fetch:', err);
+    return response.error(res, 500, 'Internal server error. Please try again later.');
+  }
+};
+
 
 
 router.insertEvents = async (req, res) => {

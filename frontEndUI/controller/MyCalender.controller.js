@@ -309,7 +309,7 @@ oModel = new JSONModel();
 	  },
         	getCalenderEvents: function() {
  
-          
+          this.getExpenseTrackerinCalenderEvents();
         const that = this;
          const username = oGlobalModel.getProperty("/LoginView/username");
        
@@ -337,7 +337,8 @@ BusyIndicator.show(0);
                
 			   const rawAppointments = response.data;
 
-        const transformedAppointments = rawAppointments.map(item => {
+         let existingAppointments = that.getView().getModel().getProperty("/appointments") || [];
+        let transformedAppointments = rawAppointments.map(item => {
             const start = new Date(item.startDate);
             const end = new Date(item.endDate);
 
@@ -364,8 +365,90 @@ BusyIndicator.show(0);
             };
         });
 
-        that.getView().getModel().setProperty("/appointments", transformedAppointments);
-        console.log(transformedAppointments);
+// Append new appointments to existing ones
+let updatedAppointments = existingAppointments.concat(transformedAppointments);
+
+// Update the model with the combined array
+that.getView().getModel().setProperty("/appointments", updatedAppointments);
+//        console.log(transformedAppointments);
+
+		 
+            } else {
+              MessageToast.show("Failed to load upcoming Reminder data.");
+            }
+          },
+          error: function (xhr, status, error) {
+            BusyIndicator.hide();
+            MessageToast.show("Error load upcoming Reminder data.");
+            console.error("Filter API error:", error);
+          }
+        });
+       
+		},
+    	getExpenseTrackerinCalenderEvents: function() {
+ 
+          
+        const that = this;
+         const username = oGlobalModel.getProperty("/LoginView/username");
+       
+         const payload = {
+          username: username
+        };
+BusyIndicator.show(0);
+        $.ajax({
+          url: "/oData/v1/CalenderService/getExpenseTrackerEvents",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify(payload),
+          success: function (response) {
+            BusyIndicator.hide();
+            if (response.status === "success") {
+
+				//for table
+ const data = response.data.map(item => ({
+          ...item,
+          _isEditable: false
+        }));
+        const model = new sap.ui.model.json.JSONModel(data);
+        that.getView().setModel(model, "reminders");
+				// for table end
+               
+			   const rawAppointments = response.data;
+
+        let existingAppointments = that.getView().getModel().getProperty("/appointments") || [];
+        let transformedAppointments = rawAppointments.map(item => {
+            const start = new Date(item.startDate);
+            const end = new Date(item.endDate);
+
+            return {
+                title: item.title,
+                text: item.text,
+                type: sap.ui.unified.CalendarDayType[item.type] || sap.ui.unified.CalendarDayType.Type01,
+                icon: item.icon || undefined,
+                tentative: true, // Set based on your logic
+                startDate: UI5Date.getInstance(
+                    start.getFullYear(),
+                    start.getMonth(),         // Months are 0-indexed in JS
+                    start.getDate(),
+                    start.getHours(),
+                    start.getMinutes()
+                ),
+                endDate: UI5Date.getInstance(
+                    end.getFullYear(),
+                    end.getMonth(),
+                    end.getDate(),
+                    end.getHours(),
+                    end.getMinutes()
+                )
+            };
+        });
+
+     // Append new appointments to existing ones
+let updatedAppointments = existingAppointments.concat(transformedAppointments);
+
+// Update the model with the combined array
+that.getView().getModel().setProperty("/appointments", updatedAppointments);
+        //console.log(transformedAppointments);
 
 		 
             } else {
