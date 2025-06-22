@@ -46,10 +46,10 @@ router.getExpenseTrackerEvents = async (req, res) => {
 
   try {
     const query = `
-      SELECT id, category AS "title", description AS text, type, payment_mode,
+      SELECT id, subcategory AS "title", description AS "text", type, payment_mode,
         transactiontime AS "startDate", transactiontime AS "endDate"
       FROM expensetracker
-      WHERE username = $1
+      WHERE username = $1 order by transactiontime desc
     `;
     const values = [username];
 
@@ -83,11 +83,26 @@ router.getExpenseTrackerEvents = async (req, res) => {
 };
 
     // Enhance result rows
-    const enhancedData = result.rows.map(item => ({
-      ...item,
-      typeCode: mapTypeToCode(item.type),
-      icon: mapPaymentModeToIcon(item.payment_mode),
-    }));
+    const enhancedData = result.rows.map(item => {
+      const startDate = new Date(item.startDate);
+      let endDate = new Date(startDate);
+endDate.setHours(startDate.getHours() + 1);
+
+      return { 
+        id:item.id,
+        title:item.title,
+        text:item.text, 
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),  // Overwrite original endDate
+        type: mapTypeToCode(item.type),
+        icon: mapPaymentModeToIcon(item.payment_mode),
+      };
+    });
+    // const enhancedData = result.rows.map(item => ({
+    //   ...item,
+    //   typeCode: mapTypeToCode(item.type),
+    //   icon: mapPaymentModeToIcon(item.payment_mode),
+    // }));
 
     return response.success(res, 200, 'Expense events fetched successfully.', enhancedData);
 

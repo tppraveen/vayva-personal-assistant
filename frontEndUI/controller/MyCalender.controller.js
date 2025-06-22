@@ -419,7 +419,7 @@ BusyIndicator.show(0);
         let transformedAppointments = rawAppointments.map(item => {
             const start = new Date(item.startDate);
             const end = new Date(item.endDate);
-
+          
             return {
                 title: item.title,
                 text: item.text,

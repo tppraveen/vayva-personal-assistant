@@ -119,6 +119,11 @@
           "name": "MyCalender",
           "pattern": "MyCalender",
           "target": "MyCalender"
+        },
+        {
+           "name": "ExpenseOverview",
+          "pattern": "ExpenseOverview",
+          "target": "ExpenseOverview"
         }
 
       ],
@@ -157,6 +162,13 @@
           "clearControlAggregation": false,
           "viewName": "MyCalender",
           "viewId": "MyCalender"
+        },
+        "ExpenseOverview": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewName": "ExpenseOverview",
+          "viewId": "ExpenseOverview"
         }
       }
     },
