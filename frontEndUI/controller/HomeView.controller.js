@@ -130,6 +130,125 @@ function(BaseController, Controller, formatter, BusyIndicator, Filter, FilterOpe
       });
     },
  
+
+
+	// Bot start here
+	onOpenBotPopover: function (oEvent) {
+  var oView = this.getView();
+
+  if (!this._pBotPopover) {
+    this._pBotPopover = Fragment.load({
+      id: oView.getId(),
+      name: "frontEndUI.view.fragment.BotPopover", // adjust namespace
+      controller: this
+    }).then(function (oPopover) {
+      oView.addDependent(oPopover);
+      oPopover.openBy(oEvent.getSource());
+      return oPopover;
+    });
+  } else {
+    this._pBotPopover.then(function (oPopover) {
+      oPopover.openBy(oEvent.getSource());
+    });
+  }
+},
+
+onCloseBotPopover: function () {
+  this.byId("botPopover").close();
+},
+onStartVoiceInput: function () {
+    const oButton = this.byId("voiceButton");
+    const oInput = this.byId("userInput");
+
+    if (!('webkitSpeechRecognition' in window)) {
+        sap.m.MessageToast.show("Speech recognition not supported.");
+        return;
+    }
+
+    // Create and configure recognition
+    if (!this._recognition) {
+        this._recognition = new webkitSpeechRecognition();
+        this._recognition.continuous = true; // ✅ Keep listening
+        this._recognition.interimResults = false;
+        this._recognition.lang = "en-US";
+
+        this._recognition.onresult = function (event) {
+            const transcript = event.results[event.results.length - 1][0].transcript;
+            oInput.setValue(transcript);
+        };
+
+        this._recognition.onerror = function (event) {
+            console.error("Speech recognition error:", event.error);
+            sap.m.MessageToast.show("Error: " + event.error);
+            this.stopRecognition(); // force stop
+        }.bind(this);
+
+        this._recognition.onend = function () {
+            if (this._isRecording) {
+                console.log("Recognition ended, restarting...");
+                this._recognition.start(); // 🔁 auto-restart if still recording
+            } else {
+                oButton.setIcon("sap-icon://microphone");
+            }
+        }.bind(this);
+    }
+
+    if (!this._isRecording) {
+        this._isRecording = true;
+        this._recognition.start();
+        oButton.setIcon("sap-icon://sound-off");
+    } else {
+        this.stopRecognition();
+    }
+},
+stopRecognition: function () {
+    const oButton = this.byId("voiceButton");
+    this._isRecording = false;
+    if (this._recognition) {
+        this._recognition.stop();
+    }
+    oButton.setIcon("sap-icon://microphone");
+},
+onSendMessage: function () {
+  var oInput = this.byId("userInput");
+  var sText = oInput.getValue().trim();
+  if (!sText) return;
+
+  var oChatArea = this.byId("chatArea");
+
+  // User message (right aligned)
+  oChatArea.addItem(new sap.m.HBox({
+    justifyContent: "End",
+	width:"100%",
+    items: [
+      new sap.m.MessageStrip({
+        text: "Me: "+sText,
+        type: "Information",
+        showIcon: false,
+        showCloseButton: false
+      }).addStyleClass("userMessage")
+    ]
+  }));
+
+  oInput.setValue("");
+
+  // Bot response (left aligned)
+  setTimeout(function () {
+    oChatArea.addItem(new sap.m.HBox({
+      justifyContent: "Start",
+	  width:"100%",
+      items: [
+        new sap.m.MessageStrip({
+          text: "PBOT: " + sText,
+          type: "Success",
+          showIcon: false,
+          showCloseButton: false
+        }).addStyleClass("botMessage")
+      ]
+    }));
+  }, 500);
+}
+
 		
 	});
 });

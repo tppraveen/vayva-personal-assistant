@@ -192,7 +192,7 @@
 		<footer>
 			<Bar design="Footer">
 				<contentMiddle>
-					<Text text="Owned by Pravya Group of Enterprise" />
+					<Text text="{i18n>FOOTER_TITLE}" />
 				</contentMiddle>
 			</Bar>
 		</footer>

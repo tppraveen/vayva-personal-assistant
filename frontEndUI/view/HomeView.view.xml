@@ -47,8 +47,12 @@
       <Bar
         design="Footer" >
         <contentMiddle>
-          <Text text="Owned by Pravya Group of Enterprise" />
+          <Text text="{i18n>FOOTER_TITLE}" />
         </contentMiddle>
+        <contentRight>
+              <Button text="Open Bot" icon="sap-icon://discussion" press=".onOpenBotPopover" />
+        </contentRight>
+
       </Bar>
     </footer>
     
