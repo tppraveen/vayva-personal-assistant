@@ -137,26 +137,19 @@ function(BaseController, Controller, formatter, BusyIndicator, Filter, FilterOpe
    var that = this;
 
   // Ensure OneSignal is ready
-  if (window.OneSignal) {
-    window.OneSignal.push(function () {
-      // You can also initialize here, if not already done
-      window.OneSignal.init({
-        appId: "YOUR-ONESIGNAL-APP-ID",
-        notifyButton: {
-          enable: true
-        }
+   if (window.OneSignalDeferred) {
+    window.OneSignalDeferred.push(async function (OneSignal) {
+      // Listen to notification display
+      OneSignal.Notifications.addEventListener('click', function (event) {
+        console.log('Notification clicked:', event);
       });
 
-      // Add event listener for when notification is displayed
-      window.OneSignal.on('notificationDisplay', function (event) {
-        console.log("Notification displayed: ", event);
-
-        // You can trigger UI changes here using `that`
-        // Example: that.getView().byId("myText").setText("New Notification!");
+      OneSignal.Notifications.addEventListener('display', function (event) {
+        console.log('Notification displayed:', event);
       });
     });
   } else {
-    console.error("OneSignal is not available on window.");
+    console.error("OneSignalDeferred not available");
   }
 
 
