@@ -134,6 +134,33 @@ function(BaseController, Controller, formatter, BusyIndicator, Filter, FilterOpe
 
 	// Bot start here
 	onOpenBotPopover: function (oEvent) {
+   var that = this;
+
+  // Ensure OneSignal is ready
+  if (window.OneSignal) {
+    window.OneSignal.push(function () {
+      // You can also initialize here, if not already done
+      window.OneSignal.init({
+        appId: "YOUR-ONESIGNAL-APP-ID",
+        notifyButton: {
+          enable: true
+        }
+      });
+
+      // Add event listener for when notification is displayed
+      window.OneSignal.on('notificationDisplay', function (event) {
+        console.log("Notification displayed: ", event);
+
+        // You can trigger UI changes here using `that`
+        // Example: that.getView().byId("myText").setText("New Notification!");
+      });
+    });
+  } else {
+    console.error("OneSignal is not available on window.");
+  }
+
+
+return
   var oView = this.getView();
 
   if (!this._pBotPopover) {
@@ -159,6 +186,7 @@ onCloseBotPopover: function () {
 onStartVoiceInput: function () {
     const oButton = this.byId("voiceButton");
     const oInput = this.byId("userInput");
+	oInput.setValue('')
 
     if (!('webkitSpeechRecognition' in window)) {
         sap.m.MessageToast.show("Speech recognition not supported.");
