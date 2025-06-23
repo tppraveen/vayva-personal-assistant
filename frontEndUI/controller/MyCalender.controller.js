@@ -1356,7 +1356,7 @@ console.log(idsToDelete)
     success: (res) => {
       if (res.status === "success") {
         sap.m.MessageToast.show("Deleted successfully.");
-        this.getCalenderEvents();
+        this.onObjectMatched();
       }
     }
   });

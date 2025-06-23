@@ -133,7 +133,7 @@ function(BaseController, Controller, formatter, BusyIndicator, Filter, FilterOpe
 
 
 	// Bot start here
-	onOpenBotPopover: function (oEvent) {
+	onOpenBotPopoverforalert: function (oEvent) {
    var that = this;
 
   // Ensure OneSignal is ready
@@ -153,7 +153,12 @@ function(BaseController, Controller, formatter, BusyIndicator, Filter, FilterOpe
   }
 
 
-return
+	},
+	// Bot start here
+	onOpenBotPopover: function (oEvent) {
+   var that = this;
+
+   
   var oView = this.getView();
 
   if (!this._pBotPopover) {
@@ -253,6 +258,7 @@ onSendMessage: function () {
 
   oInput.setValue("");
 
+  var oTextFromPBot = this.handleBotLogic(sText);
   // Bot response (left aligned)
   setTimeout(function () {
     oChatArea.addItem(new sap.m.HBox({
@@ -260,7 +266,7 @@ onSendMessage: function () {
 	  width:"100%",
       items: [
         new sap.m.MessageStrip({
-          text: "PBOT: " + sText,
+          text: "PBOT: " + oTextFromPBot,
           type: "Success",
           showIcon: false,
           showCloseButton: false
@@ -268,7 +274,212 @@ onSendMessage: function () {
       ]
     }));
   }, 500);
+},
+handleBotLogicMain:  function (sMessage) {
+	var pBotMsg ="";
+
+ 
+  function parseDate(str) {
+    const today = new Date();
+    const dayMap = {
+      "today": new Date(),
+      "tomorrow": new Date(today.getTime() + 86400000),
+      "yesterday": new Date(today.getTime() - 86400000)
+    };
+
+    str = str.toLowerCase();
+    if (dayMap[str]) {
+      return dayMap[str];
+    }
+
+    // Try parsing date (basic format: dd mm yyyy or dd month yyyy)
+    const parsedDate = new Date(str);
+    return isNaN(parsedDate) ? null : parsedDate;
+  }
+
+  function formatDateTime(date, timeStr) {
+  if (!date || !timeStr) return "";
+
+  let [hour, meridian] = timeStr.toLowerCase().split(/am|pm/);
+  let [h, m] = hour.trim().split(":");
+  h = parseInt(h || 0);
+  m = parseInt(m || 0);
+
+  if (meridian === "pm" && h < 12) h += 12;
+  if (meridian === "am" && h === 12) h = 0;
+
+  date.setHours(h, m || 0);
+  return date.toISOString(); // standardized UTC
 }
+
+
+  var result = {
+    title: "",
+    desc: "",
+    from: "",
+    to: ""
+  };
+
+  var lowerMsg = sMessage.toLowerCase();
+  if (lowerMsg.startsWith("create reminder")) {
+    var messageBody = sMessage.substring("create reminder".length).trim();
+
+    let forIndex = messageBody.indexOf(" for ");
+    let fromIndex = messageBody.indexOf(" from ");
+
+    if (fromIndex !== -1) {
+      result.title = messageBody.substring(0, forIndex !== -1 ? forIndex : fromIndex).trim();
+      result.desc = forIndex !== -1 ? messageBody.substring(forIndex + 5, fromIndex).trim() : "";
+
+      var datetimeStr = messageBody.substring(fromIndex + 6).trim();
+      var toIndex = datetimeStr.indexOf(" to ");
+      if (toIndex !== -1) {
+        var fromRaw = datetimeStr.substring(0, toIndex).trim();
+        var toRaw = datetimeStr.substring(toIndex + 4).trim();
+
+        // Extract date part from "tomorrow 8am" etc.
+        var fromParts = fromRaw.split(" ");
+        var toParts = toRaw.split(" ");
+
+        var fromDate = parseDate(fromParts[0]);
+        var toDate = parseDate(toParts[0]);
+
+        result.from = formatDateTime(fromDate, fromParts.slice(1).join(" "));
+        result.to = formatDateTime(toDate, toParts.slice(1).join(" "));
+      }
+    }
+  }
+  
+
+  pBotMsg= `Title: ${result.title}, Description: ${result.desc}, From: ${result.from}, To: ${result.to}`;
+
+	return pBotMsg ;
+},
+onClearChat: function () {
+  var oChatArea = this.byId("chatArea");
+  oChatArea.removeAllItems();
+},
+
+handleBotLogic: function (sMessage) {
+  function parseDate(str) {
+    const today = new Date();
+    const dayMap = {
+      "today": new Date(),
+      "tomorrow": new Date(today.getTime() + 86400000),
+      "yesterday": new Date(today.getTime() - 86400000)
+    };
+    str = str.toLowerCase();
+    if (dayMap[str]) return dayMap[str];
+    const parsed = new Date(str);
+    return isNaN(parsed) ? null : parsed;
+  }
+
+  function formatToISO(date, timeStr) {
+    if (!date || !timeStr) return "";
+    let [hour, meridian] = timeStr.toLowerCase().split(/am|pm/);
+    let [h, m] = hour.trim().split(":");
+    h = parseInt(h || 0);
+    m = parseInt(m || 0);
+    if (meridian === "pm" && h < 12) h += 12;
+    if (meridian === "am" && h === 12) h = 0;
+    date.setHours(h, m || 0, 0, 0);
+    return date.toISOString();
+  }
+
+  let result = {
+    title: "",
+    description: "",
+    fromDateTime: "",
+    toDateTime: "",
+    username: "praveen", // static for now
+    type: "Type07",    // static type, you can make this dynamic if needed
+    icon: "sap-icon://appointment-2" // default, override as needed
+  };
+
+  let lowerMsg = sMessage.toLowerCase();
+  if (lowerMsg.startsWith("create reminder")) {
+    let messageBody = sMessage.substring("create reminder".length).trim();
+    let forIndex = messageBody.indexOf(" for ");
+    let fromIndex = messageBody.indexOf(" from ");
+
+    if (fromIndex !== -1) {
+      result.title = messageBody.substring(0, forIndex !== -1 ? forIndex : fromIndex).trim();
+      result.description = forIndex !== -1
+        ? messageBody.substring(forIndex + 5, fromIndex).trim()
+        : "";
+
+      let datetimeStr = messageBody.substring(fromIndex + 6).trim();
+      let toIndex = datetimeStr.indexOf(" to ");
+      if (toIndex !== -1) {
+        let fromRaw = datetimeStr.substring(0, toIndex).trim();   // e.g., "tomorrow 8am"
+        let toRaw = datetimeStr.substring(toIndex + 4).trim();    // e.g., "tomorrow 11am"
+
+        let fromParts = fromRaw.split(" ");
+        let toParts = toRaw.split(" ");
+
+        let fromDate = parseDate(fromParts[0]);
+        let toDate = parseDate(toParts[0]);
+
+        result.fromDateTime = formatToISO(fromDate, fromParts.slice(1).join(" "));
+        result.toDateTime = formatToISO(toDate, toParts.slice(1).join(" "));
+      }
+    }
+  }
+  else if(lowerMsg.startsWith("yes")){
+	this.onBotUserConfirm()
+  }
+  else {
+	return sMessage;
+  }
+
+  if (!result.title || !result.fromDateTime || !result.toDateTime) {
+    return "Sorry, I couldn't understand your reminder completely. Please use the format: 'create reminder [title] for [description] from [date time] to [date time]'";
+  }
+
+  // Store payload in a variable or component so it can be used after confirmation
+  this._pendingReminderPayload = [result]; // Wrap in array like onSaveReminder()
+
+  // Return confirmation message
+  return `Got it! I created a reminder:\n\n• **Title**: ${result.title}\n• **Description**: ${result.description || "(none)"}\n• **From**: ${result.fromDateTime}\n• **To**: ${result.toDateTime}\n\nDo you want to save this reminder? (Yes/No)`;
+},
+onBotUserConfirm: function () {
+  if (this._pendingReminderPayload) {
+    this.insertEvents(this._pendingReminderPayload);
+    sap.m.MessageToast.show("Reminder saved.");
+    this._pendingReminderPayload = null;
+  } else {
+    sap.m.MessageToast.show("No pending reminder to save.");
+  }
+},
+
+
+
+	insertEvents: function(payload) {
+ 
+          
+     var that=this;   
+BusyIndicator.show(0);
+        $.ajax({
+  url: "/oData/v1/CalenderService/insertEvents",
+  method: "POST",
+  contentType: "application/json",
+  data: JSON.stringify(payload),
+  success: function(data) {
+BusyIndicator.hide();
+that.onCloseReminderDialog();
+that.getCalenderEvents()
+    sap.m.MessageToast.show("Reminder added successfully!");
+    // Close dialog or reset form if needed
+  },
+  error: function(xhr, status, error) {
+BusyIndicator.hide();
+    sap.m.MessageToast.show("Error saving reminder: " + error);
+  }
+});
+       
+		},
+	
+
 
 		
 	});

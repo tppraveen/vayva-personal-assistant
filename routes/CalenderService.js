@@ -18,7 +18,8 @@ router.getAllEvents = async (req, res) => {
   }
   try {
     const query = `
-      SELECT  id,title,description as text,type,icon,startdate as "startDate",enddate as "endDate"  FROM calenderEvents  WHERE username = $1 `;
+      SELECT  id,title,description as text,type,icon,startdate as "startDate",enddate as "endDate"  FROM calenderEvents  WHERE username = $1 
+       order by created_on desc`;
     const values = [username];
  
     const result = await pool.query(query, values);
