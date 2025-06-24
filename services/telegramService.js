@@ -1,7 +1,7 @@
 // services/telegramService.js
 
 
-const TELEGRAM_TOKEN =   "8086484955:AAFu9VJKuP7R9IijFT17BoHCBTz3rbMxdFc";
+const TELEGRAM_TOKEN = process.env.TEL_TKN_PBOT;
 const TELEGRAM_API = `https://api.telegram.org/bot${TELEGRAM_TOKEN}`;
 
 async function sendMessage(chatId, text) {
