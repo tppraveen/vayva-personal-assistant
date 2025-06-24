@@ -33,6 +33,8 @@ const oExpenseServicePrefix = nodeApiVersion+"/ExpenseServices";
 const oExpenseConfigServicePrefix = nodeApiVersion+"/ExpenseCategoryConfigServices";
 const ooReminderServicePrefix = nodeApiVersion+"/oReminderServices";
  const oCalenderServicePrefix = nodeApiVersion+"/CalenderService";
+ const oTelegramServicePrefix = nodeApiVersion+'/TelegramService';
+ 
 app.get(nodeApiVersion+'/api/data/users',dataRoutes.getAppHomeMenuTiles);
 
 
@@ -105,7 +107,15 @@ app.post(oExpenseServicePrefix + '/getExpenseDashboardSummary', oExpenseService.
 
 
 
+// Telegram  
+//////////////////////////// Telegram Services
+const oTelegramService = require('./routes/telegramRouter');
 
+app.post(oTelegramServicePrefix + '/webhook', oTelegramService.telegramWebhook);
+app.post(oTelegramServicePrefix + '/sendMessage', oTelegramService.sendTelegramMessage);
+
+
+// Telegram end
 
 
 

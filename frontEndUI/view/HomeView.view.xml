@@ -51,6 +51,7 @@
         </contentMiddle>
         <contentRight>
               <Button text="Open Bot" icon="sap-icon://discussion" press=".onOpenBotPopover" />
+              <Button text="test telegram" icon="sap-icon://discussion" press=".sendTelegramMessage" />
         </contentRight>
 
       </Bar>

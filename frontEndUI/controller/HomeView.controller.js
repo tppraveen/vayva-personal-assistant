@@ -132,6 +132,55 @@ function(BaseController, Controller, formatter, BusyIndicator, Filter, FilterOpe
  
 
 
+
+
+
+
+
+
+
+
+
+// every push call below in any cmd
+// vs code --Invoke-RestMethod -Uri "https://api.telegram.org/bot8086484955:AAFu9VJKuP7R9IijFT17BoHCBTz3rbMxdFc/setWebhook" -Method Post -Body @{url="https://pravyafamapp.onrender.com/oData/v1/TelegramService/webhook"}
+
+// cmd -- curl -F "url=https://pravyafamapp.onrender.com/oData/v1/TelegramService/webhook" https://api.telegram.org/bot8086484955:AAFu9VJKuP7R9IijFT17BoHCBTz3rbMxdFc/setWebhook
+
+ 
+sendTelegramMessage: function () {
+    const that = this;
+
+    const payload = {
+        chatId: "1006472940", // Replace with actual Telegram chat ID
+        message: "Hello from SAPUI5!"
+    };
+
+    BusyIndicator.show();
+
+    $.ajax({
+        url:"/oData/v1/TelegramService/sendMessage",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(payload),
+        success: function (response) {
+            BusyIndicator.hide();
+
+            // Optional: show toast or save result
+            sap.m.MessageToast.show("Telegram message sent!");
+          console.log(response)
+            const model = new sap.ui.model.json.JSONModel(response);
+            that.getView().setModel(model, "telegram");
+        },
+        error: function (err) {
+            BusyIndicator.hide();
+            sap.m.MessageToast.show("Failed to send Telegram message.");
+        }
+    });
+},
+
+
+
+
 	// Bot start here
 	onOpenBotPopoverforalert: function (oEvent) {
    var that = this;
