@@ -151,12 +151,6 @@ async function insertEvents(payload) {
   return Promise.resolve(); // simulate async success
 }
 
-// Example sendMessage function
-async function sendMessage(chatId, text) {
-  // Replace this with Telegram API call to send message back
-  console.log(`Sending message to chatId ${chatId}: ${text}`);
-  return Promise.resolve();
-}
 
 
 const sendTelegramMessage = async (req, res) => {
