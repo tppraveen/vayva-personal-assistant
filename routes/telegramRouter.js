@@ -19,47 +19,63 @@ const { sendMessage } = require("../services/telegramService");
 // };
 let pendingReminderPayload = null; // Store pending reminder between calls (in-memory for demo)
 
+const { handleBotMessage } = require('./bot/handleBotMessage');
+
+
 const telegramWebhook = async (req, res) => {
-  console.log("📩 Incoming webhook payload:", JSON.stringify(req.body));
   const message = req.body.message;
+  if (!message || !message.text) return res.sendStatus(200);
 
-  if (message && message.text) {
-    const chatId = message.chat.id;
-    const text = message.text.trim();
+  const chatId = message.chat.id;
+  const text = message.text.trim();
 
-    console.log(`Received message from chatId ${chatId}: ${text}`);
+  console.log(`📩 Incoming from ${chatId}: ${text}`);
 
-    if (text.toLowerCase() === "yes" && pendingReminderPayload) {
-      // User confirmed reminder save
-      try {
-       // await insertEvents(pendingReminderPayload);
-        await sendMessage(chatId, "✅ Reminder saved successfully!");
-        pendingReminderPayload = null;
-      } catch (error) {
-        await sendMessage(chatId, `❌ Error saving reminder: ${error.message}`);
-      }
-      return res.sendStatus(200);
-    }
-
-    if (text.toLowerCase().startsWith("create reminder")) {
-      const response = handleBotLogic(text);
-      // If response is string => send that as message (confirmation or error)
-      if (typeof response === "string") {
-        await sendMessage(chatId, response);
-      } else if (Array.isArray(response)) {
-        // It's payload awaiting confirmation
-        pendingReminderPayload = response;
-        await sendMessage(chatId, "Got your reminder! Please reply 'Yes' to save it.");
-      } else {
-        await sendMessage(chatId, "Sorry, I couldn't process your reminder.");
-      }
-    } else {
-      await sendMessage(chatId, `P-Bot: ${text}`); // Echo fallback
-    }
-  }
+  await handleBotMessage(chatId, text);
 
   res.sendStatus(200);
 };
+// const telegramWebhook = async (req, res) => {
+//   console.log("📩 Incoming webhook payload:", JSON.stringify(req.body));
+//   const message = req.body.message;
+
+//   if (message && message.text) {
+//     const chatId = message.chat.id;
+//     const text = message.text.trim();
+
+//     console.log(`Received message from chatId ${chatId}: ${text}`);
+
+//     if (text.toLowerCase() === "yes" && pendingReminderPayload) {
+//       // User confirmed reminder save
+//       try {
+//        // await insertEvents(pendingReminderPayload);
+//         await sendMessage(chatId, "✅ Reminder saved successfully!");
+//         pendingReminderPayload = null;
+//       } catch (error) {
+//         await sendMessage(chatId, `❌ Error saving reminder: ${error.message}`);
+//       }
+//       return res.sendStatus(200);
+//     }
+
+//     if (text.toLowerCase().startsWith("create reminder")) {
+//       const response = handleBotLogic(text);
+//       // If response is string => send that as message (confirmation or error)
+//       if (typeof response === "string") {
+//         await sendMessage(chatId, response);
+//       } else if (Array.isArray(response)) {
+//         // It's payload awaiting confirmation
+//         pendingReminderPayload = response;
+//         await sendMessage(chatId, "Got your reminder! Please reply 'Yes' to save it.");
+//       } else {
+//         await sendMessage(chatId, "Sorry, I couldn't process your reminder.");
+//       }
+//     } else {
+//       await sendMessage(chatId, `P-Bot: ${text}`); // Echo fallback
+//     }
+//   }
+
+//   res.sendStatus(200);
+// };
 
 // Parses input, returns confirmation string or payload array
 function handleBotLogic(sMessage) {
@@ -176,3 +192,11 @@ module.exports = {
     sendTelegramMessage,
     telegramWebhook
 };
+
+
+
+// Reference Start 
+
+
+
+// End
