@@ -22,6 +22,7 @@ let pendingReminderPayload = null; // Store pending reminder between calls (in-m
 const { handleBotMessage } = require('./bot/handleBotMessage');
 
 
+
 const telegramWebhook = async (req, res) => {
   const message = req.body.message;
   if (!message || !message.text) return res.sendStatus(200);
@@ -29,9 +30,15 @@ const telegramWebhook = async (req, res) => {
   const chatId = message.chat.id;
   const text = message.text.trim();
 
-  console.log(`📩 Incoming from ${chatId}: ${text}`);
+  const response = await handleBotMessage(chatId, text);
 
-  await handleBotMessage(chatId, text);
+  if (Array.isArray(response)) {
+    for (const msg of response) {
+      await sendMessage(chatId, msg);
+    }
+  } else {
+    await sendMessage(chatId, response);
+  }
 
   res.sendStatus(200);
 };
