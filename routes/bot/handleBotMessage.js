@@ -1,4 +1,7 @@
-// In-memory state
+const { Pool } = require('pg');
+const pool = new Pool(); // customize with your config
+// 
+// // In-memory state
 const userStateMap = {};
 
 /**
@@ -13,10 +16,8 @@ const setState = (chatId, state) => {
   userStateMap[chatId] = state;
 };
 
-// 🔧 MOCK insert function (replace with your actual function)
-const insertEvent = async ({ title, desc, from, to }) => {
-  return { success: true };
-};
+ 
+
 
 /**
  * Main handler for all messages
@@ -207,7 +208,26 @@ Reply:
 const handleAddReminderConfirm = async (chatId, text, state) => {
   if (text.toLowerCase() === 'yes') {
     try {
-      const response = await insertEvent(state.reminder);
+        const fromDateTime = parseToISTDateTime(state.reminder.from);
+const toDateTime = parseToISTDateTime(state.reminder.to);
+
+if (!fromDateTime || !toDateTime) {
+  return `❌ Invalid date/time format. Please try again using "DD-MM-YYYY HH:MM" or natural terms like "tomorrow 10:00".`;
+}
+
+const payload = {
+  title: state.reminder.title,
+  description: state.reminder.desc || '',
+  fromDateTime,
+  toDateTime,
+  username: 'praveen',
+  type: 'Type07',
+  icon: 'sap-icon://appointment-2'
+};
+
+const response = await insertEvent(payload);
+
+
       if (response.success) {
         setState(chatId, { step: 'MAIN_MENU' });
         return `
@@ -232,4 +252,130 @@ Return to:
   return `❓ Please reply "yes" to confirm or "no" to cancel.`;
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+const moment = require('moment-timezone');
+
+/**
+ * Convert input like 'tomorrow 10:00' or 'monday 9:30' into IST datetime
+ */
+const parseToISTDateTime = (input) => {
+  const now = moment().tz("Asia/Kolkata");
+
+  let date;
+  const lower = input.toLowerCase();
+
+  if (lower.startsWith("tomorrow")) {
+    date = now.clone().add(1, 'day');
+    input = input.replace(/tomorrow/i, '').trim();
+  } else if (lower.startsWith("today")) {
+    date = now.clone();
+    input = input.replace(/today/i, '').trim();
+  } else {
+    // Try parsing weekdays
+    const weekdays = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+    for (let i = 0; i < 7; i++) {
+      if (lower.startsWith(weekdays[i])) {
+        const targetDay = i;
+        const currentDay = now.day();
+        const daysToAdd = (targetDay + 7 - currentDay) % 7 || 7;
+        date = now.clone().add(daysToAdd, 'day');
+        input = input.replace(new RegExp(weekdays[i], 'i'), '').trim();
+        break;
+      }
+    }
+  }
+
+  if (!date) {
+    // fallback to manual date like 26-06-2025 10:00
+    date = moment.tz(input, "DD-MM-YYYY HH:mm", "Asia/Kolkata");
+  } else {
+    // Add time (HH:mm)
+    const timeMatch = input.match(/(\d{1,2}):(\d{2})/);
+    if (timeMatch) {
+      const [_, hour, minute] = timeMatch;
+      date.hour(Number(hour)).minute(Number(minute)).second(0);
+    } else {
+      // default time
+      date.hour(9).minute(0).second(0);
+    }
+  }
+
+  if (!date.isValid()) {
+    return null;
+  }
+
+  return date.format(); // ISO with +05:30
+};
+ 
+/**
+ * Insert a single event into the calenderEvents table
+ */
+const insertEvent = async (event) => {
+  const {
+    username,
+    title,
+    description,
+    icon,
+    type,
+    fromDateTime,
+    toDateTime
+  } = event;
+
+  if (!username || !title || !fromDateTime || !toDateTime) {
+    throw new Error('Missing required fields: username, title, fromDateTime, or toDateTime.');
+  }
+
+  const insertQuery = `
+    INSERT INTO calenderEvents (
+      username, title, description, icon, type, startdate, enddate, created_by
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+  `;
+
+  const values = [
+    username,
+    title,
+    description || '',
+    icon || 'sap-icon://appointment-2',
+    type || 'Type07',
+    fromDateTime,
+    toDateTime,
+    username
+  ];
+
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+    await client.query(insertQuery, values);
+    await client.query('COMMIT');
+    return { success: true };
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('❌ DB Insert Error:', error);
+    return { success: false, message: error.message };
+  } finally {
+    client.release();
+  }
+};
+
+
+
+
+
+
+
+
+ 
 module.exports = { handleBotMessage };
