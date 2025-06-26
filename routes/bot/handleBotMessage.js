@@ -186,12 +186,14 @@ const handleAddReminderTitle = (chatId, text) => {
 const handleAddReminderDesc = (chatId, text) => {
   const state = getState(chatId);
   const reminder = { ...state.reminder, desc: text === 'skip' ? '' : text };
+  const fromDateTime = parseToISTDateTime(reminder.from);
+const toDateTime = parseToISTDateTime(reminder.to);
 
   const confirmMsg = `
 📋 Confirm this reminder:
 
-🗓 From: ${reminder.from}
-🛑 To: ${reminder.to}
+🗓 From: ${fromDateTime}
+🛑 To: ${toDateTime}
 📌 Title: ${reminder.title}
 📝 Description: ${reminder.desc || '(none)'}
 
@@ -325,9 +327,8 @@ const parseToISTDateTime = (input) => {
 const axios = require('axios');
 
 // Replace with your actual host (localhost or deployed domain)
-const CALENDAR_API_BASE_URL = process.env.API_BASE_URL ||
-
-async function insertEventsViaApi(payload) {
+const CALENDAR_API_BASE_URL = process.env.API_BASE_URL ;
+const insertEventsViaApi = async (payload) => {
   try {
     const response = await axios.post(
       `${CALENDAR_API_BASE_URL}/oData/v1/CalenderService/insertEvents`,
@@ -350,7 +351,7 @@ async function insertEventsViaApi(payload) {
     console.error("❌ Failed to insert reminder:", error.response?.data || error.message);
     throw error;
   }
-}
+};
 
 
 const insertEvent2 = async (event) => {
