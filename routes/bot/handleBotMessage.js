@@ -218,14 +218,14 @@ if (!fromDateTime || !toDateTime) {
 const payload = {
   title: state.reminder.title,
   description: state.reminder.desc || '',
-  fromDateTime,
-  toDateTime,
+  fromDateTime:fromDateTime,
+  toDateTime:toDateTime,
   username: 'praveen',
   type: 'Type07',
   icon: 'sap-icon://appointment-2'
 };
 
-const response = await insertEvent(payload);
+const response = await insertEventsViaApi([payload]); // send as array
 
 
       if (response.success) {
@@ -322,7 +322,38 @@ const parseToISTDateTime = (input) => {
 /**
  * Insert a single event into the calenderEvents table
  */
-const insertEvent = async (event) => {
+const axios = require('axios');
+
+// Replace with your actual host (localhost or deployed domain)
+const CALENDAR_API_BASE_URL = process.env.API_BASE_URL ||
+
+async function insertEventsViaApi(payload) {
+  try {
+    const response = await axios.post(
+      `${CALENDAR_API_BASE_URL}/oData/v1/CalenderService/insertEvents`,
+      payload,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (response.status === 201) {
+      console.log("📅 Reminder inserted successfully.");
+      return response.data;
+    } else {
+      console.log(`Unexpected Insert response: ${response.status}`);
+      throw new Error(`Unexpected response: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("❌ Failed to insert reminder:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
+
+const insertEvent2 = async (event) => {
   const {
     username,
     title,
