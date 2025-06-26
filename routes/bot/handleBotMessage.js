@@ -1,6 +1,7 @@
 const { Pool } = require('pg');
-const pool = new Pool(); // customize with your config
-// 
+const pool = new Pool(); 
+const axios = require('axios');
+
 // // In-memory state
 const userStateMap = {};
 
@@ -102,24 +103,61 @@ Reply with the number (1-3).
   }
 };
 
-const handleReminderMenu = (chatId, text) => {
+const moment = require('moment-timezone');
+
+const handleReminderMenu = async (chatId, text) => {
   switch (text) {
     case '1':
-      setState(chatId, { step: 'REMINDER_UPCOMING', page: 1 });
-      return `
+      try {
+          const payload = {
+          username: 'praveen'
+        };
+        const response = await axios.post(
+          '/oData/v1/CalenderService/getAllEvents',
+          JSON.stringify(payload),
+          {
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
+
+        const events = response.data?.data || [];
+
+        if (events.length === 0) {
+          return `📋 No upcoming reminders found.`;
+        }
+
+        // Sort events by start date (ascending)
+        const sorted = events.sort(
+          (a, b) => new Date(a.startDate) - new Date(b.startDate)
+        );
+
+        // Get top 5
+        const top5 = sorted.slice(0, 5);
+
+        // Format the top 5 events
+        const reminderList = top5.map((item, index) => {
+          const start = moment(item.startDate).tz('Asia/Kolkata').format('D MMMM [at] h:mm A');
+          const end = moment(item.endDate).tz('Asia/Kolkata').format('h:mm A');
+          return `${index + 1}. ${item.title} – ${item.text} – ${start} to ${end}`;
+        }).join('\n');
+
+        setState(chatId, { step: 'REMINDER_UPCOMING', page: 1 });
+
+        return `
 📋 Top 5 Upcoming Reminders:
 
-1. Call Mom – 26 June at 6:00 PM
-2. Team meeting – 27 June at 10:00 AM
-3. Pay rent – 1 July at 9:00 AM
-4. Dentist appointment – 2 July at 3:00 PM
-5. Submit report – 3 July at 11:59 PM
+${reminderList}
 
 What would you like to do next?
 
 1. ▶️ Show next 5
 2. ❌ Exit
-      `.trim();
+        `.trim();
+
+      } catch (err) {
+        console.error('Error fetching reminders:', err);
+        return `❌ Could not fetch reminders. Please try again later.`;
+      }
 
     case '2':
       return `⏰ You have no missed reminders.`;
@@ -132,6 +170,8 @@ What would you like to do next?
       return `❌ Please reply with 1, 2, or 3.`;
   }
 };
+
+
 
 const handleUpcomingReminders = (chatId, text) => {
   if (text === '1') {
@@ -220,8 +260,8 @@ if (!fromDateTime || !toDateTime) {
 const payload = {
   title: state.reminder.title,
   description: state.reminder.desc || '',
-  fromDateTime:fromDateTime,
-  toDateTime:toDateTime,
+  fromDateTime:new Date(fromDateTime).toISOString(),
+  toDateTime:new Date(toDateTime).toISOString(),
   username: 'praveen',
   type: 'Type07',
   icon: 'sap-icon://appointment-2'
@@ -267,7 +307,6 @@ Return to:
 
 
 
-const moment = require('moment-timezone');
 
 /**
  * Convert input like 'tomorrow 10:00' or 'monday 9:30' into IST datetime
@@ -324,14 +363,13 @@ const parseToISTDateTime = (input) => {
 /**
  * Insert a single event into the calenderEvents table
  */
-const axios = require('axios');
 
 // Replace with your actual host (localhost or deployed domain)
 const CALENDAR_API_BASE_URL = process.env.API_BASE_URL ;
 const insertEventsViaApi = async (payload) => {
   try {
     const response = await axios.post(
-      `${CALENDAR_API_BASE_URL}/oData/v1/CalenderService/insertEvents`,
+      `/oData/v1/CalenderService/insertEvents`,
       payload,
       {
         headers: {
