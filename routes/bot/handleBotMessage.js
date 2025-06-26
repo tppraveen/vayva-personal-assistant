@@ -113,7 +113,7 @@ const handleReminderMenu = async (chatId, text) => {
           username: 'praveen'
         };
         const response = await axios.post(
-          '/oData/v1/CalenderService/getAllEvents',
+          CALENDAR_API_BASE_URL+'/oData/v1/CalenderService/getAllEvents',
           JSON.stringify(payload),
           {
             headers: { 'Content-Type': 'application/json' },
@@ -369,7 +369,7 @@ const CALENDAR_API_BASE_URL = process.env.API_BASE_URL ;
 const insertEventsViaApi = async (payload) => {
   try {
     const response = await axios.post(
-      `/oData/v1/CalenderService/insertEvents`,
+      CALENDAR_API_BASE_URL+`/oData/v1/CalenderService/insertEvents`,
       payload,
       {
         headers: {
