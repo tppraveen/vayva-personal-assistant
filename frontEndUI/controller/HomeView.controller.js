@@ -531,5 +531,48 @@ BusyIndicator.hide();
 
 
 		
+
+
+
+
+
+
+
+
+
+
+
+testfFunction: function() {
+ 
+          
+     var that=this;   
+BusyIndicator.show(0);
+        $.ajax({
+  url: "/oData/v1/TelegramService/testInsertEvents",
+  method: "POST",
+  contentType: "application/json",
+  success: function(data) {
+BusyIndicator.hide();
+    sap.m.MessageToast.show("function call added successfully!");
+    // Close dialog or reset form if needed
+  },
+  error: function(xhr, status, error) {
+BusyIndicator.hide();
+    sap.m.MessageToast.show("Error function call reminder: " + error);
+  }
+});
+       
+		},
+	
+
+
+
+
+
+
+
+
+
+
 	});
 });

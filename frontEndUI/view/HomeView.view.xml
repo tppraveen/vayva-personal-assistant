@@ -50,6 +50,8 @@
           <Text text="{i18n>FOOTER_TITLE}" />
         </contentMiddle>
         <contentRight>
+        
+              <Button text="Test Function" icon="sap-icon://discussion" press=".testfFunction" />
               <Button text="Open Bot" icon="sap-icon://discussion" press=".onOpenBotPopover" />
               <Button text="test telegram" icon="sap-icon://discussion" press=".sendTelegramMessage" />
         </contentRight>

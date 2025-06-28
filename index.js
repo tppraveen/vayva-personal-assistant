@@ -113,6 +113,7 @@ const oTelegramService = require('./routes/telegramRouter');
 
 app.post(oTelegramServicePrefix + '/webhook', oTelegramService.telegramWebhook);
 app.post(oTelegramServicePrefix + '/sendMessage', oTelegramService.sendTelegramMessage);
+app.post(oTelegramServicePrefix + '/testInsertEvents', oTelegramService.testInsertEvents);
 
 
 // Telegram end

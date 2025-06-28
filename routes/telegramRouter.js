@@ -2,21 +2,32 @@
 
 const { sendMessage } = require("../services/telegramService");
 
-// const telegramWebhook = async (req, res) => {
-//         console.log("📩 Incoming webhook payload:", JSON.stringify(req.body));
+ 
 
-//     const message = req.body.message;
 
-//     if (message && message.text) {
-//         const chatId = message.chat.id;
-//         const text = message.text;
+const pool = require('../db');
 
-//         console.log(`Received message from chatId ${chatId}: ${text}`);
-//         await sendMessage(chatId, `PBot: ${text}`);
-//     }
 
-//     res.sendStatus(200);
-// };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 let pendingReminderPayload = null; // Store pending reminder between calls (in-memory for demo)
 
 const { handleBotMessage } = require('./bot/handleBotMessage');
@@ -194,10 +205,91 @@ const sendTelegramMessage = async (req, res) => {
         });
     }
 };
+const insertCalenderEventstoDB = async (event) => {
+  try {
+     const { title,description,fromDateTime,toDateTime,username,type,icon} = event;
 
+    const query = `
+      INSERT INTO dummytable (id, name)
+      VALUES ($1, $2)
+      RETURNING *;
+    `;
+    const values = [123, fromDateTime];
+  const result = await pool.query(query, values);
+    return "Inserted into Calender Successfully.";
+  } catch (error) {
+    
+    console.error("DB Insert Error:", error);
+    // throw error;
+    return "DB Error : Not Inserted into Calender.";
+
+  }
+}; 
+const getTop5CalendarEventsAsText = async (requests) => {
+  const { username,limit,offset} = requests;
+
+  try {
+    const query = `
+      SELECT *
+      FROM calenderevents  where username=$1
+      ORDER BY startdate DESC 
+      LIMIT $2 OFFSET $3;
+    `;
+    const values =[username,limit,offset]
+    const result = await pool.query(query,values);
+
+    if (result.rows.length === 0) {
+      return "No calendar events found.";
+    }
+
+    const formattedText = result.rows
+      .map((row, index) => `${index + 1}. ${row.title} - ${row.startdate.toISOString()}`)
+      .join('\n');
+
+    return formattedText;
+
+  } catch (error) {
+    console.error("DB Fetch Error:", error);
+    return "DB Error: Could not retrieve calendar events.";
+  }
+};
+
+
+const testInsertEvents = async (req, res) => {
+  
+    try {
+//       var oPayload= {
+//   title: "dummy",
+//   description:  '',
+//   fromDateTime:new Date().toISOString(),
+//   toDateTime:new Date().toISOString(),
+//   username: 'praveen123',
+//   type: 'Type07',
+//   icon: 'sap-icon://appointment-2'
+// }
+      var oPayload= {
+  username: 'praveen',limit :5,offset:1
+}
+
+        //const result = await insertCalenderEventstoDB(oPayload);
+        const result = await getTop5CalendarEventsAsText(oPayload);
+        
+        res.status(200).json({
+          message: "Inserted into dummy_table successfully",
+          data: result
+        });
+    } catch (err) {
+        console.error("Send Message Error:", err.message || err);
+        res.status(500).json({
+            error: "Failed to send message",
+            details: err.message || "Unknown error"
+        });
+    }
+};
 module.exports = {
     sendTelegramMessage,
-    telegramWebhook
+    telegramWebhook,
+    testInsertEvents
 };
 
 

@@ -1,9 +1,9 @@
-const { Pool } = require('pg');
-const pool = new Pool(); 
+
+const pool = require('../../db');
 const axios = require('axios');
 
 // // In-memory state
-const userStateMap = {};
+const userStateMap = {}; 
 
 /**
  * Get user state
@@ -109,44 +109,47 @@ const handleReminderMenu = async (chatId, text) => {
   switch (text) {
     case '1':
       try {
-          const payload = {
-          username: 'praveen'
-        };
-        const response = await axios.post(
-          CALENDAR_API_BASE_URL+'/oData/v1/CalenderService/getAllEvents',
-          JSON.stringify(payload),
-          {
-            headers: { 'Content-Type': 'application/json' },
-          }
-        );
+        //   const payload = {
+        //   username: 'praveen'
+        // };
+        // const response = await axios.post(
+        //   CALENDAR_API_BASE_URL+'/oData/v1/CalenderService/getAllEvents',
+        //   JSON.stringify(payload),
+        //   {
+        //     headers: { 'Content-Type': 'application/json' },
+        //   }
+        // );
 
-        const events = response.data?.data || [];
+        // const events = response.data?.data || [];
 
-        if (events.length === 0) {
+        const top5Calenders = await getTop5CalendarEventsAsText(oPayload);
+ 
+
+        if (top5Calenders.length === 0) {
           return `📋 No upcoming reminders found.`;
         }
 
         // Sort events by start date (ascending)
-        const sorted = events.sort(
-          (a, b) => new Date(a.startDate) - new Date(b.startDate)
-        );
+        // const sorted = events.sort(
+        //   (a, b) => new Date(a.startDate) - new Date(b.startDate)
+        // );
 
         // Get top 5
-        const top5 = sorted.slice(0, 5);
+        // const top5 = sorted.slice(0, 5);
 
-        // Format the top 5 events
-        const reminderList = top5.map((item, index) => {
-          const start = moment(item.startDate).tz('Asia/Kolkata').format('D MMMM [at] h:mm A');
-          const end = moment(item.endDate).tz('Asia/Kolkata').format('h:mm A');
-          return `${index + 1}. ${item.title} – ${item.text} – ${start} to ${end}`;
-        }).join('\n');
+        // // Format the top 5 events
+        // const reminderList = top5.map((item, index) => {
+        //   const start = moment(item.startDate).tz('Asia/Kolkata').format('D MMMM [at] h:mm A');
+        //   const end = moment(item.endDate).tz('Asia/Kolkata').format('h:mm A');
+        //   return `${index + 1}. ${item.title} – ${item.text} – ${start} to ${end}`;
+        // }).join('\n');
 
         setState(chatId, { step: 'REMINDER_UPCOMING', page: 1 });
 
         return `
 📋 Top 5 Upcoming Reminders:
 
-${reminderList}
+${top5Calenders}
 
 What would you like to do next?
 
@@ -267,21 +270,28 @@ const payload = {
   icon: 'sap-icon://appointment-2'
 };
 
-const response = await insertEventsViaApi([payload]); // send as array
+const response = await insertCalenderEventstoDB(payload); // send as array
 
+return response+`
 
-      if (response.success) {
-        setState(chatId, { step: 'MAIN_MENU' });
-        return `
-✅ Reminder created successfully!
 
 Return to:
 1. Main Menu
 2. Add Another Reminder
         `.trim();
-      } else {
-        return `❌ Failed to create reminder. Try again later.`;
-      }
+
+//       if (response.success) {
+//         setState(chatId, { step: 'MAIN_MENU' });
+//         return `
+// ✅ Reminder created successfully!
+
+// Return to:
+// 1. Main Menu
+// 2. Add Another Reminder
+//         `.trim();
+//       } else {
+//         return `❌ Failed to create reminder. Try again later.`;
+//       }
     } catch (err) {
       return `❌ Error creating reminder: ${err.message}`;
     }
@@ -391,55 +401,55 @@ const insertEventsViaApi = async (payload) => {
   }
 };
 
+ 
+const insertCalenderEventstoDB = async (event) => {
+  try {
+     const { title,description,fromDateTime,toDateTime,username,type,icon} = event;
 
-const insertEvent2 = async (event) => {
-  const {
-    username,
-    title,
-    description,
-    icon,
-    type,
-    fromDateTime,
-    toDateTime
-  } = event;
+    const query = `
+      INSERT INTO dummytable (id, name)
+      VALUES ($1, $2)
+      RETURNING *;
+    `;
+    const values = [123, fromDateTime];
+  const result = await pool.query(query, values);
+    return "Inserted into Calender Successfully.";
+  } catch (error) {
+    
+    console.error("DB Insert Error:", error);
+    // throw error;
+    return "DB Error : Not Inserted into Calender.";
 
-  if (!username || !title || !fromDateTime || !toDateTime) {
-    throw new Error('Missing required fields: username, title, fromDateTime, or toDateTime.');
   }
-
-  const insertQuery = `
-    INSERT INTO calenderEvents (
-      username, title, description, icon, type, startdate, enddate, created_by
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-  `;
-
-  const values = [
-    username,
-    title,
-    description || '',
-    icon || 'sap-icon://appointment-2',
-    type || 'Type07',
-    fromDateTime,
-    toDateTime,
-    username
-  ];
-
-  const client = await pool.connect();
+}; 
+const getTop5CalendarEventsAsText = async (requests) => {
+  const { username,limit,offset} = requests;
 
   try {
-    await client.query('BEGIN');
-    await client.query(insertQuery, values);
-    await client.query('COMMIT');
-    return { success: true };
+    const query = `
+      SELECT *
+      FROM calenderevents  where username=$1
+      ORDER BY startdate DESC 
+      LIMIT $2 OFFSET $3;
+    `;
+    const values =[username,limit,offset]
+    const result = await pool.query(query,values);
+
+    if (result.rows.length === 0) {
+      return "No calendar events found.";
+    }
+
+    const formattedText = result.rows
+      .map((row, index) => `${index + 1}. ${row.title} - ${row.startdate.toISOString()}`)
+      .join('\n');
+
+    return result.rows[0];
+
   } catch (error) {
-    await client.query('ROLLBACK');
-    console.error('❌ DB Insert Error:', error);
-    return { success: false, message: error.message };
-  } finally {
-    client.release();
+    console.error("DB Fetch Error:", error);
+    return "DB Error: Could not retrieve calendar events.";
   }
 };
-
 
 
 
