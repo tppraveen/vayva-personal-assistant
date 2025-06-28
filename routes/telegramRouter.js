@@ -244,8 +244,8 @@ const getTop5CalendarEventsAsText = async (requests) => {
 
     const formattedText = result.rows
       .map((row, index) => {
-   const start = moment(item.startDate).tz('Asia/Kolkata').format('D MMMM [at] h:mm A');
-                  const end = moment(item.endDate).tz('Asia/Kolkata').format('h:mm A');
+   const start = moment(row.startDate).tz('Asia/Kolkata').format('D MMMM [at] h:mm A');
+                  const end = moment(row.endDate).tz('Asia/Kolkata').format('h:mm A');
                
 
       return `${index + offset+1}. ${row.title}:${row.description} -
