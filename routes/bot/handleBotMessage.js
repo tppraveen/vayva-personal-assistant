@@ -112,7 +112,7 @@ const handleReminderMenu = async (chatId, text) => {
     case '1':
       try {
         const oPayload = {
-          username: 'praveen',limit :5,offset:1
+          username: 'praveen',limit :5,offset:0
         };
         const top5Calenders = await getTop5CalendarEventsAsText(oPayload);
   
@@ -454,8 +454,8 @@ const getTop5CalendarEventsAsText = async (requests) => {
  
     const formattedText = result.rows
       .map((row, index) => {
-   const start = moment(row.startDate).tz('Asia/Kolkata').format('D MMMM [at] h:mm A');
-                  const end = moment(row.endDate).tz('Asia/Kolkata').format('h:mm A');
+          const start = moment(row.startdate).tz('Asia/Kolkata').format('D MMMM [at] h:mm A');
+          const end =   moment(row.enddate).tz('Asia/Kolkata').format('D MMMM [at] h:mm A');
                
 
       return `${index + offset+1}. ${row.title}:${row.description} -
