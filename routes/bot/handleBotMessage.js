@@ -26,7 +26,7 @@ const setState = (chatId, state) => {
 const handleBotMessage = async (chatId, text) => {
   const state = getState(chatId);
 
-  if (/^hi p bot$/i.test(text)) {
+  if (/^hi p bot$/i.test(text) || /^hi$/i.test(text)) {
     return showMainMenu(chatId);
   }
 
@@ -68,7 +68,7 @@ const showMainMenu = (chatId) => {
   setState(chatId, { step: 'MAIN_MENU' });
 
   return `
-👋 Hi! I’m your personal assistant for expenses, reminders, and calendar tasks.
+👋 Hi! I’m your P-Bot Personal assistant for expenses, reminders, and calendar tasks.
 
 Here’s what I can do:
 1. 🧠 Reminder
@@ -109,41 +109,15 @@ const handleReminderMenu = async (chatId, text) => {
   switch (text) {
     case '1':
       try {
-        //   const payload = {
-        //   username: 'praveen'
-        // };
-        // const response = await axios.post(
-        //   CALENDAR_API_BASE_URL+'/oData/v1/CalenderService/getAllEvents',
-        //   JSON.stringify(payload),
-        //   {
-        //     headers: { 'Content-Type': 'application/json' },
-        //   }
-        // );
-
-        // const events = response.data?.data || [];
-
+        const oPayload = {
+          username: 'praveen',limit :5,offset:1
+        };
         const top5Calenders = await getTop5CalendarEventsAsText(oPayload);
- 
-
+  
         if (top5Calenders.length === 0) {
           return `📋 No upcoming reminders found.`;
         }
-
-        // Sort events by start date (ascending)
-        // const sorted = events.sort(
-        //   (a, b) => new Date(a.startDate) - new Date(b.startDate)
-        // );
-
-        // Get top 5
-        // const top5 = sorted.slice(0, 5);
-
-        // // Format the top 5 events
-        // const reminderList = top5.map((item, index) => {
-        //   const start = moment(item.startDate).tz('Asia/Kolkata').format('D MMMM [at] h:mm A');
-        //   const end = moment(item.endDate).tz('Asia/Kolkata').format('h:mm A');
-        //   return `${index + 1}. ${item.title} – ${item.text} – ${start} to ${end}`;
-        // }).join('\n');
-
+ 
         setState(chatId, { step: 'REMINDER_UPCOMING', page: 1 });
 
         return `
@@ -176,16 +150,21 @@ What would you like to do next?
 
 
 
-const handleUpcomingReminders = (chatId, text) => {
+const handleUpcomingReminders = async (chatId, text) => {
   if (text === '1') {
+     const oPayload = {
+          username: 'praveen',limit :5,offset:5
+        };
+        const topnext5Calenders = await getTop5CalendarEventsAsText(oPayload);
+  
+        if (topnext5Calenders.length === 0) {
+          return `📋 No upcoming reminders found.`;
+        }
+
     return `
 📋 Next 5 Reminders:
 
-6. Yoga class – 4 July at 6:00 AM
-7. Grocery shopping – 4 July at 7:00 PM
-8. Review meeting – 5 July at 3:00 PM
-9. Dinner with family – 6 July at 8:00 PM
-10. Book reading – 7 July at 9:00 AM
+${topnext5Calenders}
 
 What would you like to do next?
 
@@ -422,6 +401,28 @@ const insertCalenderEventstoDB = async (event) => {
 
   }
 }; 
+const getISTTimeFormat = (startdate)=>{
+ 
+
+// Create a Date object in UTC
+const date = new Date(startdate);
+
+// Convert to IST (UTC+5:30)
+const istOffset = 5.5 * 60 * 60 * 1000; // milliseconds
+const istDate = new Date(date.getTime() + istOffset);
+
+// Format as dd/mm/yyyy HH MM
+const dd = String(istDate.getDate()).padStart(2, '0');
+const mm = String(istDate.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+const yyyy = istDate.getFullYear();
+const HH = String(istDate.getHours()).padStart(2, '0');
+const MM = String(istDate.getMinutes()).padStart(2, '0');
+
+return formatted = `${dd}/${mm}/${yyyy} ${HH}:${MM}`;
+
+
+
+};
 const getTop5CalendarEventsAsText = async (requests) => {
   const { username,limit,offset} = requests;
 
@@ -438,9 +439,9 @@ const getTop5CalendarEventsAsText = async (requests) => {
     if (result.rows.length === 0) {
       return "No calendar events found.";
     }
-
+ 
     const formattedText = result.rows
-      .map((row, index) => `${index + 1}. ${row.title} - ${row.startdate.toISOString()}`)
+      .map((row, index) => `${index + offset+1}. ${row.title}:${row.description} - ${getISTTimeFormat(row.startdate)}-${getISTTimeFormat(row.enddate)} `)
       .join('\n');
 
     return result.rows[0];

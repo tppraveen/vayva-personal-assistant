@@ -243,7 +243,7 @@ const getTop5CalendarEventsAsText = async (requests) => {
     }
 
     const formattedText = result.rows
-      .map((row, index) => `${index + 1}. ${row.title} - ${row.startdate.toISOString()}`)
+      .map((row, index) => `${index + offset+1}. ${row.title}:${row.description} - ${getISTTimeFormat(row.startdate)}-${getISTTimeFormat(row.enddate)} `)
       .join('\n');
 
     return formattedText;
@@ -253,7 +253,28 @@ const getTop5CalendarEventsAsText = async (requests) => {
     return "DB Error: Could not retrieve calendar events.";
   }
 };
+const getISTTimeFormat = (startdate)=>{
+ 
 
+// Create a Date object in UTC
+const date = new Date(startdate);
+
+// Convert to IST (UTC+5:30)
+const istOffset = 5.5 * 60 * 60 * 1000; // milliseconds
+const istDate = new Date(date.getTime() + istOffset);
+
+// Format as dd/mm/yyyy HH MM
+const dd = String(istDate.getDate()).padStart(2, '0');
+const mm = String(istDate.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+const yyyy = istDate.getFullYear();
+const HH = String(istDate.getHours()).padStart(2, '0');
+const MM = String(istDate.getMinutes()).padStart(2, '0');
+
+return formatted = `${dd}/${mm}/${yyyy} ${HH}:${MM}`;
+
+
+
+};
 
 const testInsertEvents = async (req, res) => {
   
