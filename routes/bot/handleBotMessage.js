@@ -116,15 +116,9 @@ const handleReminderMenu = async (chatId, text) => {
         };
         const top5Calenders = await getTop5CalendarEventsAsText(oPayload);
   
-        if (top5Calenders.length === 0) {
+        if (top5Calenders=== '') {
           return `📋 No upcoming reminders found.`;
         }
-         const reminderList = top5Calenders.map((item, index) => {
-          const start = moment(item.startDate).tz('Asia/Kolkata').format('D MMMM [at] h:mm A');
-          const end = moment(item.endDate).tz('Asia/Kolkata').format('h:mm A');
-          return `${index + 1}. ${item.title}:${item.description} – ${item.text} – ${start} to ${end}`;
-        }).join('\n');
-
  
         setState(chatId, { step: 'REMINDER_UPCOMING', page: 1 });
 
@@ -459,10 +453,16 @@ const getTop5CalendarEventsAsText = async (requests) => {
     }
  
     const formattedText = result.rows
-      .map((row, index) => `${index + offset+1}. ${row.title}:${row.description} - ${getISTTimeFormat(row.startdate)}-${getISTTimeFormat(row.enddate)} `)
+      .map((row, index) => {
+   const start = moment(item.startDate).tz('Asia/Kolkata').format('D MMMM [at] h:mm A');
+                  const end = moment(item.endDate).tz('Asia/Kolkata').format('h:mm A');
+               
+
+      return `${index + offset+1}. ${row.title}:${row.description} -
+       ${start}-${end} `})
       .join('\n');
 
-    return result.rows[0];
+    return formattedText;
 
   } catch (error) {
     console.error("DB Fetch Error:", error);
