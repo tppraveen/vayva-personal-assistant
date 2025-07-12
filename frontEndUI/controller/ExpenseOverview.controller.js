@@ -63,12 +63,9 @@ sap.ui.define([
         oDateRange.setDateValue(oFirstDay);     
         oDateRange.setSecondDateValue(oToday);   
  
-        const oModel = new sap.ui.model.json.JSONModel();
-        this.getView().setModel(oModel, "oMissedReminderModel");
-        this.getView().setModel(oModel, "oUpcomingReminderModel");
+        const oModel = new sap.ui.model.json.JSONModel(); 
         this.getView().setModel(oModel, "oExpenseModel");
-        this.onLoadUpcomingReminder();
-        this.onLoadMissedReminder();
+        
         this.onFilter();
       },
 
@@ -129,72 +126,7 @@ sap.ui.define([
             console.error("Filter API error:", error);
           }
         });
-      },
-      onLoadUpcomingReminder:function(){
-          
-        const that = this;
-         const username = oGlobalModel.getProperty("/LoginView/username");
-       
-         const payload = {
-          username: username,
-          modulename:'ExpenseTracker'
-        };
-BusyIndicator.show(0);
-        $.ajax({
-          url: "/oData/v1/oReminderServices/getUpcomingReminders",
-          method: "POST",
-          contentType: "application/json",
-          data: JSON.stringify(payload),
-          success: function (response) {
-            BusyIndicator.hide();
-            if (response.status === "success") {
-              const oModel = new sap.ui.model.json.JSONModel(response.data);
-              that.getView().setModel(oModel, "oUpcomingReminderModel");
-              console.log(response.data)
-            } else {
-              MessageToast.show("Failed to load upcoming Reminder data.");
-            }
-          },
-          error: function (xhr, status, error) {
-            BusyIndicator.hide();
-            MessageToast.show("Error load upcoming Reminder data.");
-            console.error("Filter API error:", error);
-          }
-        });
-      },
-      
-      onLoadMissedReminder:function(){
-          
-        const that = this;
-         const username = oGlobalModel.getProperty("/LoginView/username");
-       
-         const payload = {
-          username: username,
-          modulename:'ExpenseTracker'
-        };
-BusyIndicator.show(0);
-        $.ajax({
-          url: "/oData/v1/oReminderServices/getMissedReminders",
-          method: "POST",
-          contentType: "application/json",
-          data: JSON.stringify(payload),
-          success: function (response) {
-            BusyIndicator.hide();
-            if (response.status === "success") {
-              const oModel = new sap.ui.model.json.JSONModel(response.data);
-              that.getView().setModel(oModel, "oMissedReminderModel");
-              console.log(response.data)
-            } else {
-              MessageToast.show("Failed to load missed Reminder data.");
-            }
-          },
-          error: function (xhr, status, error) {
-            BusyIndicator.hide();
-            MessageToast.show("Error load missed Reminder data.");
-            console.error("Filter API error:", error);
-          }
-        });
-      },
+      }, 
       onReset:function(){
         var oDateRange = this.getView().byId("dateRange");
         var oToday = new Date();
@@ -296,10 +228,28 @@ fnLoadExpenseTrackerChart: function () {
   var oChartModel = new sap.ui.model.json.JSONModel({ aggregatedData: aggregatedArray });
   this.getView().setModel(oChartModel, "ExpensetrackerChart");
 
+   this._originalData = JSON.parse(JSON.stringify(this.getView().getModel("oExpenseModel").getProperty("/data")));
+
+  // Apply initial filter to exclude income
+  this._filterIncomeData(false);
+
   var oVizFrame = this.byId("idVizFrame");
   oVizFrame.attachSelectData(this._onBarClick.bind(this)); // ✅ attach click event
 },
 
+onIncomeSwitchChange: function (oEvent) {
+    const bIncludeIncome = oEvent.getParameter("state"); // true if switch is ON
+    this._filterIncomeData(bIncludeIncome);
+},
+
+_filterIncomeData: function (bIncludeIncome) {
+    const aAllData = this._originalData || [];
+    const aFilteredData = bIncludeIncome
+        ? aAllData // Show all
+        : aAllData.filter(item => item.type.toLowerCase() !== "income");
+
+    this.getView().getModel("ExpensetrackerChart").setProperty("/aggregatedData", aFilteredData);
+},
 _onBarClick: function (oEvent) {
   var aData = oEvent.getParameter("data");
   if (!aData || !aData.length || !aData[0].data) {
@@ -364,225 +314,8 @@ _onBarClick: function (oEvent) {
 }
 
 ,
-
-      onExport: function () {
-        MessageToast.show("Export to Excel clicked");
-        // add export logic
-      },
-
-
-      onAddCategory: function () {
-        oRouter.navTo("ExpenseCategoryConfig", true);
-      },
-
-
-
-
-
-
-
-
-
-
-
-
  
  
-
-
-
-
-
-      onExportExcel: function () {
-  // Dummy JSON data
-  const aDummyData = [
-    { category: "Food", amount: 120.5, date: "2025-02-01" },
-    { category: "Transport", amount: 50, date: "2025-02-02" },
-    { category: "Rent", amount: 800, date: "2025-02-03" }
-  ];
-
-  // Column definitions
-  const aColumns = [
-    {
-      label: "Category",
-      property: "category",
-      type: "string"
-    },
-    {
-      label: "Amount",
-      property: "amount",
-      type: "number",
-      scale: 2
-    },
-    {
-      label: "Date",
-      property: "date",
-      type: "string"
-    }
-  ];
-
-  // Export settings
-  const oSettings = {
-    workbook: {
-      columns: aColumns,
-      context: {
-        sheetName: "february" // Sheet name here
-      }
-    },
-    dataSource: aDummyData,
-    fileName: "February_Expenses.xlsx"
-  };
-
-  new Spreadsheet(oSettings)
-    .build()
-    .then(() => sap.m.MessageToast.show("Excel export complete"))
-    .catch(err => console.error("Export failed", err));
-},
-
- 
- 
-
-onListItemPress: function (oEvent) {
-    const oContext = oEvent.getSource().getBindingContext();
-    console.log("Pressed:", oContext.getObject());
-    // Navigate or show popup detail
-},
-
-onReminderCompletePress: function (oEvent) {
-    var that = this;
-
-    // Get the context and ID of the selected reminder
-    var oBindingContext = oEvent.getSource().getBindingContext("oUpcomingReminderModel");
-    var oReminderData = oBindingContext.getObject();
-    var reminderId = oReminderData.id;
-
-    // Confirm with user
-    MessageBox.confirm("Are you sure you want to complete this reminder?", {
-        title: "Confirm Completion",
-        actions: [MessageBox.Action.OK, MessageBox.Action.CANCEL],
-        onClose: function (oAction) {
-            if (oAction === MessageBox.Action.OK) {
-                // Call backend
-                $.ajax({
-                    url: "/oData/v1/oReminderServices/markAsCompleted",
-                    method: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify({ id: reminderId }),
-                    success: function () {
-                        // Optional: Refresh model
-                        that.getView().getModel("oUpcomingReminderModel").refresh(true);
-                        that.onLoadUpcomingReminder();
-                        that.onLoadMissedReminder();
-
-                        MessageToast.show("Reminder marked as completed.");
-                    },
-                    error: function () {
-                        MessageBox.error("Failed to complete reminder. Please try again.");
-                    }
-                });
-            }
-        }
-    });
-},
-
-onUpcomingReminderSnoozePress: function (oEvent) {
-     const oBindingContext = oEvent.getSource().getBindingContext("oUpcomingReminderModel");
-    const oReminderData = oBindingContext.getObject();
-    this.onReminderSnooze(oReminderData)
-},
-onMissedReminderSnoozePress: function (oEvent) {
-    const oBindingContext = oEvent.getSource().getBindingContext("oMissedReminderModel");
-    const oReminderData = oBindingContext.getObject();
-     this.onReminderSnooze(oReminderData)
-},
-onReminderSnooze: function (oReminderData) {
-    const that = this; 
-    // Create a DateTimePicker Dialog for user input
-    const oDialog = new sap.m.Dialog({
-        title: "Snooze Reminder",
-        content: [
-            new sap.m.Text({ text: "Are you sure you want to snooze this reminder to another time?" }),
-            new sap.m.DateTimePicker("newRemindAt", {
-                valueFormat: "yyyy-MM-ddTHH:mm:ss",
-                displayFormat: "long",
-                width: "100%",
-                required: true
-            })
-        ],
-        beginButton: new sap.m.Button({
-            text: "OK",
-            press: function () {
-                const oDateTimePicker = sap.ui.getCore().byId("newRemindAt");
-                const sNewDate = oDateTimePicker.getDateValue();
-
-                if (!sNewDate) {
-                    sap.m.MessageToast.show("Please select a valid date/time.");
-                    return;
-                }
-
-                oDialog.close();
-
-                // Call backend with new date and reminder ID
-                that._snoozeReminder(oReminderData.id, sNewDate); 
-            }
-        }),
-        endButton: new sap.m.Button({
-            text: "Cancel",
-            press: function () {
-                oDialog.close();
-            }
-        }),
-        afterClose: function () {
-            oDialog.destroy();
-        }
-    });
-
-    oDialog.open();
-},
-
-_snoozeReminder: function (reminderId, newRemindAt) {
-    const oModel = new sap.ui.model.json.JSONModel();
-    const sUrl = "/oData/v1/oReminderServices/snoozeReminder";
-  var that = this;
-    const oPayload = {
-        id: reminderId,
-        newRemindAt: newRemindAt
-    };
-
-    $.ajax({
-        url: sUrl,
-        method: "POST",
-        contentType: "application/json",
-        data: JSON.stringify(oPayload),
-        success: function () {
-            sap.m.MessageToast.show("Reminder snoozed successfully.");
-              that.onLoadUpcomingReminder();
-                        that.onLoadMissedReminder();
-        },
-        error: function (xhr) {
-            sap.m.MessageBox.error("Failed to snooze reminder: " + xhr.responseText);
-        }
-    });
-},
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     });
   });

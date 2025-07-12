@@ -19,7 +19,7 @@
         style="Standard"
         class="customHeaderBar">
         <contentMiddle>
-          <Title text="Pravya Family App" />
+          <Title text="{i18n>APP_TITLE}" />
         </contentMiddle>
       </Bar>
     </customHeader>

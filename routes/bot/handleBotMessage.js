@@ -114,7 +114,7 @@ const handleReminderMenu = async (chatId, text) => {
         const oPayload = {
           username: 'praveen',limit :5,offset:0
         };
-        const top5Calenders = await getTop5CalendarEventsAsText(oPayload);
+        const top5Calenders = await getTableDatas(oPayload,"Top5Calender");
   
         if (top5Calenders=== '') {
           return `📋 No upcoming reminders found.`;
@@ -157,7 +157,7 @@ const handleUpcomingReminders = async (chatId, text) => {
      const oPayload = {
           username: 'praveen',limit :5,offset:5
         };
-        const topnext5Calenders = await getTop5CalendarEventsAsText(oPayload);
+        const topnext5Calenders = await getTableDatas(oPayload,"Next5Calender");
   
         if (topnext5Calenders.length === 0) {
           return `📋 No upcoming reminders found.`;
@@ -435,16 +435,35 @@ return formatted = `${dd}/${mm}/${yyyy} ${HH}:${MM}`;
 
 
 };
-const getTop5CalendarEventsAsText = async (requests) => {
-  const { username,limit,offset} = requests;
+const getTableDatas = async (oPayload,queryType) => {
 
-  try {
-    const query = `
+  if(queryType==="Top5Calender"){
+     const sQueryTop5 = `
       SELECT *
-      FROM calenderevents  where username=$1
+      FROM calenderevents  where username=$1 qnd  startdate::date <= CURRENT_DATE
+      AND enddate::date >= CURRENT_DATE;
       ORDER BY startdate DESC 
       LIMIT $2 OFFSET $3;
     `;
+      return await getTop5CalendarEventsAsText(oPayload,sQueryTop5);
+  }
+  if(queryType==="Next5Calender"){
+     const sQueryNext5 = `
+      SELECT *
+      FROM calenderevents  where username=$1 qnd  startdate::date <= CURRENT_DATE
+      AND enddate::date >= CURRENT_DATE;
+      ORDER BY startdate DESC 
+      LIMIT $2 OFFSET $3;
+    `;
+      return await getTop5CalendarEventsAsText(oPayload,sQueryNext5);
+  }
+
+}
+const getTop5CalendarEventsAsText = async (requests,query) => {
+  const { username,limit,offset} = requests;
+
+  try {
+   
     const values =[username,limit,offset]
     const result = await pool.query(query,values);
 

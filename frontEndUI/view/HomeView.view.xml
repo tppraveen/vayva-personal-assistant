@@ -24,7 +24,7 @@
           <Button icon="sap-icon://nav-back" press="onNavBack" tooltip="Notifications" type="Transparent" />
         </contentLeft>
         <contentMiddle>
-          <Title text="Pravya Family App" />
+          <Title text="{i18n>APP_TITLE}" />
         </contentMiddle>
 		  <contentRight>
           <Button icon="sap-icon://synchronize" tooltip="Run Job Reminader sheduler" type="Transparent" press="fnRunremainderScheduler" />
@@ -51,9 +51,9 @@
         </contentMiddle>
         <contentRight>
         
-              <Button text="Test Function" icon="sap-icon://discussion" press=".testfFunction" />
-              <Button text="Open Bot" icon="sap-icon://discussion" press=".onOpenBotPopover" />
-              <Button text="test telegram" icon="sap-icon://discussion" press=".sendTelegramMessage" />
+              <!-- <Button text="Test Function" icon="sap-icon://discussion" press=".testfFunction" /> -->
+              <Button text="Open P Bot" icon="sap-icon://discussion" press=".onOpenBotPopover" />
+              <!-- <Button text="test telegram" icon="sap-icon://discussion" press=".sendTelegramMessage" /> -->
         </contentRight>
 
       </Bar>

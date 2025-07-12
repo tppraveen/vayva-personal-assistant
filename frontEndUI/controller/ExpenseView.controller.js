@@ -251,13 +251,7 @@ _formatDateIST: function(dateObj) {
           }
         });
       },
-        
-
-      onExport: function () {
-        MessageToast.show("Export to Excel clicked");
-        // add export logic
-      },
-
+         
 
       onAddCategory: function () {
         oRouter.navTo("ExpenseCategoryConfig", true);
@@ -592,57 +586,166 @@ BusyIndicator.show(0);
         });
       },
 
+    onExportExpense: async function () { 
+  const oView = this.getView();
+  const aData = oView.getModel("oExpenseModel").getProperty("/data");
 
+  if (!aData || aData.length === 0) {
+    sap.m.MessageToast.show("No expense data to export.");
+    return;
+  }
 
+  // Ask user for file name
+  const oDialog = new sap.m.Dialog({
+    title: "Enter File Name",
+    content: new sap.m.Input("fileNameInput", {
+      placeholder: "e.g., MyExpenses"
+    }),
+    beginButton: new sap.m.Button({
+      text: "Export",
+      press: () => {
+        const sFileName = sap.ui.getCore().byId("fileNameInput").getValue().trim();
+        if (!sFileName) {
+          sap.m.MessageToast.show("Please enter a valid file name.");
+          return;
+        }
 
-
-
-      onExportExcel: function () {
-  // Dummy JSON data
-  const aDummyData = [
-    { category: "Food", amount: 120.5, date: "2025-02-01" },
-    { category: "Transport", amount: 50, date: "2025-02-02" },
-    { category: "Rent", amount: 800, date: "2025-02-03" }
-  ];
-
-  // Column definitions
-  const aColumns = [
-    {
-      label: "Category",
-      property: "category",
-      type: "string"
-    },
-    {
-      label: "Amount",
-      property: "amount",
-      type: "number",
-      scale: 2
-    },
-    {
-      label: "Date",
-      property: "date",
-      type: "string"
-    }
-  ];
-
-  // Export settings
-  const oSettings = {
-    workbook: {
-      columns: aColumns,
-      context: {
-        sheetName: "february" // Sheet name here
+        oDialog.close();
+        oDialog.destroy(); 
+        this._exportUsingSheetJS(aData, sFileName);
       }
-    },
-    dataSource: aDummyData,
-    fileName: "February_Expenses.xlsx"
-  };
+    }),
+    endButton: new sap.m.Button({
+      text: "Cancel",
+      press: () => {
+      oDialog.close();
+      oDialog.destroy(); // also destroy on cancel
+    }
+    })
+  });
 
-  new Spreadsheet(oSettings)
-    .build()
-    .then(() => sap.m.MessageToast.show("Excel export complete"))
-    .catch(err => console.error("Export failed", err));
+  oDialog.open();
 },
+_exportUsingSheetJS: function (aData, sFileName) {
+  const monthSheets = {};
+  const summaryData = [];
 
+  aData.forEach(item => {
+    const dateObj = new Date(item.transactiontime);
+    const month = dateObj.toLocaleString("default", { month: "short" });
+    const year = dateObj.getFullYear();
+    const sheetName = `${month}_${year}`;
+
+    if (!monthSheets[sheetName]) {
+      monthSheets[sheetName] = [];
+    }
+
+    monthSheets[sheetName].push({
+      Category: item.category,
+      Subcategory: item.subcategory,
+      Description: item.description,
+      "Payment Mode": item.payment_mode,
+      Amount: parseFloat(item.amount),
+      "Date/Time": dateObj.toLocaleString("en-IN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      })
+    });
+  });
+
+  const wb = XLSX.utils.book_new();
+
+  // Process each sheet
+  Object.entries(monthSheets).forEach(([sheet, data]) => {
+    const wsData = [...data];
+
+    // Totals
+    let totalAmount = 0;
+    const paymentModeTotals = {};
+
+    data.forEach(entry => {
+      totalAmount += entry.Amount;
+      const mode = entry["Payment Mode"] || "Other";
+      paymentModeTotals[mode] = (paymentModeTotals[mode] || 0) + entry.Amount;
+    });
+
+    // Push total row
+    wsData.push({});
+    wsData.push({ Description: "Total Amount", Amount: totalAmount });
+
+    Object.keys(paymentModeTotals).forEach(mode => {
+      wsData.push({
+        Description: `${mode} Total`,
+        Amount: paymentModeTotals[mode]
+      });
+    });
+
+    // Add to summary
+    summaryData.push({
+      Month: sheet,
+      Total: totalAmount,
+      ...paymentModeTotals
+    });
+
+    const ws = XLSX.utils.json_to_sheet(wsData, { origin: "A1" });
+
+    // Set column widths
+    ws["!cols"] = [
+      { wch: 30 }, // Category
+      { wch: 30 }, // Subcategory
+      { wch: 70 }, // Description
+      { wch: 20 }, // Payment Mode
+      { wch: 15 }, // Amount
+      { wch: 25 } // Date/Time
+    ];
+
+    // Freeze header
+    ws["!freeze"] = { xSplit: 0, ySplit: 1 };
+
+    // Style header row (bold + yellow)
+    const headerRange = XLSX.utils.decode_range(ws["!ref"]);
+    const headerRow = headerRange.s.r;
+
+    for (let c = headerRange.s.c; c <= headerRange.e.c; c++) {
+      const cellAddr = XLSX.utils.encode_cell({ r: headerRow, c });
+      if (ws[cellAddr]) {
+        ws[cellAddr].s = {
+          font: { bold: true },
+          fill: { fgColor: { rgb: "FFFF00" } },
+          alignment: { horizontal: "center" }
+        };
+      }
+    }
+
+    XLSX.utils.book_append_sheet(wb, ws, sheet);
+  });
+
+  // Summary sheet
+  const summarySheet = XLSX.utils.json_to_sheet(summaryData);
+  summarySheet["!cols"] = [{ wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }];
+
+  // Format headers in summary
+  const summaryHeaders = XLSX.utils.decode_range(summarySheet["!ref"]);
+  for (let c = summaryHeaders.s.c; c <= summaryHeaders.e.c; c++) {
+    const cellAddr = XLSX.utils.encode_cell({ r: summaryHeaders.s.r, c });
+    if (summarySheet[cellAddr]) {
+      summarySheet[cellAddr].s = {
+        font: { bold: true },
+        fill: { fgColor: { rgb: "FFFF00" } },
+        alignment: { horizontal: "center" }
+      };
+    }
+  }
+
+  XLSX.utils.book_append_sheet(wb, summarySheet, "Summary");
+
+  XLSX.writeFile(wb, `${sFileName}.xlsx`);
+  sap.m.MessageToast.show("Expense Details Exported in Excel format Successfully🎉");
+},
  
  
 

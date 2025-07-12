@@ -33,7 +33,7 @@
 					<HBox class="sapUiSmallMarginTop">
 						<Button text="Reset" press="onReset" />
 						<Button text="Filter" press="onFilter" />
-						<Button text="Export Excel" icon="sap-icon://excel-attachment" press="onExportExcel" />
+						<Button text="Export Excel" icon="sap-icon://excel-attachment" press="onExportExpense" />
 					</HBox>
 					<!-- Reminder Tabs -->
 					<IconTabBar class="sapUiSmallMarginTop" expandable="false">
@@ -131,7 +131,8 @@
        items="{oExpenseModel>/data}">
 						<headerToolbar>
 							<OverflowToolbar>
-								<Title text='Balance - {= ${oExpenseSummaryModel>/total_income} - ${oExpenseSummaryModel>/total_expense} }' />
+								<Title text='Total Exp. - {oExpenseSummaryModel>/total_expense}  
+								    Balance - {= (${oExpenseSummaryModel>/total_income} - ${oExpenseSummaryModel>/total_expense}).toFixed(2)  }' />
 								<ToolbarSpacer />
 								<Button text="Add Expense" icon="sap-icon://add" press="onAddExpense"/>
 								<Button text="Add Category" icon="sap-icon://add-folder" press="onAddCategory"/>
