@@ -1,0 +1,13 @@
+<mvc:View
+  controllerName="PersonalAssistantUI.controller.Dashboard"
+ xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    
+    <Page   showHeader="false" class="sapUiResponsiveContentPadding">
+        
+         
+        
+          
+    </Page>
+</mvc:View>

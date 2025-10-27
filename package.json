@@ -1,5 +1,5 @@
 {
-  "name": "pravyafamapp",
+  "name": "vayva-personal-assistant",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -27,11 +27,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tppraveen/pravyafamapp.git"
+    "url": "git+https://github.com/tppraveen/vayva-personal-assistant.git"
   },
   "bugs": {
-    "url": "https://github.com/tppraveen/pravyafamapp/issues"
+    "url": "https://github.com/tppraveen/vayva-personal-assistant/issues"
   },
-  "homepage": "https://github.com/tppraveen/pravyafamapp#readme",
+  "homepage": "https://github.com/tppraveen/vayva-personal-assistant#readme",
   "description": ""
 }

@@ -1,0 +1,138 @@
+{
+  "_version": "1.59.0",
+  "sap.app": {
+    "id": "PersonalAssistantUI",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.14.0",
+      "toolsId": "0c60fb47-0f02-4d2f-a7f6-d130976c3e84"
+    },
+    "dataSources": {
+      "Public": {
+        "uri": "/oData/v1/api/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {},
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.120.15",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.export": {},
+        "sap.ui.core": {},
+        "sap.f": {},
+        "sap.suite.ui.generic.template": {},
+        "sap.ui.comp": {},
+        "sap.ui.generic.app": {},
+        "sap.ui.table": {},
+        "sap.ushell": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "PersonalAssistantUI.i18n.i18n"
+        }
+      },
+      "util": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "PersonalAssistantUI.util.util"
+        }
+      },
+      "publicmodel": {
+        "type": "sap.ui.model.odata.v4.ODataModel",
+        "dataSource": "Public",
+        "preload": true,
+        "settings": {
+          "synchronizationMode": "None",
+          "operationMode": "Server",
+          "earlyRequests": true
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "viewType": "XML",
+        "async": true,
+        "viewPath": "PersonalAssistantUI.view",
+        "controlAggregation": "pages",
+        "controlId": "app",
+        "clearControlAggregation": false
+      },
+      "routes": [
+        {
+          "name": "Login",
+          "pattern": "",
+          "target": "Login"
+        },
+       
+        {
+          "name": "Dashboard",
+          "pattern": "Dashboard",
+          "target": "Dashboard"
+        }
+
+      ],
+      "targets": {
+         
+        "Login": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewName": "Login",
+          "viewId": "Login"
+        },
+        "Dashboard": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewName": "Dashboard",
+          "viewId": "Dashboard"
+        }
+         
+      }
+    },
+    "rootView": {
+      "viewName": "PersonalAssistantUI.view.App",
+      "type": "XML",
+      "async": true,
+      "id": "App"
+    }
+  }
+}

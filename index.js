@@ -3,7 +3,7 @@
 
 // const port = process.env.PORT || 3000;
 
-// app.use(express.static("frontEndUI"));
+// app.use(express.static("PersonalAssistantUI"));
 
 // app.get("/hello", (req, res) => {
 //   res.json({ message: "Hello from Node.js backend!" });
@@ -22,7 +22,7 @@ const handleError = require('./utils/errorHandler');
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'frontEndUI')));
+app.use(express.static(path.join(__dirname, 'PersonalAssistantUI')));
 
  
  
@@ -125,5 +125,5 @@ app.post(oTelegramServicePrefix + '/testInsertEvents', oTelegramService.testInse
 
 
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

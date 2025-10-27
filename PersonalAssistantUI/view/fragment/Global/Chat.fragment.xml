@@ -1,0 +1,45 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+  <Popover
+    id="chatPopover"
+    title="💬 AI Assistant"
+    placement="Auto"
+    showHeader="true"
+    contentWidth="600px"
+    contentHeight="600px"
+    class="sapUiNoContentPadding">
+
+    <VBox fitContainer="true" class="sapUiMediumMarginTopBottom">
+
+      <!-- Chat messages -->
+      <List
+        id="chatList"
+        items="{/messages}"
+        showSeparators="None"
+        inset="false"
+        growing="true"
+        growingScrollToLoad="true">
+        <CustomListItem>
+          <HBox justifyContent="Begin" alignItems="Start" wrap="Wrap">
+            <Text
+              text="{sender}: "
+              design="Bold" />
+            <Text text="{text}" />
+          </HBox>
+        </CustomListItem>
+      </List>
+
+      <!-- Input + Send -->
+      <HBox class="sapUiSmallMarginTop" justifyContent="SpaceBetween">
+        <Input
+          id="chatInput" width="100%"
+           placeholder="Type a message..." />
+        <Button  width="25%"
+          icon="sap-icon://paper-plane"
+          type="Emphasized"
+          press=".onSendMessage" />
+      </HBox>
+
+    </VBox>
+
+  </Popover>
+</core:FragmentDefinition>

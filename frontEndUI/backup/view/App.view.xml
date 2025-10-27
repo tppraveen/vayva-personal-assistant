@@ -1,5 +1,0 @@
-<mvc:View xmlns:mvc="sap.ui.core.mvc"
-          xmlns="sap.m"
-          controllerName="frontEndUI.controller.App">
-  <App id="app"/>
-</mvc:View>

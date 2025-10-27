@@ -75,7 +75,7 @@ Here’s what I can do:
 2. 💸 Expenses
 3. 💊 Medicine
 
-📲 [Open App](https://pravyafamapp.onrender.com/)
+📲 [Open App](https://vayva-personal-assistant.onrender.com/)
 
 Reply with the number (1-3) to continue.
   `.trim();
