@@ -6,12 +6,14 @@ sap.ui.define([
   "sap/ui/model/Filter",
   "sap/ui/model/FilterOperator",
   'sap/m/MessageToast',
-  "PersonalAssistantUI/model/models"
+  "PersonalAssistantUI/model/models",
+  "sap/ui/model/json/JSONModel"
+
 ],
   /**
    * @param {typeof sap.ui.core.mvc.Controller} Controller
    */
-  function (BaseController, Controller, formatter, BusyIndicator, Filter, FilterOperator, MessageToast, CMSModel) {
+  function (BaseController, Controller, formatter, BusyIndicator, Filter, FilterOperator, MessageToast, CMSModel, JSONModel) {
     "use strict";
     var oRouter;
     return BaseController.extend("PersonalAssistantUI.controller.Dashboard", {
@@ -20,7 +22,7 @@ sap.ui.define([
         oRouter = sap.ui.core.UIComponent.getRouterFor(this);
         oRouter.getRoute("Dashboard").attachMatched(this.onObjectMatched, this);
         this.oResourceBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
-
+this.onBaseInit();
         // Get Zone list
         //this.getZoneLists();
         var oModel = new sap.ui.model.json.JSONModel();
@@ -38,6 +40,17 @@ sap.ui.define([
         });
 
       },
+      onObjectMatched: function () {
+        BusyIndicator.hide();
+        sap.ui.getCore().getModel("oGlobalAIModel").setProperty("/menuBar/menuVisible", true);
+       },
+      
+      // Example of handling tile press
+      onTilePress: function (oEvent) {
+        var oTile = oEvent.getSource();
+        var sHeader = oTile.getHeader();
+        alert("You pressed the " + sHeader + " tile");
+      }
 
 
     });

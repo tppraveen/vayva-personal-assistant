@@ -1,40 +1,7 @@
 <mvc:View controllerName="PersonalAssistantUI.controller.App"
 	xmlns:mvc="sap.ui.core.mvc" displayBlock="true"  xmlns="sap.m"
     xmlns:f="sap.f"  >
-	<f:ShellBar id="menuBar"
-                    title="Dashboard"
-                    class="customShellBar"
-                    homeIcon="/image/pravzyraally.png"
-                    showCopilot="false"
-                    showSearch="false"
-                    showNotifications="false" >
-    <f:additionalContent>
-            <!-- Custom AI Assistant -->
-            <Button
-                id="aiButton"
-                icon="sap-icon://da"
-                type="Transparent"
-                tooltip="AI Assistant"
-                press="onCopilotPress" />
-
-            <!-- Custom Notifications -->
-            <Button
-                id="customNotificationBtn"
-                icon="sap-icon://bell"
-                type="Transparent"
-                tooltip="Notifications"
-                press="onUserNotificationPress" />
-                 </f:additionalContent>
-                    <f:menu>
-                        <Menu>
-                            <MenuItem text="Expense Tracker" icon="sap-icon://flight" />
-                            <MenuItem text="Expense Overview" icon="sap-icon://car-rental" />
-                        </Menu>
-                    </f:menu>
-                    <f:profile>
-                        <Avatar id="userAvatarBtn"  initials="PK" press=".onUserAvatarPress"/>
-                    </f:profile>
-                </f:ShellBar>
+	 
 	<App id="app">
 	</App>
 </mvc:View>

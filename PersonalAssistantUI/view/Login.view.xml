@@ -1,45 +1,43 @@
 <mvc:View
     controllerName="PersonalAssistantUI.controller.Login" 
-	xmlns:mvc="sap.ui.core.mvc"
-	xmlns="sap.m"
-	xmlns:core="sap.ui.core"
-	xmlns:l="sap.ui.layout"
-  height="100%">
-	<Page showHeader="false" enableScrolling="true" class="sapUiResponsivePadding">
-		<!-- Responsive Body Content -->
-		<content>
-    			<VBox height="450px" alignItems="Center" justifyContent="Center">
-             <!-- Login/Signup Form -->
-            <VBox justifyContent="Center" alignItems="Center" class="loginForm">
-                <!-- Logo (optional) -->
-                <Image src="image/pravzyraally.png" width="250px" height="auto" class="loginLogo" />
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:l="sap.ui.layout"
+    height="100%">
+    <Page showHeader="false" enableScrolling="true" class="sapUiResponsivePadding">
+        <content>
+            <VBox height="450px" alignItems="Center" justifyContent="Center">
+                <!-- Login/Signup Form -->
+                <VBox justifyContent="Center" alignItems="Center" class="loginForm">
+                    <!-- Logo (optional) -->
+                    <Image src="image/pravzyraally.png" width="250px" height="auto" class="loginLogo"/>
 
-                <!-- Login/Signup Header -->
-                <Label text="{i18n>LOGIN_TO_YOUR_ACCOUNT_LABEL}" class="loginTitle"/>
+                    <!-- Login/Signup Header -->
+                    <Label text="{i18n>LOGIN_TO_YOUR_ACCOUNT_LABEL}" class="loginTitle"/>
 
-                <!-- Username / Mobile Number -->
-                <Input placeholder="{i18n>USERNAME_INPUT_PLACEHOLDER}" class="inputField" type="Text"/>
+                    <!-- Username / Mobile Number -->
+                    <Input placeholder="{i18n>USERNAME_INPUT_PLACEHOLDER}" class="inputField" type="Text"/>
 
-                <!-- Password -->
-                <Input placeholder="{i18n>PASSWORD_PLACEHOLDER}" class="inputField" type="Password"/>
+                    <!-- Password -->
+                    <Input placeholder="{i18n>PASSWORD_PLACEHOLDER}" class="inputField" type="Password"/>
 
-                <!-- Login Button -->
-                <Button text="{i18n>LOGIN_BTN}" type="Emphasized" class="loginButton" press="onLoginPress"/>
+                    <!-- Login Button -->
+                    <Button text="{i18n>LOGIN_BTN}" type="Emphasized" class="loginButton" press="onLoginPress"/>
 
-                <!-- Signup Button -->
-                <Label text="{i18n>DONT_HAVE_ACCOUNT_LABEL}" class="signupText"/>
-                <Button text="{i18n>SIGN_UP_BTN}" type="Transparent" class="signupButton"/>
+                    <!-- Signup Button -->
+                    <Label text="{i18n>DONT_HAVE_ACCOUNT_LABEL}" class="signupText"/>
+                    <Button text="{i18n>SIGN_UP_BTN}" type="Transparent" class="signupButton"/>
+                </VBox>
             </VBox>
-                        </VBox>
-
- 		</content>
-		<!-- Footer -->
-		<footer>
-			<Bar design="Footer">
-				<contentMiddle>
-					<Text text="{i18n>FOOTER_TITLE}" />
-				</contentMiddle>
-			</Bar>
-		</footer>
-	</Page>
+        </content>
+        <!-- Footer -->
+        <footer>
+            <Bar design="Footer">
+                <contentMiddle>
+                    <Text text="{i18n>FOOTER_TITLE}" />
+                </contentMiddle>
+            </Bar>
+        </footer>
+    </Page>
 </mvc:View>

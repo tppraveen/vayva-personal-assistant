@@ -16,17 +16,17 @@
     
     <HBox class="sapUiSmallMarginBottom" justifyContent="SpaceBetween" width="100%">
     <Text text="{i18n>USERNAME_LABEL}" />
-    <Text text="{oUserDetailsPopoverModel>/userDetails/username}" class="colorCyan" />
+    <Text text="{oGlobalAIModel>/userDetails/username}" class="colorCyan" />
 </HBox>
 
    <HBox class="sapUiSmallMarginBottom" justifyContent="SpaceBetween" width="100%">
     <Text text="{i18n>NAME_LABEL}" />
-    <Text text="{oUserDetailsPopoverModel>/userDetails/name}" class="colorCyan" />
+    <Text text="{oGlobalAIModel>/userDetails/name}" class="colorCyan" />
 </HBox>
 
     <HBox class="sapUiSmallMarginBottom" justifyContent="SpaceBetween" width="100%">
     <Text text="{i18n>LASTLOGIN_LABEL}" />
-    <Text text="{oUserDetailsPopoverModel>/userDetails/lastLogin}" class="colorCyan" />
+    <Text text="{oGlobalAIModel>/userDetails/lastLogin}" class="colorCyan" />
 </HBox>
  
 
@@ -35,7 +35,7 @@
             <Label text="{i18n>THEME_LABEL}" textAlign="Center" class=""/>
            
 <ComboBox
-    selectedKey="{oUserDetailsPopoverModel>/userDetails/selectedTheme}"
+    selectedKey="{oGlobalAIModel>/userDetails/selectedTheme}"
     change=".onThemeChange"
     width="100%">
     <items>

@@ -23,7 +23,9 @@ sap.ui.define([
             this.setModel(models.createDeviceModel(), "device");
  
             const oGlobalModelData = {
-                dashboard: {},
+                dashboard: {
+                    tiles:[]
+                },
                 Notifications: [
             {
                 title: "New order (#2525)",
@@ -82,21 +84,21 @@ sap.ui.define([
             }
                 ],
                 userDetails: {
-                    username: "prvn",
-                    name: "Praveen Kumar",
+                    username: "GUEST",
+                    name: "GUEST",
                     lastLogin: "26/10/2025 10:00AM",                   
                     selectedTheme: "sap_horizon",
-                    assignedMenu:[
-                         { text: "Expense Tracker", icon: "sap-icon://wallet" },
-                        { text: "Expense Overview", icon: "sap-icon://expense-report" },
-                        { text: "Medicine History", icon: "sap-icon://medicine-box" }
-                    ]
+                    assignedMenu:[ ]
+                },
+                menuBar:{
+                    menuVisible:true
                 }
             };
 
             const oGlobalModel = new sap.ui.model.json.JSONModel(oGlobalModelData);
             sap.ui.getCore().setModel(oGlobalModel, "oGlobalAIModel");
- 
+            this.setModel(oGlobalModel, "oGlobalAIModel");
+
  
         },
         

@@ -10,9 +10,245 @@
 
 /* Home page end */
 
+/* Login Page -- start */
+/* Main container */
+.loginForm {
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    background-color: #f0f4f8;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Logo styling */
+.loginLogo {
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+}
+
+.loginLogo:hover {
+    transform: scale(1.1);
+}
+
+/* Header */
+.loginTitle {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #3b3b3b;
+    margin-bottom: 20px;
+    text-align: center;
+    animation: fadeIn 1s ease;
+}
+
+/* Input Fields */
+.inputField {
+    width: 100%;
+    margin-bottom: 15px;
+    /* padding: 12px; */
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.inputField:focus {
+    border-color: #0073e6;
+    outline: none;
+}
+
+/* Login Button */
+.loginButton {
+    width: 100%;
+    padding: 12px;
+    margin-top: 4px;
+    background-color: #0073e6;
+    color: white;
+    font-weight: bold;
+    border-radius: 6px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.loginButton:hover {
+    background-color: #005bb5;
+}
+
+/* Signup Text */
+.signupText {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 1rem;
+    color: #888;
+    transition: color 0.3s ease;
+}
+
+.signupText:hover {
+    color: #0073e6;
+}
+
+/* Signup Button */
+.signupButton {
+    width: 100%;
+    padding: 12px;
+    font-weight: bold;
+    background-color: transparent;
+    color: #0073e6;
+    border: 2px solid #0073e6;
+    border-radius: 6px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.signupButton:hover {
+    background-color: #0073e6;
+    color: white;
+}
+
+/* Footer */
+footer {
+    background-color: #f7f7f7;
+    padding: 10px 0;
+    margin-top: 20px;
+}
+
+footer .sapMBar {
+    padding: 0 20px;
+}
+
+footer .sapMText {
+    color: #888;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Add animation to the entire form */
+.loginForm {
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+/* Add a subtle bounce effect to the login button */
+.loginButton {
+    animation: bounce 2s infinite;
+}
 
 
+/* Login Page -- end */
 
+
+/* Dashboard :start */ 
+/* === Page Background === */
+.page-container {
+    background: var(--sapBackgroundColor); /* uses theme color */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* === Tile Container === */
+.tile-container {
+    padding: 2rem;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+/* === HBox Styling (tile layout row) === */
+.tile-container .sapMFlexBox {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2rem;
+}
+/* === GenericTile Styling (Blue Accent Theme) === */
+.sapMGT {
+    background: linear-gradient(145deg, #f5f9ff, #e8f1ff); /* light blue gradient background */
+    border: 2px solid #b3d4fc; /* subtle blue border */
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(30, 144, 255, 0.2); /* light blue glow */
+    transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+    cursor: pointer;
+}
+
+/* Hover effect: slightly stronger blue glow */
+.sapMGT:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(30, 144, 255, 0.35);
+    background: linear-gradient(145deg, #eaf3ff, #d6e8ff);
+}
+
+/* Optional: Focus or active state for keyboard navigation or press */
+.sapMGT:active,
+.sapMGT:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.3);
+    transform: scale(0.98);
+}
+
+/* === Tile Header & Footer Text in Blue Theme === */
+.sapMGT .sapMGTHdrTxt,
+.sapMGT .sapMGTSubHdrTxt {
+    color: #0a3d91; /* darker blue for text */
+    font-weight: 600;
+    text-align: center;
+}
+
+/* === Numeric Content (value) Styling === */
+.sapMNCLargeText {
+    color: #007aff; /* vivid blue for main value */
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.sapMNCLargeText[data-sap-ui-nc-color="Good"] {
+    color: var(--sapPositiveColor);
+}
+.sapMNCLargeText[data-sap-ui-nc-color="Critical"] {
+    color: var(--sapCriticalColor);
+}
+.sapMNCLargeText[data-sap-ui-nc-color="Error"] {
+    color: var(--sapNegativeColor);
+}
+
+/* === Responsive Adjustments === */
+@media (max-width: 768px) {
+    .tile-container {
+        padding: 1rem;
+        gap: 1rem;
+    }
+    .sapMGT {
+        width: 150px !important;
+        height: 150px !important;
+    }
+}
+@keyframes tileFadeIn {
+    0% { opacity: 0; transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+}
+.sapMGT {
+    animation: tileFadeIn 0.5s ease;
+}
+
+/* Dashbaord : End */
 
 
 

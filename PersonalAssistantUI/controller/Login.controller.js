@@ -36,6 +36,7 @@ function(BaseController, Controller, formatter, BusyIndicator, Filter, FilterOpe
 		},
 		onObjectMatched: function() {
 			BusyIndicator.hide();
+			sap.ui.getCore().getModel("oGlobalAIModel").setProperty("/menuBar/menuVisible",false);
 			 
 		},	
 		onLoginPress: function () {
