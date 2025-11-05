@@ -1,0 +1,105 @@
+<mvc:View controllerName="PersonalAssistantUI.controller.Dashboard"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:f="sap.f"
+	xmlns:mc="sap.suite.ui.microchart"
+	xmlns:smc="sap.ui.comp.smartmicrochart"
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:chart="sap.suite.ui.commons"
+	xmlns:viz="sap.viz.ui5.controls">
+	<!-- 🧭 ShellBar as fixed header -->
+	<f:ShellBar id="menuBar" title="Dashboard" class="customShellBar" homeIcon="{oGlobalAIModel>/applicationDetails/logoPath}" showCopilot="false" showSearch="false" showNotifications="false" visible="{oGlobalAIModel>/menuBar/menuVisible}">
+		<f:additionalContent>
+			<!-- Custom AI Assistant -->
+			<Button id="aiButton" icon="sap-icon://da" type="Transparent" tooltip="AI Assistant" press="onCopilotPress" />
+			<!-- Custom Notifications -->
+			<Button id="customNotificationBtn" icon="sap-icon://bell" type="Transparent" tooltip="Notifications" press="onUserNotificationPress" />
+		</f:additionalContent>
+		<f:menu>
+			<Menu items="{path: 'oGlobalAIModel>/userDetails/assignedMenu'}">
+				<MenuItem text="Dashboard" icon="sap-icon://flight" />
+				<MenuItem text="{oGlobalAIModel>header}" icon="{oGlobalAIModel>icon}" />
+			</Menu>
+		</f:menu>
+		<f:profile>
+			<Avatar id="userAvatarBtn" initials="{oGlobalAIModel>/userDetails/initial}" press=".onUserAvatarPress" />
+		</f:profile>
+	</f:ShellBar>
+	<Page showHeader="false" contentOnly="true">
+		<content>
+			<!-- 🌟 FIRST ROW: 3 KPI Microcharts -->
+			<HBox width="100%" class="customRow" wrap="Wrap" justifyContent="SpaceBetween">
+				<!-- Revenue -->
+				<VBox width="33%" height="180px" alignItems="Stretch" justifyContent="Center">
+					<HBox>
+						<VBox>
+							<Text text="Health Status" design="Bold" />
+							<mc:ComparisonMicroChart scale="M" shrinkable="true" class="sapUiSmallMargin" press="press" width="100%" maxValue="40" minValue="0">
+								<mc:data>
+									<mc:ComparisonMicroChartData title="Water" value="16" color="Good" displayValue="1L of 10L"/>
+									<mc:ComparisonMicroChartData title="Sleep" value="16" color="Good" displayValue="5hr of 8hr"/>
+									<mc:ComparisonMicroChartData title="Steps" value="26" color="Good" displayValue="1000 of 8000"/>
+								</mc:data>
+							</mc:ComparisonMicroChart>
+						</VBox>
+						<!-- Customer Growth -->
+						<VBox>
+							<Text text="Health Status" design="Bold" />
+							<mc:ColumnMicroChart press="press" class="sapUiSmallMargin" allowColumnLabels="true">
+								<mc:leftTopLabel>
+									<mc:ColumnMicroChartLabel label="0M" color="Good"/>
+								</mc:leftTopLabel>
+								<mc:rightTopLabel>
+									<mc:ColumnMicroChartLabel label="80M" color="Critical"/>
+								</mc:rightTopLabel>
+								<mc:leftBottomLabel>
+									<mc:ColumnMicroChartLabel label="June 1"/>
+								</mc:leftBottomLabel>
+								<mc:rightBottomLabel>
+									<mc:ColumnMicroChartLabel label="June 30"/>
+								</mc:rightBottomLabel>
+								<mc:columns>
+									<mc:ColumnMicroChartData value="60" label="Q1" color="Error"/>
+									<mc:ColumnMicroChartData value="80" label="Q2" displayValue="80M" color="Error"/>
+									<mc:ColumnMicroChartData value="-20" label="Q3" color="Error"/>
+									<mc:ColumnMicroChartData value="60" label="Q4" displayValue="avg" color="Neutral"/>
+									<mc:ColumnMicroChartData value="55" label="Q5" color="Neutral"/>
+								</mc:columns>
+							</mc:ColumnMicroChart>
+						</VBox>
+					</HBox>
+					<HBox alignItems="Center" justifyContent="SpaceBetween">
+						<Button icon="sap-icon://slim-arrow-left" press=".onSlideLeft" />
+						<ScrollContainer id="scrollTiles1" horizontal="true" vertical="false" width="100%" showScrollBar="false" class="noScroll">
+							<HBox id="tilesBox1" wrap="NoWrap" class="sapUiTinyMarginBeginEnd">
+								<GenericTile header="Tile 1" subheader="Status" frameType="TwoByHalf" />
+								<GenericTile header="Tile 2" subheader="Status" frameType="TwoByHalf" />
+								<GenericTile header="Tile 3" subheader="Status" frameType="TwoByHalf" />
+							</HBox>
+						</ScrollContainer>
+						<Button icon="sap-icon://slim-arrow-right" press=".onSlideRight" />
+					</HBox>
+				</VBox>
+				<!-- Profit Margin -->
+				<VBox width="24%" height="180px" alignItems="Stretch" justifyContent="Center">
+					<Text text="Day Routine" design="Bold" />
+					<List headerText="Address" >
+						<DisplayListItem label="Name" value="{SupplierName}12" />
+						<DisplayListItem label="Street" value="{Street} {HouseNumber}21" />
+						<DisplayListItem label="City" value="{ZIPCode} {City}21" type="Navigation"/>
+						<DisplayListItem label="Country" value="{Country}2121" type="Navigation" />
+						<DisplayListItem label="Country" value="{Country}2121" type="Navigation" />
+						<DisplayListItem label="Country" value="{Country}2121" type="Navigation" />
+					</List>
+				</VBox>
+			</HBox>
+			<!-- 🌟 AI Suggestion Buttons -->
+			<HBox justifyContent="Center" class="customRow" wrap="Wrap" alignItems="Center">
+				<Button text="Add Expense" icon="sap-icon://add-expense" press=".onAddExpense" />
+				<Button text="Log Mood" icon="sap-icon://heart" press=".onLogMood" />
+				<Button text="Add Appointment" icon="sap-icon://appointment-2" press=".onAddAppointment" />
+				<Button text="Upcoming Reminder" icon="sap-icon://bell" press=".onShowReminders" />
+			</HBox>
+		</content>
+	</Page>
+</mvc:View>

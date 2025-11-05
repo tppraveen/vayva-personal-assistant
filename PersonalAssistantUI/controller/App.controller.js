@@ -1,16 +1,8 @@
 sap.ui.define([
-    "sap/ui/core/mvc/Controller",
-    "sap/ui/core/Fragment",
-    "sap/ui/model/json/JSONModel",
-    "sap/m/MessageToast",
-    "sap/ui/core/Component"
+    "sap/ui/core/mvc/Controller"
 ],
-    function (Controller, Fragment, JSONModel, MessageToast, Component) {
+    function (Controller) {
         "use strict";
-        var oGlobalModel
         return Controller.extend("PersonalAssistantUI.controller.App", {
-             
-
-    
         });
     });

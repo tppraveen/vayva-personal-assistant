@@ -1,0 +1,88 @@
+<mvc:View
+    controllerName="PersonalAssistantUI.controller.Dashboard"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.f" xmlns:generic="sap.m"
+    xmlns:mc="sap.suite.ui.microchart"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+ 
+
+    <VBox fitContainer="true">
+
+        <!-- Collapsible Panel -->
+        <Panel
+            expandable="true"
+            expanded="false"
+            headerText="Highlights"
+            class="sapUiNoContentPadding sapUiSmallMarginBottom">
+
+            <!-- Carousel for Hot News / Featured tiles -->
+            <Carousel height="180px" loop="true" backgroundDesign="Transparent">
+                
+                <!-- Slide 1 -->
+                <VBox class="sapUiSmallMargin">
+                    <generic:GenericTile header="Hot News" subheader="Latest expense updates" class="sapUiTinyMargin genericTileStyle">
+                        <generic:TileContent unit="USD" footer="This Month">
+                            <generic:NumericContent value="1200" valueColor="Good" indicator="Up" />
+                        </generic:TileContent>
+                    </generic:GenericTile>
+                </VBox>
+
+                <!-- Slide 2 -->
+                <VBox class="sapUiSmallMargin">
+                    <generic:GenericTile header="Featured" subheader="Budget insights" class="sapUiTinyMargin genericTileStyle">
+                        <generic:TileContent unit="USD" footer="Budget Remaining">
+                            <generic:NumericContent value="850" valueColor="Neutral" indicator="Down" />
+                        </generic:TileContent>
+                    </generic:GenericTile>
+                </VBox>
+
+                <!-- Slide 3 -->
+                <VBox class="sapUiSmallMargin">
+                    <generic:GenericTile header="Alerts" subheader="Spending alerts" class="sapUiTinyMargin genericTileStyle">
+                        <generic:TileContent footer="Warnings">
+                            <generic:NumericContent value="3" valueColor="Critical" indicator="Up" />
+                        </generic:TileContent>
+                    </generic:GenericTile>
+                </VBox>
+
+            </Carousel>
+        </Panel>
+
+        <!-- Expense Summary Card -->
+        <f:Card
+            class="sapUiSmallMargin"
+            width="100%"
+            height="auto"
+            headerPosition="Top">
+
+            <f:header>
+                <f:CardHeader
+                    title="Expense Summary"
+                    subtitle="Overview of your recent spending"
+                    statusText="Updated 2h ago"
+                    iconSrc="sap-icon://money-bills" />
+            </f:header>
+
+            <f:content>
+                <VBox class="sapUiSmallMargin">
+                    <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginBottom">
+                        <Text text="Total Expenses:" />
+                        <ObjectNumber number="2,400" unit="USD" state="Error" />
+                    </HBox>
+                    <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginBottom">
+                        <Text text="Budget Used:" />
+                        <ObjectNumber number="65" unit="%" state="Critical" />
+                    </HBox>
+                    <HBox justifyContent="SpaceBetween">
+                        <Text text="Top Category:" />
+                        <Text text="Travel" />
+                    </HBox>
+                </VBox>
+            </f:content>
+
+        </f:Card>
+
+    </VBox> 
+</mvc:View>
+ 

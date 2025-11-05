@@ -47,7 +47,9 @@
         "sap.ui.comp": {},
         "sap.ui.generic.app": {},
         "sap.ui.table": {},
-        "sap.ushell": {}
+        "sap.ushell": {},
+        "sap.suite.ui.microchart": {},
+        "sap.viz": {}
       }
     },
     "contentDensities": {
@@ -106,6 +108,11 @@
           "name": "Dashboard",
           "pattern": "Dashboard",
           "target": "Dashboard"
+        },
+        {
+          "name": "Home",
+          "pattern": "Home",
+          "target": "Home"
         }
 
       ],
@@ -124,6 +131,13 @@
           "clearControlAggregation": false,
           "viewName": "Dashboard",
           "viewId": "Dashboard"
+        },
+        "Home": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewName": "Home",
+          "viewId": "Home"
         }
          
       }

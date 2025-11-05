@@ -10,13 +10,9 @@ sap.ui.define(
     ],
     function (Controller, formatter, _MessageToast, History, Fragment, JSONModel, Component) {
         "use strict";
-        var oGlobalModel;
-        return Controller.extend("PersonalAssistantUI.controller.BaseController", {
+         return Controller.extend("PersonalAssistantUI.controller.BaseController", {
             formatter: formatter,
-            onBaseInit: function () {
-                oGlobalModel = sap.ui.getCore().getModel("oGlobalAIModel");
-                this.getLoggedInUserDetailsAndNotifications();
-            },
+            
             // Success, Warning,Error message used in Line and Product Standard
             onShowSuccess: function (message) {
                 sap.m.MessageBox.success(
@@ -153,51 +149,7 @@ sap.ui.define(
 
             // ****************************** Notification End  ******************************
             // ****************************** UserDetails  Start ******************************
-            getLoggedInUserDetailsAndNotifications : function(){
-        let oDashboardData = oGlobalModel.getProperty("/userDetails");
-        oDashboardData.username="tppkPRVN"
-        oDashboardData.name="Praveen Kumar"
-        oDashboardData.lastLogin="26/10/2025 10:00AM"
-        oDashboardData.selectedTheme="sap_horizon",          
-        oDashboardData.assignedMenu.push({
-          header: "Expense",
-          subheader: "Manage your spending",
-          value: 200,
-          valueColor: "Good",
-          indicator: "Up",
-          scale: "Amount",
-          state: "Loaded"
-        });
-        oDashboardData.assignedMenu.push({
-          header: "Expense Tracker",
-          subheader: "Track your financial habits",
-          value: 15,
-          valueColor: "Neutral",
-          indicator: "None",
-          scale: "Track",
-          state: "Loaded"
-        });
-        oDashboardData.assignedMenu.push({
-          header: "Medicine History",
-          subheader: "View your medicine records",
-          value: 8,
-          valueColor: "Good",
-          indicator: "Up",
-          scale: "Medications",
-          state: "Loaded"
-        });
-        oDashboardData.assignedMenu.push({
-          header: "Calendar",
-          subheader: "View your schedule",
-          value: 3,
-          valueColor: "Good",
-          indicator: "Up",
-          scale: "Appointments",
-          state: "Loaded"
-        });
- 
-        oGlobalModel.refresh(true);
-            },
+          
             onUserAvatarPress: function (oEvent) {
                 var oView = this.getView();
 
@@ -223,7 +175,7 @@ sap.ui.define(
                 sap.ui.getCore().applyTheme(sSelectedKey);
                 this.getView().getModel("oUserDetailsPopoverModel").setProperty("/userDetails/selectedTheme", sSelectedKey);
                 // Update global model
-                oGlobalModel.setProperty("/userDetails/selectedTheme", sSelectedKey);
+                sap.ui.getCore().getModel("oGlobalAIModel").setProperty("/userDetails/selectedTheme", sSelectedKey);
             },
 
             onSettingsPress: function () {
@@ -240,6 +192,23 @@ sap.ui.define(
             },
             // ****************************** UserDetails  End ******************************
 
+            onSideNavButtonPress: function () {
+                var oToolPage = this.getView().byId("toolPage");
+                console.log("sihe")
+                var bSideExpanded = oToolPage.getSideExpanded();
+
+                this._setToggleButtonTooltip(bSideExpanded);
+
+                oToolPage.setSideExpanded(!oToolPage.getSideExpanded());
+            },
+            _setToggleButtonTooltip: function (bLarge) {
+                var oToggleButton = this.byId('sideNavigationToggleButton');
+                if (bLarge) {
+                    oToggleButton.setTooltip('Large Size Navigation');
+                } else {
+                    oToggleButton.setTooltip('Small Size Navigation');
+                }
+            },
 
 
 

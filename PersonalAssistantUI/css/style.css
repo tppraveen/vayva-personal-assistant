@@ -157,28 +157,45 @@ footer .sapMText {
 /* Login Page -- end */
 
 
-/* Dashboard :start */ 
-/* === Page Background === */
-.page-container {
-    background: var(--sapBackgroundColor); /* uses theme color */
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* Dashboard :start */  
+/* Light blue + light green */
+.newsPanel .sapMPanelContent {
+    background: linear-gradient(145deg, #65c1ff 0%, #8dffb6 100%); 
+     
+    padding: 15px;
+ }
+.genericTileStyle {
+    background: linear-gradient(0deg, lightcyan, white, lightcyan);
 }
 
-/* === Tile Container === */
-.tile-container {
-    padding: 2rem;
-    gap: 2rem;
-    flex-wrap: wrap;
+/* ====== Tool Header (Top Menu Bar) ====== */
+.customToolHeader {
+    background: linear-gradient(145deg, #0fb470c4 0%, #7e5bf1b3 100%);
+    box-shadow:
+        0 3px 10px rgba(0,0,0,0.4),
+        inset 0 1px 2px rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    color: #ffffff;
 }
 
-/* === HBox Styling (tile layout row) === */
-.tile-container .sapMFlexBox {
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 2rem;
+.customToolHeader .sapMBtn {
+    color: #e2e8f0 !important;
 }
+.customToolHeader .sapMBtn:hover {
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 6px;
+}
+.customToolHeader .sapMBtnIcon {
+    color: #f1f5f9 !important;
+}
+
+.customToolHeader .sapMTitle {
+    color: #f8fafc !important;
+    font-weight: 600;
+}
+ 
+  
+
 /* === GenericTile Styling (Blue Accent Theme) === */
 .sapMGT {
     background: linear-gradient(145deg, #f5f9ff, #e8f1ff); /* light blue gradient background */

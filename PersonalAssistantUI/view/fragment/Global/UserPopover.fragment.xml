@@ -14,20 +14,27 @@
            <!-- User Info -->
 <VBox class="sapUiSmallMargin sapUiMediumMarginTopBottom" justifyContent="Center" alignItems="Start" >
     
-    <HBox class="sapUiSmallMarginBottom" justifyContent="SpaceBetween" width="100%">
-    <Text text="{i18n>USERNAME_LABEL}" />
+    <HBox   visible="{= ${oGlobalAIModel>/globalAppConfig/isUserDetailsLoaded} }" class="sapUiSmallMarginBottom" justifyContent="SpaceBetween" width="100%" >
+    <Text text="{i18n>USERNAME_LABEL} " />
     <Text text="{oGlobalAIModel>/userDetails/username}" class="colorCyan" />
 </HBox>
 
-   <HBox class="sapUiSmallMarginBottom" justifyContent="SpaceBetween" width="100%">
+   <HBox visible="{= ${oGlobalAIModel>/globalAppConfig/isUserDetailsLoaded} }"  class="sapUiSmallMarginBottom" justifyContent="SpaceBetween" width="100%">
     <Text text="{i18n>NAME_LABEL}" />
-    <Text text="{oGlobalAIModel>/userDetails/name}" class="colorCyan" />
+    <Text text="{oGlobalAIModel>/userDetails/firstName} {oGlobalAIModel>/userDetails/lastName}" class="colorCyan" />
 </HBox>
 
-    <HBox class="sapUiSmallMarginBottom" justifyContent="SpaceBetween" width="100%">
+    <HBox visible="{= ${oGlobalAIModel>/globalAppConfig/isUserDetailsLoaded} }"  class="sapUiSmallMarginBottom" justifyContent="SpaceBetween" width="100%">
     <Text text="{i18n>LASTLOGIN_LABEL}" />
     <Text text="{oGlobalAIModel>/userDetails/lastLogin}" class="colorCyan" />
 </HBox>
+<VBox visible="{= !${oGlobalAIModel>/globalAppConfig/isUserDetailsLoaded} }"  class="sapUiSmallMarginBottom" justifyContent="SpaceBetween" width="100%">
+     <Button text="{i18n>LOGIN_BTN}" type="Emphasized" class="loginButton" />
+
+                    <!-- Signup Button -->
+                    <Label text="{i18n>DONT_HAVE_ACCOUNT_LABEL}" class="signupText"/>
+                    <Button text="{i18n>SIGN_UP_BTN}" type="Transparent" class="signupButton"/>
+</VBox>
  
 
 

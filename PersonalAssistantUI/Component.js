@@ -23,6 +23,48 @@ sap.ui.define([
             this.setModel(models.createDeviceModel(), "device");
  
             const oGlobalModelData = {
+                globalAppConfig:{
+                    isApplicationDataLoaded :false,
+                    isUserDetailsLoaded :false
+                },
+                applicationDetails:{
+                    applicationName:"",
+                    logoPath:"",
+                    footerName:"",
+                    companyInfo: {
+                    companyLogoPath:"",
+                        "name": "PRAV Technovations",
+                        "address": "54,west Street,Thandampalayam",
+                        "website": "https://www.praveen.com"
+                    }
+
+                },
+                dashboard: {
+                    tiles:[]
+                },
+                Notifications: [ ],
+                userDetails: {
+                    initial:"",
+                    username: "",
+                    firstName: "",
+                    lastName: "",
+                    lastLogin: "",                   
+                    selectedTheme: "sap_horizon",
+                    navItems:[ ],
+                    assignedMenu:[ ]
+                },
+                menuBar:{
+                    menuVisible:false
+                }
+            };
+
+
+
+            const oGlobalModelData2 = {
+                applicationDetails:{
+                    logoPath:"image/pravzyraally.png",
+                    footerName:"PRVN Group of Enterprises"
+                },
                 dashboard: {
                     tiles:[]
                 },
@@ -84,9 +126,10 @@ sap.ui.define([
             }
                 ],
                 userDetails: {
-                    username: "GUEST",
-                    name: "GUEST",
-                    lastLogin: "26/10/2025 10:00AM",                   
+                    initial:"",
+                    username: "",
+                    name: "",
+                    lastLogin: "",                   
                     selectedTheme: "sap_horizon",
                     assignedMenu:[ ]
                 },
