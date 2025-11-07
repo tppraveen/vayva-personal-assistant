@@ -1,28 +1,23 @@
 <core:FragmentDefinition
-    xmlns="sap.m"
-    xmlns:core="sap.ui.core">
-
-    <Popover title="Notifications" placement="Bottom" showHeader="true" showArrow="true">
-        <NotificationList items="{notif>/notifications}">
-            <NotificationListItem
-                title="{notif>title}"
-                description="{notif>description}"
-                datetime="{notif>datetime}"
-                unread="{notif>unread}"
-                priority="{notif>priority}"
-                authorName="{notif>authorName}"
-                authorPicture="{notif>authorPicture}"
-                authorInitials="{notif>authorInitials}"
-                authorAvatarColor="{notif>authorAvatarColor}"
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<Popover title="{i18n>NNOTIFICATIONS_TITLE}" width="Auto" placement="Bottom" showHeader="true" showArrow="true">
+		<NotificationList items="{oGlobalAIModel>/userDetails/UserNotifications}">
+			<NotificationListItem
+                title="{oGlobalAIModel>title}"
+                description="{oGlobalAIModel>description}"
+                datetime="{oGlobalAIModel>datetime}"
+                unread="{oGlobalAIModel>unread}"
+                priority="{oGlobalAIModel>priority}"
+                authorName="{oGlobalAIModel>authorName}"
+                authorPicture="{oGlobalAIModel>authorPicture}"
+                authorInitials="{oGlobalAIModel>authorInitials}"
+                authorAvatarColor="{oGlobalAIModel>authorAvatarColor}"
                 showCloseButton="true"
                 close=".onItemClose"
                 press=".onListItemPress">
-                <buttons>
-                    <Button text="{notif>buttons/0/text}" press=".onAcceptPress" visible="{= !!${notif>buttons/0} }"/>
-                    <Button text="{notif>buttons/1/text}" press=".onRejectPress" visible="{= !!${notif>buttons/1} }"/>
-                </buttons>
-            </NotificationListItem>
-        </NotificationList>
-    </Popover>
-
+				<!-- <buttons><Button text="{oGlobalAIModel>buttons/0/text}" press=".onAcceptPress" visible="{= !!${oGlobalAIModel>buttons/0} }"/><Button text="{oGlobalAIModel>buttons/1/text}" press=".onRejectPress" visible="{= !!${oGlobalAIModel>buttons/1} }"/></buttons> -->
+			</NotificationListItem>
+		</NotificationList>
+	</Popover>
 </core:FragmentDefinition>

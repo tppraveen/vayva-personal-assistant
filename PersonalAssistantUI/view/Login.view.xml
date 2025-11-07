@@ -8,24 +8,22 @@
     height="100%">
     
   <!-- ShellBar as fixed header -->
-  <f:ShellBar
-      id="menuBar"
+  <f:ShellBar 
        class="customShellBar"
       homeIcon="{oGlobalAIModel>/applicationDetails/logoPath}"
       showCopilot="false"
       showSearch="false"
       showNotifications="false" >
-
-       
  
-  
       <f:profile>
           <Avatar id="userAvatarBtn" initials="{oGlobalAIModel>/userDetails/initial}" press=".onUserAvatarPress" />
       </f:profile>
   </f:ShellBar>
     <Page showHeader="false" enableScrolling="true" class="sapUiResponsivePadding">
         <content>
-            <VBox height="450px" alignItems="Center" justifyContent="Center">
+        
+            <VBox height="450px"  width="100%" class="sapUiContentPadding"
+                fitContainer="true" alignItems="Center" justifyContent="Center" >
                 <!-- Login/Signup Form -->
                 <VBox justifyContent="Center" alignItems="Center" class="loginForm">
                     <!-- Logo (optional) -->

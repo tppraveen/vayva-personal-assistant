@@ -3,7 +3,7 @@ sap.ui.define([], () => {
 
 	return {
      
-		  fnSingleBooleanCheck: function(bLoaded) {
+		  fnSingleBooleanCheck: function(bLoaded) { // no need for ref only
           return !!bLoaded; // ensures a proper boolean
       }
      

@@ -100,13 +100,13 @@
       "routes": [
         {
           "name": "Login",
-          "pattern": "",
+          "pattern": "Login",
           "target": "Login"
         },
        
         {
           "name": "Dashboard",
-          "pattern": "Dashboard",
+          "pattern": "",
           "target": "Dashboard"
         },
         {

@@ -6,19 +6,20 @@
 	xmlns:mc="sap.suite.ui.microchart"
 	xmlns:smc="sap.ui.comp.smartmicrochart"
 	xmlns="sap.m"
+	xmlns:m="sap.m"
 	xmlns:core="sap.ui.core"
 	xmlns:viz="sap.viz.ui5.controls"
 	xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
 	xmlns:viz.data="sap.viz.ui5.data"
  >
-	<Page showHeader="false" contentOnly="true">
+	<Page showHeader="false"  >
 		<content>
-			<!-- <VBox fitContainer="false"> -->
+			<!-- <VBox width="100%" fitContainer="true"> -->
 			<!-- Collapsible Panel -->
 			<Panel
-            expandable="false"
-            expanded="false"
-            class="sapUiNoContentPadding sapUiSmallMarginBottom newsPanel">
+				expandable="false"
+				expanded="false"
+				class="sapUiNoContentPadding sapUiSmallMarginBottom newsPanel">
 				<!-- Show/Hide Button -->
 				<!-- Custom "Header" with Title left and Button right -->
 				<HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiSmallMargin">
@@ -28,117 +29,185 @@
 						<Label text="Overview Updates"  />
 					</VBox>
 					<!-- Right show/hide button -->
-					<Button text="Show" press="onToggleCarousel" />
+					<Button   press="onToggleCarousel"
+					text="{= !${oGlobalAIModel>/DashboardPage/FeedsCarouselToogle} ? 'show' : 'hide' }" 
+					icon="{= !${oGlobalAIModel>/DashboardPage/FeedsCarouselToogle} ? 'sap-icon://show' : 'sap-icon://hide' }" />
 				</HBox>
 				<!-- Carousel for Hot News / Featured tiles -->
-				<Carousel id="idCarousel" height="auto" loop="true" backgroundDesign="Transparent">
-					<!-- Slide 1 -->
-					<VBox class="sapUiSmallMargin">
-						<HBox>
-							<generic:GenericTile header="Hot News" subheader="Latest expense updates" class="sapUiTinyMargin genericTileStyle">
-								<generic:TileContent unit="USD" footer="This Month">
-									<generic:NumericContent value="1200" valueColor="Good" indicator="Up" />
-								</generic:TileContent>
-							</generic:GenericTile>
-							<generic:GenericTile header="Featured" subheader="Budget insights" class="sapUiTinyMargin genericTileStyle">
-								<generic:TileContent unit="USD" footer="Budget Remaining">
-									<generic:NumericContent value="850" valueColor="Neutral" indicator="Down" />
-								</generic:TileContent>
-							</generic:GenericTile>
-						</HBox>
-					</VBox>
-					<!-- Slide 2 -->
-					<VBox class="sapUiSmallMargin">
-						<generic:GenericTile header="Featured" subheader="Budget insights" class="sapUiTinyMargin genericTileStyle">
-							<generic:TileContent unit="USD" footer="Budget Remaining">
-								<generic:NumericContent value="850" valueColor="Neutral" indicator="Down" />
-							</generic:TileContent>
-						</generic:GenericTile>
-					</VBox>
-					<!-- Slide 3 -->
-					<VBox class="sapUiSmallMargin">
-						<generic:GenericTile header="Alerts" subheader="Spending alerts" class="sapUiTinyMargin genericTileStyle">
-							<generic:TileContent footer="Warnings">
-								<generic:NumericContent value="3" valueColor="Critical" indicator="Up" />
-							</generic:TileContent>
-						</generic:GenericTile>
-					</VBox>
-				</Carousel>
+				 
+
+<Carousel
+    id="idCarouse"
+    backgroundDesign="Transparent"
+    height="auto"
+    pages="{ path: 'oGlobalAIModel>/DashboardPage/Tiles' }">
+
+    <customLayout>
+        <CarouselLayout visiblePagesCount="{= ${device>/system/phone} ? 1 : 2 }" />
+    </customLayout>
+
+    <m:FlexBox
+        direction="Row"
+        wrap="Wrap"
+        justifyContent="Center"
+        alignItems="Center">
+
+        <m:Panel
+            class="quickStartCard"
+            height="auto">
+            
+            <VBox class="  ">
+
+                <!-- Image with Text Overlay -->
+                <VBox  class="imageOverlayContainer" style="position: relative; display: inline-block;">
+                    <Image 
+                        src="{oGlobalAIModel>image}"
+                        densityAware="false"
+                        width="300px"
+                        height="180px"
+                        class="sapUiTinyMarginBottom"/>
+                    
+                    <!-- Overlay Text -->
+                    <VBox 
+                        class="overlayText"
+                        style="position: absolute; top: 10px; left: 10px; color: white; background-color: rgba(0,0,0,0.5); padding: 5px; border-radius: 3px;">
+                        <m:Label text="{oGlobalAIModel>header}" design="Bold"/>
+                        <m:Text text="{oGlobalAIModel>subheader}" />
+                    </VBox>
+                </VBox>
+
+            </VBox>
+        </m:Panel>
+
+    </m:FlexBox>
+</Carousel>
+
+			
+
 			</Panel>
 			<!-- Main Layout Grid -->
-			<HBox  width="100%" renderType="Bare" class="sapUiSmallMarginTop">
-				<!-- Left Section (2 parts width) -->
-				<VBox width="53.3%" class="sapUiSmallMarginEnd">
-					<!-- First Row -->
-					<!-- <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginBottom"> -->
-					<FlexBox
-            class="sapUiSmallMarginBottom"
-            justifyContent="SpaceBetween"
-            direction="{= ${device>/system/desktop} ? 'Row' : 'Column' }">
-            <VBox  justifyContent="Center" alignItems="Center">
-            <Label text="Health Status"/>
-						<mc:ComparisonMicroChart scale="M" shrinkable="true" class="sapUiSmallMargin" press="press" width="100%" maxValue="40" minValue="0">
-							<mc:data>
-								<mc:ComparisonMicroChartData title="Water" value="16" color="Good" displayValue="1L of 10L"/>
-								<mc:ComparisonMicroChartData title="Sleep" value="16" color="Good" displayValue="5hr of 8hr"/>
-								<mc:ComparisonMicroChartData title="Steps" value="26" color="Good" displayValue="1000 of 8000"/>
-							</mc:data>
-						</mc:ComparisonMicroChart>
-            </VBox>
-            <VBox justifyContent="Center" alignItems="Center">
-
-             <Label text="Monthly Overview"/>
-						<mc:ColumnMicroChart press="press" class="sapUiSmallMargin" allowColumnLabels="true">
-							<mc:leftTopLabel>
-								<mc:ColumnMicroChartLabel label="0M" color="Good"/>
-							</mc:leftTopLabel>
-							<mc:rightTopLabel>
-								<mc:ColumnMicroChartLabel label="80M" color="Critical"/>
-							</mc:rightTopLabel>
-							<mc:leftBottomLabel>
-								<mc:ColumnMicroChartLabel label="June 1"/>
-							</mc:leftBottomLabel>
-							<mc:rightBottomLabel>
-								<mc:ColumnMicroChartLabel label="June 30"/>
-							</mc:rightBottomLabel>
-							<mc:columns>
-								<mc:ColumnMicroChartData value="60" label="Q1" color="Error"/>
-								<mc:ColumnMicroChartData value="80" label="Q2" displayValue="80M" color="Error"/>
-								<mc:ColumnMicroChartData value="-20" label="Q3" color="Error"/>
-								<mc:ColumnMicroChartData value="60" label="Q4" displayValue="avg" color="Neutral"/>
-								<mc:ColumnMicroChartData value="55" label="Q5" color="Neutral"/>
-							</mc:columns>
-						</mc:ColumnMicroChart>
-                          </VBox>
-
-					</FlexBox>
-					<!-- Second Row -->
-					<FlexBox
-            class="sapUiSmallMarginBottom"
-            justifyContent="SpaceBetween"
-            visible="{=${device>/system/desktop}}">
-						<VBox width="100%" height="100%" >
-            
-             <Label text="Spend Overview"/>
-							<viz:VizFrame width="100%"
-                id="idColumnChart"
-                vizType="column"
-                vizProperties='{
-                    "title": {
-                        "visible": false
-                    }
-                }'
-                model=""
-                dataset="{oExpenseOverviewChart>/values}">
+			<HBox justifyContent="Center" class="customRow" wrap="Wrap" alignItems="SpaceBetween" >
+				<Button text="Add Expense" icon="sap-icon://add" press=".onAddExpense" />
+				<Button text="Log Mood" icon="sap-icon://heart" press=".onLogMood"  class="sapUiSmallMarginBegin"/>
+				<Button text="Add Appointment" icon="sap-icon://appointment-2" press=".onAddAppointment"  class="sapUiSmallMarginBegin" />
+				<Button text="Upcoming Reminder" icon="sap-icon://bell" press=".onShowReminders"  class="sapUiSmallMarginBegin"/>
+			</HBox>
+			<!-- </VBox>  -->
+			<!-- MAIN FLEX CONTAINER -->
+			<m:FlexBox
+    direction="{= ${device>/system/phone} ? 'Column' : 'Row' }"
+    width="100%"
+    height="100%"
+    fitContainer="true">
+				<!-- LEFT SIDE (Desktop) or Top (Mobile) -->
+				<m:FlexBox
+      direction="Column"
+      width="{= ${device>/system/phone} ? '100%' : '65%'}"
+      justifyContent="Start"
+      alignItems="Stretch"
+      class="sapUiSmallMargin">
+					<!-- Health + Overview (side-by-side on desktop, stacked on mobile) -->
+					<m:FlexBox
+        direction="{= ${device>/system/phone} ? 'Row' : 'Row' }"
+        justifyContent="SpaceBetween"
+        width="100%">
+						<HBox width="{= ${device>/system/phone} ? '50%' : '50%'}">
+							<VBox  justifyContent="Center" alignItems="Center">
+								<Label text="Health Status"/>
+								<mc:ComparisonMicroChart scale="M" shrinkable="true" class="sapUiSmallMargin" press="press" width="100%"
+						 maxValue="{oGlobalAIModel>/DashboardPage/healthStatusData/maxValue}" 
+						 minValue="{oGlobalAIModel>/DashboardPage/healthStatusData/maxValue}">
+									<mc:data  >
+										<mc:ComparisonMicroChartData 
+									title="{oGlobalAIModel>/DashboardPage/healthStatusData/lists/0/title}" 
+									value="{oGlobalAIModel>/DashboardPage/healthStatusData/lists/0/value}" 
+									color="{oGlobalAIModel>/DashboardPage/healthStatusData/lists/0/color}" 
+									displayValue="{oGlobalAIModel>/DashboardPage/healthStatusData/lists/0/displayValue}" />
+										<mc:ComparisonMicroChartData 
+									title="{oGlobalAIModel>/DashboardPage/healthStatusData/lists/1/title}" 
+									value="{oGlobalAIModel>/DashboardPage/healthStatusData/lists/1/value}" 
+									color="{oGlobalAIModel>/DashboardPage/healthStatusData/lists/1/color}" 
+									displayValue="{oGlobalAIModel>/DashboardPage/healthStatusData/lists/1/displayValue}" />
+										<mc:ComparisonMicroChartData 
+									title="{oGlobalAIModel>/DashboardPage/healthStatusData/lists/2/title}" 
+									value="{oGlobalAIModel>/DashboardPage/healthStatusData/lists/2/value}" 
+									color="{oGlobalAIModel>/DashboardPage/healthStatusData/lists/2/color}" 
+									displayValue="{oGlobalAIModel>/DashboardPage/healthStatusData/lists/2/displayValue}" />
+									</mc:data>
+								</mc:ComparisonMicroChart>
+							</VBox>
+						</HBox>
+						<HBox width="{= ${device>/system/phone} ? '50%' : '50%'}">
+							<VBox justifyContent="Center" alignItems="Center">
+								<Label text="Monthly Overview"/>
+								<mc:ColumnMicroChart press="press" class="sapUiSmallMargin" allowColumnLabels="true">
+									<!-- Binding columns -->
+									<mc:columns>
+										<mc:ColumnMicroChartData 
+            value="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/0/value}" 
+            label="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/0/label}" 
+            displayValue="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/0/displayValue}" 
+            color="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/0/color}" />
+										<mc:ColumnMicroChartData 
+            value="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/1/value}" 
+            label="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/1/label}" 
+            displayValue="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/1/displayValue}" 
+            color="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/1/color}" />
+										<mc:ColumnMicroChartData 
+            value="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/2/value}" 
+            label="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/2/label}" 
+            displayValue="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/2/displayValue}" 
+            color="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/2/color}" />
+										<mc:ColumnMicroChartData 
+            value="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/3/value}" 
+            label="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/3/label}" 
+            displayValue="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/3/displayValue}" 
+            color="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/3/color}" />
+										<mc:ColumnMicroChartData 
+            value="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/4/value}" 
+            label="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/4/label}" 
+            displayValue="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/4/displayValue}" 
+            color="{oGlobalAIModel>/DashboardPage/WeeklyExpenseChartData/4/color}" />
+									</mc:columns>
+								</mc:ColumnMicroChart>
+							</VBox>
+						</HBox>
+					</m:FlexBox>
+					<!-- Chart below -->
+					<HBox width="100%" visible="{= ${device>/system/desktop}}">
+						<VBox width="100%"   >
+							<Label text="Spend Overview"/>
+							<viz:VizFrame width="100%"  
+								id="idColumnChart"
+								vizType="column"
+								vizProperties='{
+									"title": {
+											"visible": false
+										},
+										"legend": { "visible": false },
+										"layout": { "padding": { "bottom": 80 } },   
+										"categoryAxis": {
+											"label": {
+												"rotation": 45,       
+												"showAsWrapped": false,
+												"visible": true
+											}
+										},
+										"valueAxis": {
+											"title": { "visible": false }
+										}
+									}'
+								 
+								dataset="{oMonthlyExpenseChartData>/values}">
 								<!-- Dataset -->
 								<viz:dataset>
-									<viz.data:FlattenedDataset data="{oExpenseOverviewChart>/values}">
+									<viz.data:FlattenedDataset data="{oMonthlyExpenseChartData>/values}">
 										<viz.data:dimensions>
-											<viz.data:DimensionDefinition name="Week" value="{oExpenseOverviewChart>Week}"/>
+											<viz.data:DimensionDefinition name="Week" value="{oMonthlyExpenseChartData>Week}"/>
 										</viz.data:dimensions>
 										<viz.data:measures>
-											<viz.data:MeasureDefinition name="Income" value="{oExpenseOverviewChart>Income}"/>
-											<viz.data:MeasureDefinition name="Expense" value="{oExpenseOverviewChart>Expense}"/>
+											<viz.data:MeasureDefinition name="Income" value="{oMonthlyExpenseChartData>Income}"/>
+											<viz.data:MeasureDefinition name="Expense" value="{oMonthlyExpenseChartData>Expense}"/>
 										</viz.data:measures>
 									</viz.data:FlattenedDataset>
 								</viz:dataset>
@@ -149,93 +218,52 @@
 								</viz:feeds>
 							</viz:VizFrame>
 						</VBox>
-					</FlexBox>
-				</VBox>
-				<!-- Right Section (1 part width) -->
-				<VBox width="46.6%" class="sapUiNoContentPadding sapUiSmallMarginBegin" >
-        
-             <Label text="Recurring/Remianders " alignItems="Center"/>
-					<NotificationList width="100%"
+					</HBox>
+				</m:FlexBox>
+				<!-- RIGHT SIDE (Desktop only) -->
+				<HBox 
+      width="{= ${device>/system/phone} ? '100%' : '45%'}"
+      class=" ">
+					<VBox width="100%" class="sapUiNoContentPadding  "  >
+						<!-- <HBox width="100%" fitContainer="true"> -->
+						<Label text="Recurring/Remianders " alignItems="Center"/>
+						<NotificationList width="100%"
               id="idNotificationList"
               items="{
-                  path: 'upcomingReminders>/reminders'
+                  path: 'oUpcomingRemindersData>/reminders'
               }"
               showUnreadStatus="true">
-
-              <NotificationListItem
-                  title="{upcomingReminders>title}"
-                  description="{upcomingReminders>description}"
-                  datetime="{upcomingReminders>datetime}"
-                  unread="{upcomingReminders>unread}"
-                  priority="{upcomingReminders>priority}"
-                  authorName="{upcomingReminders>authorName}"
-                  authorPicture="{upcomingReminders>authorPicture}"
+							<NotificationListItem
+                  title="{oUpcomingRemindersData>title}"
+                  description="{oUpcomingRemindersData>description}"
+                  datetime="{oUpcomingRemindersData>datetime}"
+                  unread="{oUpcomingRemindersData>unread}"
+                  priority="{oUpcomingRemindersData>priority}"
+                  authorName="{oUpcomingRemindersData>authorName}"
+                  authorPicture="{oUpcomingRemindersData>authorPicture}"
                   showCloseButton="true"
                   press=".onNotificationPress">
-
-                  <buttons>
-                      <Button
+								<buttons>
+									<Button
                           icon="sap-icon://accept"
                           text="Complete"
                           press=".onCompletePress"/>
-                      <Button
+									<Button
                           icon="sap-icon://sys-cancel"
                           text="Ignore"
                           press=".onIgnorePress"/>
-                      <Button
+									<Button
                           icon="sap-icon://schedule"
                           text="Reschedule"
                           press=".onReschedulePress"/>
-                  </buttons>
-
-              </NotificationListItem>
-          </NotificationList>
-				</VBox>
-			</HBox>
-      
-			<HBox  width="100%" renderType="Bare" class="sapUiSmallMarginTop" visible="{= !${device>/system/desktop}}">
-      <!-- Visisble only mobile -->
-       
-					 
-            <VBox width="100%"  justifyContent="Center"  >
-             <Label text="Spend Overview"/>
-							<viz:VizFrame width="100%"
-                id="idColumnChart2"
-                vizType="column"
-                vizProperties='{
-                    "title": {
-                        "visible": false
-                    }
-                }'
-                model=""
-                dataset="{oExpenseOverviewChart>/values}">
-								<!-- Dataset -->
-								<viz:dataset>
-									<viz.data:FlattenedDataset data="{oExpenseOverviewChart>/values}">
-										<viz.data:dimensions>
-											<viz.data:DimensionDefinition name="Week" value="{oExpenseOverviewChart>Week}"/>
-										</viz.data:dimensions>
-										<viz.data:measures>
-											<viz.data:MeasureDefinition name="Income" value="{oExpenseOverviewChart>Income}"/>
-											<viz.data:MeasureDefinition name="Expense" value="{oExpenseOverviewChart>Expense}"/>
-										</viz.data:measures>
-									</viz.data:FlattenedDataset>
-								</viz:dataset>
-								<!-- Feeds -->
-								<viz:feeds>
-									<viz.feeds:FeedItem uid="valueAxis" type="Measure" values="Income,Expense"/>
-									<viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="Week"/>
-								</viz:feeds>
-							</viz:VizFrame>
-            </VBox>
-      </HBox>
-			<HBox justifyContent="Center" class="customRow" wrap="Wrap" alignItems="SpaceBetween" >
-				<Button text="Add Expense" icon="sap-icon://add-expense" press=".onAddExpense" />
-				<Button text="Log Mood" icon="sap-icon://heart" press=".onLogMood" />
-				<Button text="Add Appointment" icon="sap-icon://appointment-2" press=".onAddAppointment" />
-				<Button text="Upcoming Reminder" icon="sap-icon://bell" press=".onShowReminders" />
-			</HBox>
-			<!-- </VBox>  -->
+								</buttons>
+							</NotificationListItem>
+						</NotificationList>
+						<!-- </HBox> -->
+					</VBox>
+				</HBox>
+			</m:FlexBox>
+			<!-- </VBox> -->
 		</content>
 	</Page>
 </mvc:View>

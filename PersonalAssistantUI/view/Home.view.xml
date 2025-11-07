@@ -1,70 +1,62 @@
 <mvc:View
     controllerName="PersonalAssistantUI.controller.Dashboard"
-     xmlns="sap.m"
- 	xmlns:mvc="sap.ui.core.mvc"
+	xmlns="sap.m"
+	xmlns:mvc="sap.ui.core.mvc"
 	xmlns:tnt="sap.tnt"
 	height="100%">
 	<tnt:ToolPage id="toolPage" >
 		<tnt:header>
 			<tnt:ToolHeader class="customToolHeader" homeIcon="{oGlobalAIModel>/applicationDetails/logoPath}" 
-    homeIconPress=".onHomeIconPress">
-   
-
+    			homeIconPress=".onHomeIconPress">
 				<Button
 					id="sideNavigationToggleButton"
 					icon="sap-icon://menu2"
 					type="Transparent"
-					press=".onSideNavButtonPress">
+					tooltip="{i18n>NAVIGATION_TOGGLE_BTN_TOOLTIP}"
+					press=".onSideNavButtonPress"> 
 					<layoutData>
 						<OverflowToolbarLayoutData priority="NeverOverflow" />
 					</layoutData>
 				</Button>
 				<ToolbarSpacer width="20px" />
-         <Button
-        id="appLogoBtn"
-        type="Transparent"
-        icon="{oGlobalAIModel>/applicationDetails/companyInfo/companyLogoPath}" 
-        text="{oGlobalAIModel>/applicationDetails/applicationName}"
-        press=".onHomeIconPress"
-        iconFirst="true"   
-        tooltip="Go to Home">
-        <layoutData>
-            <OverflowToolbarLayoutData priority="NeverOverflow" />
-        </layoutData>
-    </Button>
-        
-
-			
-			 
-			 
-			 
+				<Button
+					id="appLogoBtn"
+					type="Transparent"
+					icon="{oGlobalAIModel>/applicationDetails/companyInfo/companyLogoPath}" 
+					text="{oGlobalAIModel>/applicationDetails/applicationName}"
+					press=".onHomeIconPress"
+					iconFirst="true"   
+					tooltip="{i18n>GO_TO_HOME_TOOLTIP}">
+					<layoutData>
+						<OverflowToolbarLayoutData priority="NeverOverflow" />
+					</layoutData>
+				</Button>
 				<tnt:ToolHeaderUtilitySeparator />
 				<ToolbarSpacer>
 					<layoutData>
 						<OverflowToolbarLayoutData priority="NeverOverflow" minWidth="20px" />
 					</layoutData>
 				</ToolbarSpacer>
-        	<Button  id="aiButton"
+				<Button  id="aiButton"
                 icon="sap-icon://da"
                 type="Transparent"
-                tooltip="AI Assistant"
+				visible="{oGlobalAIModel>/ApplicationConfigurations/showPilotAIButton}"
+                tooltip="{i18n>AI_ASSISTANT_TOOLTIP}"
                 press="onCopilotPress">
 					<layoutData>
 						<OverflowToolbarLayoutData priority="Low" />
 					</layoutData>
-				</Button> 
-        
+				</Button>
 				<Button id="customNotificationBtn"
                 icon="sap-icon://bell"
                 type="Transparent"
-                tooltip="Notifications"
+                tooltip="{i18n>NOTIFICATIONS_TOOLTIP}"
                 press="onUserNotificationPress">
 					<layoutData>
 						<OverflowToolbarLayoutData priority="Low" />
 					</layoutData>
 				</Button>
-
-				<Button text="{oGlobalAIModel>/userDetails/initial} {oGlobalAIModel>/userDetails/navItems/0/title}" type="Transparent" press=".onUserAvatarPress" ariaHasPopup="Menu">
+				<Button text="{oGlobalAIModel>/userDetails/initial}" type="Transparent" press=".onUserAvatarPress" ariaHasPopup="Menu">
 					<layoutData>
 						<OverflowToolbarLayoutData priority="NeverOverflow" />
 					</layoutData>
@@ -72,13 +64,12 @@
 			</tnt:ToolHeader>
 		</tnt:header>
 		<tnt:sideContent>
-    
 			<tnt:SideNavigation class="customSideNav"
 				expanded="true"
 				itemPress=".onItemPress"
 				selectedKey="{/selectedKey}"
 				itemSelect=".onItemSelect">
-    <tnt:NavigationList items="{path: 'oGlobalAIModel>/userDetails/navItems'}"  >
+				<tnt:NavigationList items="{path: 'oGlobalAIModel>/userDetails/navigationMenus'}"  >
 					<tnt:NavigationListItem
 						text="{oGlobalAIModel>title}"
 						icon="{oGlobalAIModel>icon}"
@@ -90,36 +81,34 @@
 						<tnt:NavigationListItem
 							text="{title}"
 							key="{key}"
-							enabled="{enabled}" />
-					</tnt:NavigationListItem>
+							enabled="{enabled}" /></tnt:NavigationListItem>
 				</tnt:NavigationList>
 				<tnt:fixedItem>
-					 <tnt:NavigationList >
-           <!-- Company logo + name -->
-        <tnt:NavigationListItem
-            icon="{oGlobalAIModel>/applicationDetails/companyInfo/companyLogoPath}"
-            enabled="false"
-            selectable="false"
-        />
-        <tnt:NavigationListItem 
+					<tnt:NavigationList  visible="{oGlobalAIModel>/ApplicationConfigurations/showCompanyDetailsonNav}" >
+						<!-- Company logo + name -->
+						<tnt:NavigationListItem
+							icon="{oGlobalAIModel>/applicationDetails/companyInfo/companyLogoPath}"
+							enabled="false"
+							selectable="false"
+						/>
+						<tnt:NavigationListItem 
             text="{oGlobalAIModel>/applicationDetails/companyInfo/name}"
             enabled="false" 
             selectable="false" 
         />
-        <tnt:NavigationListItem 
+						<tnt:NavigationListItem 
             text="{oGlobalAIModel>/applicationDetails/companyInfo/website}" 
             enabled="false" 
             selectable="false" 
-        /> 
-    </tnt:NavigationList>
-
- 				</tnt:fixedItem>
+        />
+					</tnt:NavigationList>
+				</tnt:fixedItem>
 			</tnt:SideNavigation>
 		</tnt:sideContent>
 		<tnt:mainContents>
-			<NavContainer id="pageContainer" initialPage="expensesPage">
+			<NavContainer id="pageContainer" initialPage="expensesPage"  >
 				<pages>
-         <mvc:XMLView
+					<mvc:XMLView
             id="expensesPage"
             viewName="PersonalAssistantUI.view.Dashboard"
         />

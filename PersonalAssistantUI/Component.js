@@ -15,34 +15,36 @@ sap.ui.define([
         init: function() { 
             // Call the base component's init function
             UIComponent.prototype.init.apply(this, arguments);
-
             // Enable routing
             this.getRouter().initialize();
-
             // Set the device model
             this.setModel(models.createDeviceModel(), "device");
- 
+            
+            this.fnInitlizeGlobalModel();
+        },
+        fnInitlizeGlobalModel:function(){
             const oGlobalModelData = {
-                globalAppConfig:{
-                    isApplicationDataLoaded :false,
-                    isUserDetailsLoaded :false
-                },
+                // Application Configuration 
+                ApplicationConfigurations:{
+                    isApplicationDetailsLoaded :false,
+                    isUserDetailsLoaded :false,
+                    showPilotAIButton:true,
+                    showCompanyDetailsonNav:true,
+                    showThemeChange:true,
+                }, 
+                // Application & Company Details Configuration 
                 applicationDetails:{
                     applicationName:"",
-                    logoPath:"",
                     footerName:"",
+                    logoPath:"",
                     companyInfo: {
-                    companyLogoPath:"",
-                        "name": "PRAV Technovations",
-                        "address": "54,west Street,Thandampalayam",
-                        "website": "https://www.praveen.com"
+                        companyLogoPath:"",
+                        name: "",
+                        address : "",
+                        website: ""
                     }
-
                 },
-                dashboard: {
-                    tiles:[]
-                },
-                Notifications: [ ],
+                // Logged In User Details  
                 userDetails: {
                     initial:"",
                     username: "",
@@ -50,101 +52,47 @@ sap.ui.define([
                     lastName: "",
                     lastLogin: "",                   
                     selectedTheme: "sap_horizon",
-                    navItems:[ ],
-                    assignedMenu:[ ]
-                },
-                menuBar:{
-                    menuVisible:false
+                    navigationMenus:[],
+                    UserNotifications: []
+                }, 
+                DashboardPage: {
+                    FeedsCarouselToogle:true,
+                    upcomingRemainders:[] ,
+                    monthlyExpenseChartData:[],
+                    WeeklyExpenseChartData:[
+                        { value: 50, label: "Q1", color: "Error" },
+                        { value: 80, label: "Q2", displayValue: "80M", color: "Error" },
+                        { value: -20, label: "Q3", color: "Error" },
+                        { value: 60, label: "Q4", displayValue: "avg", color: "Neutral" },
+                        { value: 55, label: "Q5", color: "Neutral" }
+                    ],
+                    healthStatusData: {
+                        minValue: 0,
+                        maxValue: 40,
+                        lists: [
+                            { title: "Water", color: "Good", displayValue: "1L of 10L", value: 30 },
+                            { title: "Sleep", color: "Good", displayValue: "5hr of 8hr", value: 20 },
+                            { title: "Steps", color: "Good", displayValue: "1000 of 8000", value: 10 }
+                        ]
+                    },
+                    Tiles:[
+                        {"header": "Featured","image": "/image/bgImage.png", "subheader": "Budget insights", "unit": "USD", "footer": "Budget Remaining", "value": 850, "valueColor": "Neutral", "indicator": "Down"},
+                        { "header": "Alerts", "image": "/image/bgImage1.png","subheader": "Spending alerts", "unit": "", "footer": "Warnings", "value": 3, "valueColor": "Critical", "indicator": "Up" },
+                        { "header": "Featured", "subheader": "Budget insights", "unit": "USD", "footer": "Budget Remaining", "value": 850, "valueColor": "Neutral", "indicator": "Down" },
+                        { "header": "Hot News", "subheader": "Latest expense updates", "unit": "USD", "footer": "This Month", "value": 1200, "valueColor": "Good", "indicator": "Up" },
+                        { "header": "Hot News", "subheader": "Latest expense updates", "unit": "USD", "footer": "This Month", "value": 1200, "valueColor": "Good", "indicator": "Up" },
+                        { "header": "Hot News", "subheader": "Latest expense updates", "unit": "USD", "footer": "This Month", "value": 1200, "valueColor": "Good", "indicator": "Up" },
+                        { "header": "Hot News", "subheader": "Latest expense updates", "unit": "USD", "footer": "This Month", "value": 1200, "valueColor": "Good", "indicator": "Up" }
+                    ]
                 }
+                
+                ,
             };
-
-
-
-            const oGlobalModelData2 = {
-                applicationDetails:{
-                    logoPath:"image/pravzyraally.png",
-                    footerName:"PRVN Group of Enterprises"
-                },
-                dashboard: {
-                    tiles:[]
-                },
-                Notifications: [
-            {
-                title: "New order (#2525)",
-                description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-                datetime: "1 hour ago",
-                unread: true,
-                priority: "None",
-                authorName: "Jean Doe",
-                authorPicture: "test-resources/sap/m/images/Woman_04.png",
-                buttons: [
-                    { text: "Accept All" },
-                    { text: "Reject All" }
-                ]
-            },
-            {
-                title: "New order (#2524) without actions",
-                description: "Short description",
-                datetime: "3 days ago",
-                unread: true,
-                priority: "High",
-                authorName: "Office Notification",
-                authorPicture: "sap-icon://group"
-            },
-            {
-                title: "New order (#2523) Long title",
-                description: "Another short description",
-                datetime: "3 days ago",
-                unread: false,
-                priority: "High",
-                authorName: "Patricia Clark",
-                authorInitials: "PC",
-                authorAvatarColor: "Accent8",
-                buttons: [
-                    { text: "Accept" },
-                    { text: "Reject" }
-                ]
-            },
-            {
-                title: "New order (#2522) Medium priority",
-                description: "With medium priority and no buttons",
-                datetime: "2 days ago",
-                unread: true,
-                priority: "Medium",
-                authorName: "John Smith",
-                authorInitials: "JS",
-                authorAvatarColor: "Accent4"
-            },
-            {
-                title: "New order (#2521) Low priority",
-                description: "Just a notification without buttons",
-                datetime: "1 week ago",
-                unread: false,
-                priority: "Low",
-                authorName: "Alice Brown",
-                authorPicture: "test-resources/sap/m/images/female_BaySu.jpg"
-            }
-                ],
-                userDetails: {
-                    initial:"",
-                    username: "",
-                    name: "",
-                    lastLogin: "",                   
-                    selectedTheme: "sap_horizon",
-                    assignedMenu:[ ]
-                },
-                menuBar:{
-                    menuVisible:true
-                }
-            };
-
+ 
             const oGlobalModel = new sap.ui.model.json.JSONModel(oGlobalModelData);
             sap.ui.getCore().setModel(oGlobalModel, "oGlobalAIModel");
             this.setModel(oGlobalModel, "oGlobalAIModel");
-
- 
-        },
-        
+        }
 		
     });
 });
