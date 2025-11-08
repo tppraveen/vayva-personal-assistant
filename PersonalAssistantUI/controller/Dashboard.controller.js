@@ -36,6 +36,7 @@ sap.ui.define([
       },
       
       onObjectMatched: function () {
+          
         BusyIndicator.hide();
 var oData = {
         tiles: [
@@ -78,7 +79,7 @@ var oData = {
       },
       
       onToggleCarousel: function () {
-        var oCarousel = this.byId("idCarousel");
+        var oCarousel = this.byId("idDashboardCarousel");
         oGlobalModel.setProperty("/DashboardPage/FeedsCarouselToogle", !oCarousel.getVisible())
       },
       fnLoadDummyServiceForRef: function () {

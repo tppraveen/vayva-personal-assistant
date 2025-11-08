@@ -76,14 +76,11 @@ sap.ui.define([
                         ]
                     },
                     Tiles:[
-                        {"header": "Featured","image": "/image/bgImage.png", "subheader": "Budget insights", "unit": "USD", "footer": "Budget Remaining", "value": 850, "valueColor": "Neutral", "indicator": "Down"},
-                        { "header": "Alerts", "image": "/image/bgImage1.png","subheader": "Spending alerts", "unit": "", "footer": "Warnings", "value": 3, "valueColor": "Critical", "indicator": "Up" },
-                        { "header": "Featured", "subheader": "Budget insights", "unit": "USD", "footer": "Budget Remaining", "value": 850, "valueColor": "Neutral", "indicator": "Down" },
-                        { "header": "Hot News", "subheader": "Latest expense updates", "unit": "USD", "footer": "This Month", "value": 1200, "valueColor": "Good", "indicator": "Up" },
-                        { "header": "Hot News", "subheader": "Latest expense updates", "unit": "USD", "footer": "This Month", "value": 1200, "valueColor": "Good", "indicator": "Up" },
-                        { "header": "Hot News", "subheader": "Latest expense updates", "unit": "USD", "footer": "This Month", "value": 1200, "valueColor": "Good", "indicator": "Up" },
-                        { "header": "Hot News", "subheader": "Latest expense updates", "unit": "USD", "footer": "This Month", "value": 1200, "valueColor": "Good", "indicator": "Up" }
-                    ]
+                        { image: "/image/img1.png", text: "Expense Tracker by AI"  },
+                        { image: "/image/img4demo.jpg", text: "It's done!"  },
+                        { image: "/image/img22.jpg", text: "Welcome Carousel Invite Friend"  },
+                        { image: "/image/img32.jpg", text: "Tablet Offer"  }
+                     ]
                 }
                 
                 ,

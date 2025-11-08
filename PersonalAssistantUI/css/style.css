@@ -158,6 +158,20 @@ footer .sapMText {
 
 
 /* Dashboard :start */  
+
+
+.sapMCrslItemTableCell .welcomeCarouselText {
+	color: rgb(255, 255, 255);
+	display: block; 
+	position: fixed;
+	bottom: 0;
+	padding: 1rem;
+	font-size: 1.5rem;
+	width: 100%;
+	text-shadow: 0 0 0.125rem black;
+}
+
+
 /* Light blue + light green */
 .newsPanel .sapMPanelContent {
     background: linear-gradient(145deg, #65c1ff 0%, #8dffb6 100%); 
