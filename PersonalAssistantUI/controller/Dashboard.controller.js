@@ -27,6 +27,7 @@ sap.ui.define([
         this.getView().setModel(this.getOwnerComponent().getModel("oGlobalAIModel"), "oGlobalAIModel");
         oGlobalModel = this.getView().getModel("oGlobalAIModel");
         // if No login details found nav to Home screeen
+        
         if (!oGlobalModel.getProperty("/ApplicationConfigurations/isUserDetailsLoaded")) {
           oRouter.navTo("Login")
         }
@@ -37,50 +38,14 @@ sap.ui.define([
       
       onObjectMatched: function () {
           
-        BusyIndicator.hide();
-var oData = {
-        tiles: [
-            {
-                header: "Featured",
-                subheader: "Budget insights",
-                unit: "USD",
-                footer: "Budget Remaining",
-                value: 850,
-                valueColor: "Neutral",
-                indicator: "Down"
-            },
-            {
-                header: "Alerts",
-                subheader: "Spending alerts",
-                unit: "",
-                footer: "Warnings",
-                value: 3,
-                valueColor: "Critical",
-                indicator: "Up"
-            },
-            {
-                header: "Hot News",
-                subheader: "Latest expense updates",
-                unit: "USD",
-                footer: "This Month",
-                value: 1200,
-                valueColor: "Good",
-                indicator: "Up"
-            }
-            // ... more tiles as needed
-        ]
-    };
-
-    var oModel = new sap.ui.model.json.JSONModel(oData);
-    this.getView().setModel(oModel);
-        
+        BusyIndicator.hide(); 
          this.fnLoadMonthlyExpenseChartData();
         this.fnLoadUpcomingRemainders();
       },
       
       onToggleCarousel: function () {
-        var oCarousel = this.byId("idDashboardCarousel");
-        oGlobalModel.setProperty("/DashboardPage/FeedsCarouselToogle", !oCarousel.getVisible())
+        var oCarousel = oGlobalModel.getProperty("/DashboardPage/FeedsCarouselToogle")
+        oGlobalModel.setProperty("/DashboardPage/FeedsCarouselToogle", !oCarousel)
       },
       fnLoadDummyServiceForRef: function () {
         var oModel = new sap.ui.model.json.JSONModel();

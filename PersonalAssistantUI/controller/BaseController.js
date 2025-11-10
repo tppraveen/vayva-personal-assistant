@@ -2,15 +2,16 @@ sap.ui.define(
     [
         "sap/ui/core/mvc/Controller",
         "PersonalAssistantUI/model/formatter",
+    "PersonalAssistantUI/model/models",
         'sap/m/MessageToast',
         "sap/ui/core/routing/History",
         "sap/ui/core/Fragment",
         "sap/ui/model/json/JSONModel",
         "sap/ui/core/Component"
     ],
-    function (Controller, formatter, MessageToast, History, Fragment, JSONModel, Component) {
+    function (Controller, formatter,models, MessageToast, History, Fragment, JSONModel, Component) {
         "use strict";
-         return Controller.extend("PersonalAssistantUI.controller.BaseController", {
+          return Controller.extend("PersonalAssistantUI.controller.BaseController", {
             formatter: formatter,
             
             // Success, Warning,Error message used in Line and Product Standard
@@ -179,8 +180,24 @@ sap.ui.define(
                 MessageToast.show("About clicked");
             },
 
-            onSignOut: function () {
-                MessageToast.show("Signing out...");
+            onSignOut: function () { 
+                // 1. Clear local/session storage
+                localStorage.removeItem("authToken");
+                localStorage.removeItem("userInfo");
+                sessionStorage.clear(); // if you used it
+
+
+                let oGlobalModelData = models.getApplicationModel()
+                const oGlobalModel = new sap.ui.model.json.JSONModel(oGlobalModelData);
+                sap.ui.getCore().setModel(oGlobalModel, "oGlobalAIModel");
+                this.getView().setModel(oGlobalModel, "oGlobalAIModel");
+                var oComponent = this.getOwnerComponent();
+                oComponent.getApplicationDetails();
+                
+                let oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+                oRouter.navTo("Login");
+                location.reload();
+                MessageToast.show("Logout succesfuly");
             },
             // ****************************** UserDetails  End ******************************
             

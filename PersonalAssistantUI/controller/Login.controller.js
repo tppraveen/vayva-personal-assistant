@@ -11,7 +11,6 @@ sap.ui.define([
 		"use strict";
 		let oRouter, oGlobalModel;
 
-
 		return BaseController.extend("PersonalAssistantUI.controller.Login", {
 			formatter: formatter,
 			onInit: function () {
@@ -20,9 +19,11 @@ sap.ui.define([
  				this.getView().setModel(this.getOwnerComponent().getModel("oGlobalAIModel"),"oGlobalAIModel");
 				oGlobalModel = this.getView().getModel("oGlobalAIModel")
 				BusyIndicator.show(0);
+				if (oGlobalModel.getProperty("/ApplicationConfigurations/isUserDetailsLoaded")) {
+					oRouter.navTo("Home")
+				}
 
-				this.getApplicationDetails();
-				const oRoute = oRouter.getRoute("Login");
+ 				const oRoute = oRouter.getRoute("Login");
 				if (oRoute) {
 					oRoute.attachMatched(this.onObjectMatched, this);
 				}
@@ -30,20 +31,7 @@ sap.ui.define([
 			onObjectMatched: function () {
   				BusyIndicator.hide();
 			},
-			
-			getApplicationDetails:function(){
- 				oGlobalModel.setProperty("/ApplicationConfigurations/isApplicationDetailsLoaded",true)
-				oGlobalModel.setProperty("/applicationDetails/logoPath","image/pravzyraally.png")
-				oGlobalModel.setProperty("/applicationDetails/companyInfo/companyLogoPath","image/prav.png")
-				oGlobalModel.setProperty("/applicationDetails/companyInfo/name","PRAV Technovations")
-				oGlobalModel.setProperty("/applicationDetails/companyInfo/address","54,west Street,Thandampalayam")
-				oGlobalModel.setProperty("/applicationDetails/companyInfo/website","https://www.praveen.com")
-				 
-				oGlobalModel.setProperty("/applicationDetails/footerName","PRVN Group of Enterprises")
-				oGlobalModel.setProperty("/applicationDetails/applicationName","ZYRA AI")
-				oGlobalModel.refresh(true);
-			},
-
+			 
 			onLoginPress: function () {
 				this.getUserDetailsforUser();
 				this.getNotificationforUser();
@@ -52,6 +40,8 @@ sap.ui.define([
 				return
 			},
 			getUserDetailsforUser:function(){
+				console.log("Call 2 - Login cont--  userDetails by inputs");
+
  				var oUserDetailsData = {
                     initial:"PK",
                     username: "praveenKumars",
@@ -89,10 +79,15 @@ sap.ui.define([
                 }
 				oGlobalModel.setProperty("/userDetails",oUserDetailsData)
 				oGlobalModel.setProperty("/ApplicationConfigurations/isUserDetailsLoaded",true)
+
+				localStorage.setItem("authToken", "Yes");
+				localStorage.setItem("AIUserDetailsInfo", JSON.stringify(oUserDetailsData));
+ 
 				oGlobalModel.refresh(true);
 			},
 			
 			getNotificationforUser:function(){
+				console.log("Call 2 - Login cont-- combine into 1 service  user - notifications Details by user");
 				var oNotificationData =[
 					 {
                             title: "New order (#2525)",

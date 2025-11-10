@@ -49,15 +49,12 @@
 					<core:Item key="sap_belize_plus_hcw" text="Belize Plus High Contrast White" />
 				</items>
 			</ComboBox>
-			<!-- Action Buttons -->
-			<List mode="SingleSelectMaster" class="sapUiNoContentPadding sapUiSmallMarginTop" width="100%">
-				<items>
-					<StandardListItem icon="sap-icon://action-settings" title="{i18n>SETTINGS_BTN}" type="Active" press="onSettingsPress" />
-					<StandardListItem icon="sap-icon://email" title="{i18n>CONTACT_SUPPORT_BTN}" type="Active" press="onContactSupport" />
-					<StandardListItem icon="sap-icon://hint" title="{i18n>ABOUT_BTN}" type="Active" press="onAboutPress" />
-					<StandardListItem icon="sap-icon://log" title="{i18n>SIGNOUT_BTN}" type="Active" press="onSignOut" />
-				</items>
-			</List>
+			<Button icon="sap-icon://action-settings" text="{i18n>SETTINGS_BTN}" type="Emphasized" press="onSettingsPress" />
+					<Button icon="sap-icon://email" text="{i18n>CONTACT_SUPPORT_BTN}" type="Accept" press="onContactSupport" />
+					<Button icon="sap-icon://hint" text="{i18n>ABOUT_BTN}" type="Accept" press=".onAboutPress" />
+					<Button visible="{=${oGlobalAIModel>/ApplicationConfigurations/isUserDetailsLoaded} }"
+					icon="sap-icon://log" text="{i18n>SIGNOUT_BTN}" type="Reject" press=".onSignOut" />
+			 
 		</VBox>
 	</Popover>
 </core:FragmentDefinition>

@@ -21,31 +21,31 @@
 			<Panel
 				expandable="false"
 				expanded="false"
-				class="sapUiNoContentPadding sapUiSmallMarginBottom newsPanel">
+				class="  sapUiSmallMarginBottom newsPanel">
 				<!-- Show/Hide Button -->
 				<!-- Custom "Header" with Title left and Button right -->
 				<HBox justifyContent="SpaceBetween" alignItems="Center" class="sapUiSmallMargin">
 					<!-- Left title -->
 					<VBox>
-						<Title text="Welcome to Zyra AI Assistant" level="H3" />
-						<Label text="Overview Updates"  />
+						<Title text="{i18n>WELCOME_TEXT} {oGlobalAIModel>/applicationDetails/applicationName}" level="H3" />
+						<Label text="{i18n>OVERVIEW_UPDATES}"  />
 					</VBox>
 					<!-- Right show/hide button -->
 					<Button   press="onToggleCarousel"
 					text="{= !${oGlobalAIModel>/DashboardPage/FeedsCarouselToogle} ? 'show' : 'hide' }" 
 					icon="{= !${oGlobalAIModel>/DashboardPage/FeedsCarouselToogle} ? 'sap-icon://show' : 'sap-icon://hide' }" />
 				</HBox>
-				<!-- Carousel for Hot News / Featured tiles -->
+				
+					<!-- Carousel for Hot News / Featured tiles -->
 				 <VBox id="idDashboardCarousel2"  >
-						<Carousel visible="{oGlobalAIModel>/DashboardPage/FeedsCarouselToogle}"
+						<Carousel visible="false"
 							id="idDashboardCarousel" 
 							showPageIndicator="true"    width="100%"
 							loop="true"
 							pageChanged=".onCarouselPageChanged"
 							  pages="{
         path: 'oGlobalAIModel>/DashboardPage/Tiles'
-    }"
-							tooltip="{i18n>welcomeDescription}">
+    }" >
 							<pages>
 								<VBox renderType="Bare">
             <Image
@@ -59,15 +59,53 @@
 							</pages>
 						</Carousel>
 					 </VBox>
-  
-			</Panel>
-			<!-- Main Layout Grid -->
-			<HBox justifyContent="Center" class="customRow" wrap="Wrap" alignItems="SpaceBetween" >
-				<Button text="Add Expense" icon="sap-icon://add" press=".onAddExpense" />
+
+				<HBox  justifyContent="SpaceBetween" alignItems="Center" width="95%" visible="{oGlobalAIModel>/DashboardPage/FeedsCarouselToogle}">
+			 
+	<GenericTile   
+	class="    tileLayout customTile3D " header="{i18n>DAILY_ROUTINE_TILE}" subheader="⏰ {oGlobalAIModel>/DashboardPage/OverViewTiles/dailyRoutine/lastEntryDateTime}" press="press">
+		
+		<TileContent >
+			<ImageContent src="sap-icon://customer-history" />
+		</TileContent>
+	</GenericTile>
+	<GenericTile visible="{=! ${device>/system/phone}}"
+	 class="sapUiTinyMarginBegin   tileLayout customTile3D " header="{i18n>ADD_EXPENSE_TILE}"
+				 subheader="{i18n>ADD_EXPENSE_SUBHEADER_TILE}" press="onPress"  >
+		<TileContent unit="{i18n>CURRENCY}" >
+			<NumericContent value="{oGlobalAIModel>/DashboardPage/OverViewTiles/Expense/totalExpense}" withMargin="false" />
+		</TileContent>
+	</GenericTile>
+	<GenericTile  visible="{=! ${device>/system/phone}}"
+	 class="sapUiTinyMarginBegin   tileLayout customTile3D " header="{i18n>LOG_MOOD_TILE}"
+				 subheader="{i18n>LOG_MOOD_SUBHEADER_TILE}" press="onPress"  >
+		<TileContent unit="Habit tracker"  >
+			<ImageContent src="sap-icon://heart" />
+		</TileContent>
+	</GenericTile>
+	<GenericTile visible="{=! ${device>/system/phone}}"
+	 class="sapUiTinyMarginBegin   tileLayout customTile3D " header="{i18n>ADD_APPOINTMENT_TILE}"
+				 subheader="{i18n>ADD_APPOINTMENT_SUBHEADER_TILE}" press="onPress"  >
+		<TileContent unit="{i18n>ADD_APPOINTMENT_FOOTER_TILE}">
+			<ImageContent src="sap-icon://appointment-2" />
+		</TileContent>
+	</GenericTile>
+		 
+	 
+
+ 
+
+ 
+	  	<HBox visible="{= ${device>/system/phone}}" justifyContent="Center" class="customRow" wrap="Wrap" alignItems="SpaceBetween" >
 				<Button text="Log Mood" icon="sap-icon://heart" press=".onLogMood"  class="sapUiSmallMarginBegin"/>
+				<Button text="Add Expense" icon="sap-icon://add" press=".onAddExpense" />
 				<Button text="Add Appointment" icon="sap-icon://appointment-2" press=".onAddAppointment"  class="sapUiSmallMarginBegin" />
 				<Button text="Upcoming Reminder" icon="sap-icon://bell" press=".onShowReminders"  class="sapUiSmallMarginBegin"/>
 			</HBox>
+				</HBox>
+			
+  
+			</Panel>
 			<!-- </VBox>  -->
 			<!-- MAIN FLEX CONTAINER -->
 			<m:FlexBox
@@ -240,7 +278,11 @@
 				</HBox>
 			</m:FlexBox>
 			<!-- </VBox> -->
+
 		</content>
+		
+			
+			 
 	</Page>
 </mvc:View>
   

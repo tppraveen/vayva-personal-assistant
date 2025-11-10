@@ -8,7 +8,6 @@ sap.ui.define([
     formatter: formatter,
     onInit: function () {
       this._setToggleButtonTooltip(!Device.system.desktop);
-    },
-
+    }, 
   });
 });

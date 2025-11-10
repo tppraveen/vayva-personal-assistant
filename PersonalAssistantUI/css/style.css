@@ -104,23 +104,7 @@
     background-color: #0073e6;
     color: white;
 }
-
-/* Footer */
-footer {
-    background-color: #f7f7f7;
-    padding: 10px 0;
-    margin-top: 20px;
-}
-
-footer .sapMBar {
-    padding: 0 20px;
-}
-
-footer .sapMText {
-    color: #888;
-    font-size: 0.9rem;
-    text-align: center;
-}
+ 
 
 /* Animation */
 @keyframes fadeIn {
